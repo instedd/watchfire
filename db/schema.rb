@@ -10,6 +10,28 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 0) do
+ActiveRecord::Schema.define(:version => 20110803201019) do
+
+  create_table "missions", :force => true do |t|
+    t.integer  "req_vols"
+    t.float    "lat"
+    t.float    "lng"
+    t.string   "reason"
+    t.string   "status"
+    t.string   "address"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "volunteers", :force => true do |t|
+    t.string   "name"
+    t.float    "lat"
+    t.float    "lng"
+    t.string   "address"
+    t.string   "voice_number"
+    t.string   "sms_number"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
 end
