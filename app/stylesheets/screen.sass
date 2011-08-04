@@ -5,3 +5,31 @@
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" />
 
 @import compass/reset
+
+@mixin left
+	float: left
+
+@mixin right
+	float: right
+	
+@mixin clear
+	clear: both
+
+#left-panel
+	@include left
+
+#right-panel
+	@include left
+	margin-left: 30px
+
+#map_canvas
+	width: 500px
+	height: 500px
+
+#volunteers
+	border: 1px solid
+	padding: 5px
+	margin-top: 20px
+
+#status
+	margin-top: 20px

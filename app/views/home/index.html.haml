@@ -1,0 +1,37 @@
+- content_for :head do
+	= javascript_include_tag 'http://maps.googleapis.com/maps/api/js?sensor=false'
+
+#left-panel
+	%form
+		%p
+			%label Recruit
+			= text_field_tag 'recruit'
+		%p
+			%label Reason
+			= text_field_tag 'reason'
+		%p
+			%label Location				
+			= text_field_tag 'location'
+		#map_canvas
+			here goes the map!
+		%p
+			%label Lat
+			= text_field_tag 'lat'
+		%p
+			%label Lng
+			= text_field_tag 'lng'
+#right-panel
+	%p 
+		Calling List
+		%button Start Recruiting
+	#volunteers
+		%ul
+			%li John Doe
+			%li Ariel Gomez
+			%li Peter Smith
+	#status
+		%ul
+			%li Confirmed 1
+			%li Denied 2
+			%li Pending 3
+			%li Unresponsive 4
