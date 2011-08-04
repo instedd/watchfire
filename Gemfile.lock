@@ -35,6 +35,10 @@ GEM
       chunky_png (~> 1.2)
       fssm (>= 0.2.7)
       sass (~> 3.1)
+    daemons (1.1.4)
+    delayed_job (2.1.4)
+      activesupport (~> 3.0)
+      daemons
     diff-lcs (1.1.2)
     enumerated_attribute (0.2.16)
       meta_programming (>= 0.2.1)
@@ -106,6 +110,7 @@ PLATFORMS
 
 DEPENDENCIES
   compass
+  delayed_job
   enumerated_attribute
   haml-rails
   jquery-rails
