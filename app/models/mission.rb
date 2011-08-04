@@ -2,6 +2,9 @@ class Mission < ActiveRecord::Base
 
   enum_attr :status, %w(^created running paused finished)
 
+  has_many :candidates, :dependent => :destroy, , :include => :volunteer
+  has_many :volunteers, :through => :candidates
+
   validates_presence_of :req_vols, :lat, :lng
 
   validates_numericality_of :req_vols, :only_integer => true, :greater_than => 0

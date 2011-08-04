@@ -10,7 +10,19 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110803201019) do
+ActiveRecord::Schema.define(:version => 20110804143819) do
+
+  create_table "candidates", :force => true do |t|
+    t.integer  "mission_id"
+    t.integer  "volunteer_id"
+    t.string   "status"
+    t.integer  "voice_retries"
+    t.integer  "sms_retries"
+    t.datetime "last_voice_att"
+    t.datetime "last_sms_att"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "missions", :force => true do |t|
     t.integer  "req_vols"

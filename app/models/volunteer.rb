@@ -1,5 +1,8 @@
 class Volunteer < ActiveRecord::Base
 
+  has_many :candidates, :dependent => :destroy
+  has_many :missions, :through => :candidates
+
   validates_presence_of :name, :lat, :lng
   
   validates_numericality_of :lat, :less_than_or_equal_to => 90, :greater_than_or_equal_to => -90

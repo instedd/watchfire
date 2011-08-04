@@ -1,0 +1,15 @@
+defaults: &defaults
+  candidate_max_sms_retries: 3
+  candidate_max_phone_retries: 3
+
+development:
+  <<: *defaults
+
+test: &test
+  <<: *defaults
+  
+staging:
+  <<: *defaults
+  
+production:
+  <<: *defaults
