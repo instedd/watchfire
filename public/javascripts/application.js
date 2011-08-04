@@ -27,15 +27,16 @@ function init_map() {
 	
 	google.maps.event.addListener(map, 'click', function(event) {
 		var location = event.latLng;
-		$("#lat").val(location.lat());
-		$("#lng").val(location.lng());
+		$("#mission_lat").val(location.lat());
+		$("#mission_lng").val(location.lng());
 		map.setCenter(location);
 		marker.setPosition(location);
     });
 
-	$("#location").keypress(function(event){
+	$("#mission_address").keypress(function(event){
 		if (event.keyCode == 13) {
-			geocodeLocation();
+      var loc = $(this).val();
+			geocodeLocation(loc);
 			return false;
         } else {
           //$("#feedback").hide();
@@ -44,13 +45,12 @@ function init_map() {
 	});
 }
 
-function geocodeLocation() {
-    var location = $("#location").val();
+function geocodeLocation(location) {
 	geocoder.geocode( { 'address': location }, function(results, status) {
 		if (status == google.maps.GeocoderStatus.OK) {
 			var location = results[0].geometry.location;
-			$("#lat").val(location.lat());
-			$("#lng").val(location.lng());
+			$("#mission_lat").val(location.lat());
+			$("#mission_lat").val(location.lng());
 			map.setCenter(location);
 			marker.setPosition(location);
 		} else {

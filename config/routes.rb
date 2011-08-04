@@ -10,8 +10,7 @@ Watchfire::Application.routes.draw do
   #   match 'products/:id/purchase' => 'catalog#purchase', :as => :purchase
   # This route can be invoked with purchase_url(:id => product.id)
 
-  # Sample resource route (maps HTTP verbs to controller actions automatically):
-  #   resources :products
+  resources :missions
 
   # Sample resource route with options:
   #   resources :products do
@@ -48,7 +47,7 @@ Watchfire::Application.routes.draw do
 
   # You can have the root of your site routed with "root"
   # just remember to delete public/index.html.
-  root :to => "home#index"
+  root :to => "missions#index"
 
   # See how all your routes lay out with "rake routes"
 
