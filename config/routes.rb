@@ -1,4 +1,6 @@
 Watchfire::Application.routes.draw do
+  post "nuntium/receive"
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

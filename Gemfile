@@ -27,6 +27,8 @@ gem 'haml-rails'
 gem 'compass'
 gem 'enumerated_attribute'
 gem 'delayed_job'
+gem 'rest-client'
+gem 'nuntium_api', :require => 'nuntium'
 gem 'geokit'
 
 # Bundle gems for the local environment. Make sure to
@@ -35,4 +37,7 @@ gem 'geokit'
 group :development, :test do
 #   gem 'webrat'
 	gem "rspec-rails", "~> 2.6"
+	gem 'machinist', '>= 2.0.0.beta2'
+	gem 'faker'
+	gem 'mocha'
 end
