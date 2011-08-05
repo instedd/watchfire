@@ -10,8 +10,8 @@ Volunteer.blueprint do
 end
 
 Candidate.blueprint do
-  mission
-  volunteer
+  mission { Mission.make! }
+  volunteer { Volunteer.make! }
 end
 
 Mission.blueprint do

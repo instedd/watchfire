@@ -11,6 +11,7 @@ class SmsJob < Struct.new(:candidate_id)
     # check if candidate has run out of retries
     if candidate.sms_retries >= config.candidate_max_sms_retries
       candidate.status = :unresponsive
+      candidate.save :validate => false
       return
     end
     
@@ -29,7 +30,7 @@ class SmsJob < Struct.new(:candidate_id)
     if response.code == 200
       candidate.sms_retries = candidate.sms_retries + 1
       candidate.last_sms_att = Time.now.utc
-      candidate.save false
+      candidate.save :validate => false
     end
     
     # Enqueue new job with time = sms timeout
