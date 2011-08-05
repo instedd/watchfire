@@ -45,6 +45,7 @@ GEM
     erubis (2.6.6)
       abstract (>= 1.0.0)
     fssm (0.2.7)
+    geokit (1.6.0)
     haml (3.1.2)
     haml-rails (0.3.4)
       actionpack (~> 3.0)
@@ -112,6 +113,7 @@ DEPENDENCIES
   compass
   delayed_job
   enumerated_attribute
+  geokit
   haml-rails
   jquery-rails
   mysql2 (~> 0.2.6)
