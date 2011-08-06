@@ -1,6 +1,6 @@
 class Candidate < ActiveRecord::Base
   
-  enum_attr :status, %w(^pending confirmed denied unresponsive)
+  enum_attr :status, %w(confirmed ^pending denied unresponsive)
 
   belongs_to :mission
   belongs_to :volunteer

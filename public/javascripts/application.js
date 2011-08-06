@@ -50,7 +50,7 @@ function geocodeLocation(location) {
 		if (status == google.maps.GeocoderStatus.OK) {
 			var location = results[0].geometry.location;
 			$("#mission_lat").val(location.lat());
-			$("#mission_lat").val(location.lng());
+			$("#mission_lng").val(location.lng());
 			map.setCenter(location);
 			marker.setPosition(location);
 		} else {

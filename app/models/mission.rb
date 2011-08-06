@@ -11,4 +11,8 @@ class Mission < ActiveRecord::Base
   validates_numericality_of :lat, :less_than_or_equal_to => 90, :greater_than_or_equal_to => -90
   validates_numericality_of :lng, :less_than_or_equal_to => 180, :greater_than_or_equal_to => -180
 
+	def candidate_count(st)
+		return self.candidates.where('status = ?', st).count
+	end
+
 end
