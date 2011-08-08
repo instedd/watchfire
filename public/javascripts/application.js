@@ -7,6 +7,10 @@ var geocoder;
 
 $(function(){
 	init_map();
+
+	$('#mission_req_vols').change(function(){
+		checkSubmit();
+	});
 });
 
 function init_map() {
@@ -31,7 +35,8 @@ function init_map() {
 		$("#mission_lng").val(location.lng());
 		map.setCenter(location);
 		marker.setPosition(location);
-    });
+		checkSubmit();
+  });
 
 	$("#mission_address").keypress(function(event){
 		if (event.keyCode == 13) {
@@ -53,6 +58,7 @@ function geocodeLocation(location) {
 			$("#mission_lng").val(location.lng());
 			map.setCenter(location);
 			marker.setPosition(location);
+			checkSubmit();
 		} else {
 			alert("Location not found");
 			//$feedback = $("#feedback");
@@ -60,4 +66,10 @@ function geocodeLocation(location) {
 			//$feedback.html("Location not found");
     	}
 	});
+}
+
+function checkSubmit() {
+	if(parseInt($('#mission_req_vols').val()) > 0 && $("#mission_lat").val().length > 0 && $("#mission_lng").val().length > 0) {
+		$('#mission_form').submit();
+	}
 }

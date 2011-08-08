@@ -1,5 +1,7 @@
 class Volunteer < ActiveRecord::Base
 
+	acts_as_mappable
+
   has_many :candidates, :dependent => :destroy
   has_many :missions, :through => :candidates
 

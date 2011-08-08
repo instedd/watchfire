@@ -7,6 +7,6 @@
 #   Mayor.create(:name => 'Daley', :city => cities.first)
 require File.expand_path('../../spec/support/blueprints.rb', __FILE__)
 
-1.upto(10).each do
+1.upto(2000).each do
   Volunteer.make!
 end

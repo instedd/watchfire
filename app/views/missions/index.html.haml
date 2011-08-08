@@ -2,7 +2,7 @@
 	= javascript_include_tag 'http://maps.googleapis.com/maps/api/js?sensor=false'
 
 #left-panel
-	= form_for @mission do |f|
+	= form_for @mission, :remote => true, :html => {:id => 'mission_form'} do |f|
 		%p
 			= f.label :req_vols, 'Recruit'
 			= f.text_field :req_vols

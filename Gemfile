@@ -29,7 +29,7 @@ gem 'enumerated_attribute'
 gem 'delayed_job'
 gem 'rest-client'
 gem 'nuntium_api', :require => 'nuntium'
-gem 'geokit'
+gem 'geokit-rails3'
 
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators
