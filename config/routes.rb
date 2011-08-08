@@ -1,4 +1,7 @@
 Watchfire::Application.routes.draw do
+  post "verboice/plan"
+  post "verboice/callback"
+
   post "nuntium/receive"
 
   # The priority is based upon order of creation:
