@@ -30,7 +30,8 @@ def _address
 end
 
 def _phone_number
-  Faker::PhoneNumber.phone_number
+  # Faker::PhoneNumber.phone_number
+  rand(10000)
 end
 
 def _lat

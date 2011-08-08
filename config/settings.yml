@@ -1,8 +1,8 @@
 defaults: &defaults
-  candidate_max_sms_retries: 3
-  candidate_max_phone_retries: 3
-  sms_timeout: 1
-  voice_timeout: 1
+  max_sms_retries: 3
+  max_voice_retries: 3
+  sms_timeout: 5
+  voice_timeout: 5
   nuntium_host: https://nuntium.instedd.org
   nuntium_account: aromero
   nuntium_app: watchfire
