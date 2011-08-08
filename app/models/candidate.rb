@@ -9,11 +9,15 @@ class Candidate < ActiveRecord::Base
 
   validates_numericality_of :voice_retries, :only_integer => true, :greater_than_or_equal_to => 0
   validates_numericality_of :sms_retries, :only_integer => true, :greater_than_or_equal_to => 0
-
-  validate :not_same_volunteer_same_mission
+  
+  validates_uniqueness_of :volunteer_id, :scope => :mission_id, :on => :create
 
 	after_initialize :init
-
+	
+	def self.find_last_for_sms_number number
+    Candidate.joins(:volunteer).where(:volunteers => {:sms_number => number}).order('last_sms_att DESC').first
+  end
+  
   private
 
   def not_same_volunteer_same_mission
