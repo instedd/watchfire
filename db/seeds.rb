@@ -5,3 +5,8 @@
 #
 #   cities = City.create([{ :name => 'Chicago' }, { :name => 'Copenhagen' }])
 #   Mayor.create(:name => 'Daley', :city => cities.first)
+require File.expand_path('../../spec/support/blueprints.rb', __FILE__)
+
+1.upto(10).each do
+  Volunteer.make!
+end
