@@ -19,20 +19,28 @@ function init_map() {
 		mapTypeId: google.maps.MapTypeId.ROADMAP
 	};
 	
-	var initialLocation = new google.maps.LatLng(60, 105);
+	var initialLocation = new google.maps.LatLng(35, -98);
 	map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
 	map.setCenter(initialLocation);
 	
 	marker = new google.maps.Marker({
 		map: map,
     });
+	
+	var loc = new google.maps.LatLng(parseFloat($("#mission_lat").val()), parseFloat($("#mission_lng").val()));
+	if(!isNaN(loc.lat()) && !isNaN(loc.lng())){		
+		map.setCenter(loc);
+		marker.setPosition(loc);
+	}
 
 	geocoder = new google.maps.Geocoder();
 	
 	google.maps.event.addListener(map, 'click', function(event) {
 		var location = event.latLng;
 		$("#mission_lat").val(location.lat());
+		$("#lat_text").val(location.lat());
 		$("#mission_lng").val(location.lng());
+		$("#lng_text").val(location.lng());
 		map.setCenter(location);
 		marker.setPosition(location);
 		checkSubmit();
@@ -55,7 +63,9 @@ function geocodeLocation(location) {
 		if (status == google.maps.GeocoderStatus.OK) {
 			var location = results[0].geometry.location;
 			$("#mission_lat").val(location.lat());
+			$("#lat_text").val(location.lat());
 			$("#mission_lng").val(location.lng());
+			$("#lng_text").val(location.lng());
 			map.setCenter(location);
 			marker.setPosition(location);
 			checkSubmit();

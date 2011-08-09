@@ -14,10 +14,12 @@
 			= f.text_field :address
 		%p
 			= f.label :lat
-			= f.text_field :lat, :disabled => 'disabled'
+			= f.text_field :lat, :disabled => 'disabled', :id => 'lat_text'
+			= f.hidden_field :lat
 		%p
 			= f.label :lng
-			= f.text_field :lng, :disabled => 'disabled'
+			= f.text_field :lng, :disabled => 'disabled', :id => 'lng_text'
+			= f.hidden_field :lng
 		#map_canvas
 			here goes the map!
 #right-panel

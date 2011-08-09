@@ -6,6 +6,7 @@ class MissionsController < ApplicationController
 	def create
 		@mission = Mission.new(params[:mission])
 		@distance = @mission.check_and_save
+		render 'update.js'
 	end
 
 	def update

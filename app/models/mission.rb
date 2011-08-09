@@ -25,8 +25,8 @@ class Mission < ActiveRecord::Base
 		if self.valid?
 			vols = self.obtain_volunteers
 			Mission.transaction do
-				set_candidates vols
 				self.save!
+				set_candidates vols
 			end
 			return vols.last.distance_from(self) rescue nil
 		end
@@ -35,7 +35,7 @@ class Mission < ActiveRecord::Base
 
 	def set_candidates(vols)
 		self.candidates.destroy_all
-		self.candidates = vols.map{|v| Candiate.new(:volunteer_id => v.id)}
+		self.candidates = vols.map{|v| Candidate.new(:volunteer_id => v.id, :mission_id => self.id)}
 		self.candidates.each do |c|
 			c.save!
 		end
