@@ -21,4 +21,28 @@ class Mission < ActiveRecord::Base
 		Volunteer.geo_scope(:origin => self).order('distance asc').limit((self.req_vols / Watchfire::Application.config.available_ratio).to_i)
 	end
 
+	def check_and_save
+		if self.valid?
+			vols = self.obtain_volunteers
+			Mission.transaction do
+				set_candidates vols
+				self.save!
+			end
+			return vols.last.distance_from(self) rescue nil
+		end
+		nil
+	end
+
+	def set_candidates(vols)
+		self.candidates.destroy_all
+		self.candidates = vols.map{|v| Candiate.new(:volunteer_id => v.id)}
+		self.candidates.each do |c|
+			c.save!
+		end
+	end
+
+	def obtain_farthest
+		self.candidates.last.volunteer.distance_from(self) rescue nil
+	end
+
 end
