@@ -2,54 +2,14 @@
 	= javascript_include_tag 'http://maps.googleapis.com/maps/api/js?sensor=false'
 
 #left-panel
-	= form_for @mission, :remote => true, :html => {:id => 'mission_form'} do |f|
-		%p
-			= f.label :req_vols, 'Recruit'
-			= f.text_field :req_vols
-		%p
-			= f.label :reason
-			= f.text_field :reason
-		%p
-			= f.label :address, 'Location'		
-			= f.text_field :address
-		%p
-			= f.label :lat
-			= f.text_field :lat, :disabled => 'disabled', :id => 'lat_text'
-			= f.hidden_field :lat
-		%p
-			= f.label :lng
-			= f.text_field :lng, :disabled => 'disabled', :id => 'lng_text'
-			= f.hidden_field :lng
-		#map_canvas
-			here goes the map!
+	#form_canvas
+		= render :partial => "form", :locals => { :mission => @mission }
+	#map_canvas
+		here goes the map!
 #right-panel
 	%p 
 		Calling List
 		%button Start Recruiting
-	#volunteers
-		%table
-			- @mission.candidates.each do |c|
-				%tr.candidate
-					%td= c.status
-					%td= c.volunteer.name
-					%td= c.volunteer.voice_number
-					%td= c.volunteer.sms_number
-	#status
-		%table
-			%tr
-				%td LOGO
-				%td Confirmed
-				%td= @mission.candidate_count('confirmed')
-			%tr
-				%td LOGO
-				%td Pending
-				%td= @mission.candidate_count('pending')
-			%tr
-				%td LOGO
-				%td Denied
-				%td= @mission.candidate_count('denied')
-			%tr
-				%td LOGO
-				%td Unresponsive
-				%td= @mission.candidate_count('unresponsive')
+	#volunteers_canvas
+		= render :partial => "candidates", :locals => { :mission => @mission }
 

@@ -1,0 +1,18 @@
+= form_for @mission, :remote => true, :html => {:id => 'mission_form'} do |f|
+	%p
+		= f.label :req_vols, 'Recruit'
+		= f.text_field :req_vols
+	%p
+		= f.label :reason
+		= f.text_field :reason
+	%p
+		= f.label :address, 'Location'		
+		= f.text_field :address
+	%p
+		= f.label :lat
+		= f.text_field :lat, :disabled => 'disabled', :id => 'lat_text'
+		= f.hidden_field :lat
+	%p
+		= f.label :lng
+		= f.text_field :lng, :disabled => 'disabled', :id => 'lng_text'
+		= f.hidden_field :lng

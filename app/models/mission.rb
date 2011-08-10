@@ -35,9 +35,8 @@ class Mission < ActiveRecord::Base
 
 	def set_candidates(vols)
 		self.candidates.destroy_all
-		self.candidates = vols.map{|v| Candidate.new(:volunteer_id => v.id, :mission_id => self.id)}
-		self.candidates.each do |c|
-			c.save!
+		vols.each do |v|
+			self.candidates.create!(:volunteer_id => v.id)
 		end
 	end
 

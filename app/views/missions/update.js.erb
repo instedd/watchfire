@@ -1,0 +1,5 @@
+$('#form_canvas').html('<%=escape_javascript(render :partial => "form", :locals => { :mission => @mission } )%>');
+
+$('#volunteers_canvas').html('<%=escape_javascript(render :partial => "candidates", :locals => { :mission => @mission } )%>');
+
+init_events();
