@@ -1,5 +1,3 @@
-require 'rest_client'
-
 class SmsJob < Struct.new(:candidate_id)
   def perform
     config = Watchfire::Application.config
