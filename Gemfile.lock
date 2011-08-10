@@ -122,6 +122,9 @@ GEM
       polyglot
       polyglot (>= 0.3.1)
     tzinfo (0.3.29)
+    verboice (0.1.0)
+      httparty
+      json
 
 PLATFORMS
   ruby
@@ -142,3 +145,4 @@ DEPENDENCIES
   rest-client
   rspec-rails (~> 2.6)
   timecop
+  verboice
