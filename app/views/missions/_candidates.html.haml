@@ -1,6 +1,6 @@
 #volunteers
 	%table
-		- @mission.candidates.each do |c|
+		- mission.candidates.each do |c|
 			%tr.candidate
 				%td= c.status
 				%td= c.volunteer.name
@@ -11,16 +11,16 @@
 		%tr
 			%td LOGO
 			%td Confirmed
-			%td= @mission.candidate_count('confirmed')
+			%td= mission.candidate_count('confirmed')
 		%tr
 			%td LOGO
 			%td Pending
-			%td= @mission.candidate_count('pending')
+			%td= mission.candidate_count('pending')
 		%tr
 			%td LOGO
 			%td Denied
-			%td= @mission.candidate_count('denied')
+			%td= mission.candidate_count('denied')
 		%tr
 			%td LOGO
 			%td Unresponsive
-			%td= @mission.candidate_count('unresponsive')
+			%td= mission.candidate_count('unresponsive')

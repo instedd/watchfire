@@ -2,8 +2,9 @@
 // This file is automatically included by javascript_include_tag :defaults
 
 var map;
-var mission_marker;
+var marker;
 var geocoder;
+var circle;
 
 $(function(){
 	init_map();
@@ -16,18 +17,21 @@ function init_map() {
 		mapTypeId: google.maps.MapTypeId.ROADMAP
 	};
 	
+	circle = new google.maps.Circle();
+
 	var initialLocation = new google.maps.LatLng(35, -98);
 	map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
 	map.setCenter(initialLocation);
 	
 	marker = new google.maps.Marker({
-		map: map,
+		map: map
     });
 	
 	var loc = new google.maps.LatLng(parseFloat($("#mission_lat").val()), parseFloat($("#mission_lng").val()));
 	if(!isNaN(loc.lat()) && !isNaN(loc.lng())){		
 		map.setCenter(loc);
 		marker.setPosition(loc);
+		setMapCircle(parseFloat($("#distance_value").html()));
 	}
 
 	geocoder = new google.maps.Geocoder();
@@ -84,5 +88,17 @@ function init_events() {
           //$("#feedback").hide();
           return true;
         }
+	});
+}
+
+function setMapCircle(distance) {
+	circle.setOptions({
+		center: marker.getPosition(),
+		map: map,
+		radius: distance * 1619,
+		fillOpacity: 0.3,
+		clickable: false,
+		fillColor: '#AAAA00',
+		strokeWeight: 1
 	});
 }

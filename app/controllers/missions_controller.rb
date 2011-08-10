@@ -1,6 +1,7 @@
 class MissionsController < ApplicationController
   def index
     @mission = Mission.first || Mission.new
+		@distance = @mission.obtain_farthest
   end
 
 	def create
