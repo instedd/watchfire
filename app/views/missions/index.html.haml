@@ -8,9 +8,6 @@
 		here goes the map!
 	= render :partial => "distance", :locals => { :distance => @distance }
 #right-panel
-	%p 
-		Calling List
-		%button Start Recruiting
 	#volunteers_canvas
 		= render :partial => "candidates", :locals => { :mission => @mission }
 

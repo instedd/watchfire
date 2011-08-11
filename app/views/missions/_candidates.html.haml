@@ -1,3 +1,12 @@
+%p 
+	Calling List
+	- if mission.candidate_count('pending') > 0
+		- if mission.status_created?
+			%button#recruit_btn Start Recruiting
+		- if mission.status_running?
+			%button#recruit_btn Stop Recruiting
+		- if mission.status_paused?
+			%button#recruit_btn Resume Recruiting
 #volunteers
 	%table
 		- mission.candidates.each do |c|
