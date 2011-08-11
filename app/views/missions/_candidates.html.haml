@@ -1,5 +1,9 @@
 %p 
 	Calling List
+	= radio_button_tag 'filter_btn', 'all', true
+	All
+	= radio_button_tag 'filter_btn', 'confirmed'
+	Confirmed
 	- if mission.candidate_count('pending') > 0
 		- if mission.status_created?
 			%button#recruit_btn Start Recruiting
@@ -10,7 +14,7 @@
 #volunteers
 	%table
 		- mission.candidates.each do |c|
-			%tr.candidate
+			%tr{:class => ('candidate candidate-'+c.status.to_s)}
 				%td= c.status
 				%td= c.volunteer.name
 				%td= c.volunteer.voice_number

@@ -89,6 +89,14 @@ function init_events() {
           return true;
         }
 	});
+	$('input:radio[name=filter_btn]').change(function(){
+		var value = $(this).val();
+		if (value == 'all') $('tr.candidate').show();
+		else {
+			$('tr.candidate').hide();
+			$('tr.candidate-confirmed').show();
+		}
+	});
 }
 
 function setMapCircle(distance) {
