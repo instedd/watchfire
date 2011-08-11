@@ -32,4 +32,9 @@ Watchfire::Application.configure do
 
   # Print deprecation notices to the stderr
   config.active_support.deprecation = :stderr
+  
+  # http://blog.angelbob.com/posts/315-RSpec-not-clearing-database-when-you-use-machinist---published-rails
+  Machinist.configure do |config|
+    config.cache_objects = false
+  end
 end

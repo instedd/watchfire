@@ -7,7 +7,7 @@ defaults: &defaults
   nuntium_account: aromero
   nuntium_app: watchfire
   nuntium_app_passwd: watchfire
-  verboice_host: http://verboice.instedd.org
+  verboice_host: http://localhost:3000
   verboice_account: aromero@manas.com.ar
   verboice_password: 123456
   verboice_channel: watchfire

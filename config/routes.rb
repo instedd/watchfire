@@ -1,6 +1,6 @@
 Watchfire::Application.routes.draw do
-  post "verboice/plan"
-  post "verboice/callback"
+  post "verboice/plan" => "verboice#plan", :format => 'xml'
+  post "verboice/callback" => "verboice#callback", :format => 'xml'
 
   post "nuntium/receive"
 
