@@ -2,7 +2,7 @@
 // This file is automatically included by javascript_include_tag :defaults
 
 var map;
-var marker;
+var mission_marker;
 var geocoder;
 var circle;
 
@@ -17,7 +17,7 @@ function init_map() {
 		mapTypeId: google.maps.MapTypeId.ROADMAP
 	};
 	
-	circle = new google.maps.Circle();
+	circle = new google.maps.Circle(); 
 
 	var initialLocation = new google.maps.LatLng(35, -98);
 	map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
@@ -32,7 +32,7 @@ function init_map() {
 	if(!isNaN(loc.lat()) && !isNaN(loc.lng())){		
 		map.setCenter(loc);
 		marker.setPosition(loc);
-		setMapCircle(parseFloat($("#distance_value").html()));
+		setMapCircle(parseFloat($('#distance_value').html()));
 	}
 
 	geocoder = new google.maps.Geocoder();
@@ -41,7 +41,7 @@ function init_map() {
 	google.maps.event.addListener(map, 'rightclick', changeMarker);
 	google.maps.event.addListener(marker, 'dragend', changeMarker);
 }
-
+	
 function changeMarker(event) {
 	var location = event.latLng;
 	$("#mission_lat").val(location.lat());

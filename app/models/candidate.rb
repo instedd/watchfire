@@ -18,6 +18,19 @@ class Candidate < ActiveRecord::Base
     Candidate.joins(:volunteer).where(:volunteers => {:sms_number => number}).order('last_sms_att DESC').readonly(false).first
   end
   
+  def has_sms?
+    !self.volunteer.sms_number.nil? && !self.volunteer.sms_number.blank?
+  end
+  
+  def has_voice?
+    !self.volunteer.voice_number.nil? && !self.volunteer.voice_number.blank?
+  end
+  
+  def call
+    Delayed::Job.enqueue(SmsJob.new(self.id)) if self.has_sms?
+    Delayed::Job.enqueue(VoiceJob.new(self.id)) if self.has_voice?
+  end
+  
   private
 
   def not_same_volunteer_same_mission

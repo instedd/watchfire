@@ -43,5 +43,25 @@ class Mission < ActiveRecord::Base
 	def obtain_farthest
 		self.candidates.last.volunteer.distance_from(self) rescue nil
 	end
+	
+	def call_volunteers
+	  update_status :running
+	  pending_candidates.each{|c| c.call}
+  end
+  
+  def stop_calling_volunteers
+    update_status :paused
+  end
+  
+  def pending_candidates
+    self.candidates.where(:status => :pending)
+  end
+  
+  private
+  
+  def update_status status
+    self.status = status
+    self.save!
+  end
 
 end
