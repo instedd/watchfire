@@ -15,5 +15,17 @@ class MissionsController < ApplicationController
 		@mission.attributes = params[:mission]
 		@distance = @mission.check_and_save
 	end
+	
+	def start
+	  @mission = Mission.find(params[:id])
+	  @mission.call_volunteers
+	  render :nothing => true
+	end
+	
+	def stop
+	  @mission = Mission.find(params[:id])
+	  @mission.stop_calling_volunteers
+	  render :nothing => true
+  end
 
 end

@@ -112,6 +112,16 @@ describe SmsJob do
     
   end
   
+  describe "mission is paused" do
+    
+    pending "should not send sms"
+    
+    pending "should not enqueue new job"
+    
+    pending "should not change candidate status"
+    
+  end
+  
   describe "nuntium bad response" do
     
     before(:each) do

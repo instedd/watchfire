@@ -2,13 +2,15 @@
 // This file is automatically included by javascript_include_tag :defaults
 
 var map;
-var marker;
+var mission_marker;
 var geocoder;
-var circle;
 
 $(function(){
 	init_map();
-	init_events();
+
+	$('#mission_req_vols').change(function(){
+		checkSubmit();
+	});
 });
 
 function init_map() {
@@ -17,8 +19,6 @@ function init_map() {
 		mapTypeId: google.maps.MapTypeId.ROADMAP
 	};
 	
-	circle = new google.maps.Circle();
-
 	var initialLocation = new google.maps.LatLng(35, -98);
 	map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
 	map.setCenter(initialLocation);
@@ -26,13 +26,12 @@ function init_map() {
 	marker = new google.maps.Marker({
 		map: map,
 		draggable: true
-  });
+    });
 	
 	var loc = new google.maps.LatLng(parseFloat($("#mission_lat").val()), parseFloat($("#mission_lng").val()));
 	if(!isNaN(loc.lat()) && !isNaN(loc.lng())){		
 		map.setCenter(loc);
 		marker.setPosition(loc);
-		setMapCircle(parseFloat($("#distance_value").html()));
 	}
 
 	geocoder = new google.maps.Geocoder();
@@ -41,7 +40,7 @@ function init_map() {
 	google.maps.event.addListener(map, 'rightclick', changeMarker);
 	google.maps.event.addListener(marker, 'dragend', changeMarker);
 }
-
+	
 function changeMarker(event) {
 	var location = event.latLng;
 	$("#mission_lat").val(location.lat());
@@ -77,41 +76,4 @@ function checkSubmit() {
 	if(parseInt($('#mission_req_vols').val()) > 0 && $("#mission_lat").val().length > 0 && $("#mission_lng").val().length > 0) {
 		$('#mission_form').submit();
 	}
-}
-
-function init_events() {
-	$('#mission_req_vols').change(function(){
-		checkSubmit();
-	});
-
-	$("#mission_address").keypress(function(event){
-		if (event.keyCode == 13) {
-      var loc = $(this).val();
-			geocodeLocation(loc);
-			return false;
-        } else {
-          //$("#feedback").hide();
-          return true;
-        }
-	});
-	$('input:radio[name=filter_btn]').change(function(){
-		var value = $(this).val();
-		if (value == 'all') $('tr.candidate').show();
-		else {
-			$('tr.candidate').hide();
-			$('tr.candidate-confirmed').show();
-		}
-	});
-}
-
-function setMapCircle(distance) {
-	circle.setOptions({
-		center: marker.getPosition(),
-		map: map,
-		radius: distance * 1619,
-		fillOpacity: 0.3,
-		clickable: false,
-		fillColor: '#AAAA00',
-		strokeWeight: 1
-	});
 }
