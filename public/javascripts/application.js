@@ -48,7 +48,7 @@ function changeMarker(event) {
 	$("#mission_lng").val(location.lng());
 	map.setCenter(location);
 	marker.setPosition(location);
-	checkSubmit();
+	reverseGeocode(location);
 }
 
 function geocodeLocation(location) {
@@ -104,7 +104,7 @@ function init_events() {
 		var loc = new google.maps.LatLng(parseFloat($("#mission_lat").val()), parseFloat($("#mission_lng").val()));
 		map.setCenter(loc);
 		marker.setPosition(loc);
-		checkSubmit();
+		reverseGeocode(loc);		
 	});
 }
 
@@ -117,5 +117,19 @@ function setMapCircle(distance) {
 		clickable: false,
 		fillColor: '#AAAA00',
 		strokeWeight: 1
+	});
+}
+
+function reverseGeocode(loc) {
+	geocoder.geocode({'latLng': loc}, function(results, status) {
+		if (status == google.maps.GeocoderStatus.OK) {
+			if (results[0]) {
+				$("#mission_address").val(results[0].formatted_address);
+			}
+		} else {
+			alert("Reverse Geocoding failed");
+			$("#mission_address").val('');
+		}
+		checkSubmit();
 	});
 }
