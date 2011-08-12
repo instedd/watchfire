@@ -24,8 +24,9 @@ function init_map() {
 	map.setCenter(initialLocation);
 	
 	marker = new google.maps.Marker({
-		map: map
-    });
+		map: map,
+		draggable: true
+  });
 	
 	var loc = new google.maps.LatLng(parseFloat($("#mission_lat").val()), parseFloat($("#mission_lng").val()));
 	if(!isNaN(loc.lat()) && !isNaN(loc.lng())){		
@@ -36,16 +37,20 @@ function init_map() {
 
 	geocoder = new google.maps.Geocoder();
 	
-	google.maps.event.addListener(map, 'click', function(event) {
-		var location = event.latLng;
-		$("#mission_lat").val(location.lat());
-		$("#lat_text").val(location.lat());
-		$("#mission_lng").val(location.lng());
-		$("#lng_text").val(location.lng());
-		map.setCenter(location);
-		marker.setPosition(location);
-		checkSubmit();
-  });
+	google.maps.event.addListener(map, 'click', changeMarker);
+	google.maps.event.addListener(map, 'rightclick', changeMarker);
+	google.maps.event.addListener(marker, 'dragend', changeMarker);
+}
+
+function changeMarker(event) {
+	var location = event.latLng;
+	$("#mission_lat").val(location.lat());
+	$("#lat_text").val(location.lat());
+	$("#mission_lng").val(location.lng());
+	$("#lng_text").val(location.lng());
+	map.setCenter(location);
+	marker.setPosition(location);
+	checkSubmit();
 }
 
 function geocodeLocation(location) {
