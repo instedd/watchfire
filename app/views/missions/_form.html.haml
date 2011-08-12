@@ -10,9 +10,7 @@
 		= f.text_field :address
 	%p
 		= f.label :lat
-		= f.text_field :lat, :disabled => 'disabled', :id => 'lat_text'
-		= f.hidden_field :lat
+		= f.text_field :lat, :class => 'coord'
 	%p
 		= f.label :lng
-		= f.text_field :lng, :disabled => 'disabled', :id => 'lng_text'
-		= f.hidden_field :lng
+		= f.text_field :lng, :class => 'coord'

@@ -45,9 +45,7 @@ function init_map() {
 function changeMarker(event) {
 	var location = event.latLng;
 	$("#mission_lat").val(location.lat());
-	$("#lat_text").val(location.lat());
 	$("#mission_lng").val(location.lng());
-	$("#lng_text").val(location.lng());
 	map.setCenter(location);
 	marker.setPosition(location);
 	checkSubmit();
@@ -58,9 +56,7 @@ function geocodeLocation(location) {
 		if (status == google.maps.GeocoderStatus.OK) {
 			var location = results[0].geometry.location;
 			$("#mission_lat").val(location.lat());
-			$("#lat_text").val(location.lat());
 			$("#mission_lng").val(location.lng());
-			$("#lng_text").val(location.lng());
 			map.setCenter(location);
 			marker.setPosition(location);
 			checkSubmit();
@@ -94,6 +90,7 @@ function init_events() {
           return true;
         }
 	});
+
 	$('input:radio[name=filter_btn]').change(function(){
 		var value = $(this).val();
 		if (value == 'all') $('tr.candidate').show();
@@ -101,6 +98,13 @@ function init_events() {
 			$('tr.candidate').hide();
 			$('tr.candidate-confirmed').show();
 		}
+	});
+
+	$('.coord').change(function(){
+		var loc = new google.maps.LatLng(parseFloat($("#mission_lat").val()), parseFloat($("#mission_lng").val()));
+		map.setCenter(loc);
+		marker.setPosition(loc);
+		checkSubmit();
 	});
 }
 
