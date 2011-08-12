@@ -102,9 +102,11 @@ function init_events() {
 
 	$('.coord').change(function(){
 		var loc = new google.maps.LatLng(parseFloat($("#mission_lat").val()), parseFloat($("#mission_lng").val()));
-		map.setCenter(loc);
-		marker.setPosition(loc);
-		reverseGeocode(loc);		
+		if(!isNaN(loc.lat()) && !isNaN(loc.lng())){		
+			map.setCenter(loc);
+			marker.setPosition(loc);
+			reverseGeocode(loc);
+		}	
 	});
 }
 
