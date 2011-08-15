@@ -13,7 +13,7 @@
 			= button_to 'Resume Recruiting', start_mission_path(@mission), :remote => true
 #volunteers
 	%table
-		- mission.candidates.each do |c|
+		- mission.candidates(true).each do |c|
 			%tr{:class => ('candidate candidate-'+c.status.to_s)}
 				%td= c.status
 				%td= c.volunteer.name
