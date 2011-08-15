@@ -114,12 +114,13 @@ function setMapCircle(distance) {
 	circle.setOptions({
 		center: marker.getPosition(),
 		map: map,
-		radius: distance * 1619,
+		radius: distance * 1609,
 		fillOpacity: 0.3,
 		clickable: false,
 		fillColor: '#AAAA00',
 		strokeWeight: 1
 	});
+	map.fitBounds(circle.getBounds());
 }
 
 function reverseGeocode(loc) {
