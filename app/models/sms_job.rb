@@ -7,7 +7,7 @@ class SmsJob < Struct.new(:candidate_id)
     return if candidate.is_not_pending?
     
     # check if candidate has run out of retries
-    if candidate.sms_retries >= config.max_sms_retries
+    unless candidate.has_retries?
       candidate.status = :unresponsive
       candidate.save :validate => false
       return

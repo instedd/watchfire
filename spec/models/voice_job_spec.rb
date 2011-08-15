@@ -94,7 +94,7 @@ describe VoiceJob do
   
   describe "candidate has run out of retries" do
     before(:each) do
-      @candidate = Candidate.make! :status => :pending, :voice_retries => @config.max_voice_retries
+      @candidate = Candidate.make! :status => :pending, :sms_retries => @config.max_sms_retries, :voice_retries => @config.max_voice_retries
       @voice_job = VoiceJob.new @candidate.id
     end
     

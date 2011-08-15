@@ -88,7 +88,7 @@ describe SmsJob do
   
   describe "candidate has run out of retries" do
     before(:each) do
-      @candidate = Candidate.make! :status => :pending, :sms_retries => @config.max_sms_retries
+      @candidate = Candidate.make! :status => :pending, :sms_retries => @config.max_sms_retries, :voice_retries => @config.max_voice_retries
       @sms_job = SmsJob.new @candidate.id
     end
     

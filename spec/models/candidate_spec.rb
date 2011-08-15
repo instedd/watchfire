@@ -83,6 +83,33 @@ describe Candidate do
       job.class.to_s.should == 'VoiceJob'
       job.candidate_id.should == @candidate.id
     end
+  end
+  
+  describe "has retries" do
+    before(:each) do
+      @candidate = Candidate.new
+      @config = Watchfire::Application.config
+    end
+    
+    it "should have retries if sms retry count is below max" do
+      @candidate.sms_retries = @config.max_sms_retries - 1
+      @candidate.has_retries?.should be true
+      @candidate.voice_retries = @config.max_voice_retries
+      @candidate.has_retries?.should be true
+    end
+    
+    it "should have retries if voice retry count is below max" do
+      @candidate.voice_retries = @config.max_voice_retries - 1
+      @candidate.has_retries?.should be true
+      @candidate.sms_retries = @config.max_sms_retries
+      @candidate.has_retries?.should be true
+    end
+    
+    it "should not have retries if sms and voice retry count is at max" do
+      @candidate.sms_retries = @config.max_sms_retries
+      @candidate.voice_retries = @config.max_voice_retries
+      @candidate.has_retries?.should be false
+    end
     
   end
   

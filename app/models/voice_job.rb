@@ -7,7 +7,7 @@ class VoiceJob < Struct.new(:candidate_id)
     return if candidate.is_not_pending?
     
     # check if candidate has run out of retries
-    if candidate.voice_retries >= config.max_voice_retries
+    unless candidate.has_retries?
       candidate.status = :unresponsive
       candidate.save :validate => false
       return

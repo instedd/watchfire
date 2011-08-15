@@ -31,6 +31,11 @@ class Candidate < ActiveRecord::Base
     Delayed::Job.enqueue(VoiceJob.new(self.id)) if self.has_voice?
   end
   
+  def has_retries?
+    config = Watchfire::Application.config
+    self.sms_retries < config.max_sms_retries || self.voice_retries < config.max_voice_retries
+  end
+  
   private
 
   def not_same_volunteer_same_mission
