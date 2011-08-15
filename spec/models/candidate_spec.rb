@@ -113,4 +113,29 @@ describe Candidate do
     
   end
   
+  describe "update status" do
+    
+    before(:each) do
+      @candidate = Candidate.new
+      @mission = Mission.new
+      @candidate.mission = @mission
+    end
+    
+    %w(confirmed pending denied unresponsive).each do |status|
+      it "should update status to #{status}" do
+        @candidate.expects(:save!)
+        @mission.stubs(:check_for_more_volunteers)
+        @candidate.update_status status
+        @candidate.send("is_#{status}?").should be true
+      end
+    end
+    
+    it "should check for more volunteers in mission" do
+      @candidate.stubs(:save!)
+      @mission.expects(:check_for_more_volunteers)
+      @candidate.update_status :pending
+    end
+    
+  end
+  
 end
