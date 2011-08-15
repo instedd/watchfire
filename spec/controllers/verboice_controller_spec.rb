@@ -34,20 +34,22 @@ describe VerboiceController do
     
     it "should set candidate status to confirmed if user pressed 1" do
       @parameters[:Digits] = '1'
+      Candidate.expects(:find_by_call_id).with('123').returns(@candidate)
+      @candidate.expects(:update_status).with(:confirmed)
       
       post 'callback', @parameters
       
       response.should render_template('callback')
-      @candidate.reload.is_confirmed?.should be true
     end
     
     it "should set candidate status to denied if user pressed 2" do
       @parameters[:Digits] = '2'
+      Candidate.expects(:find_by_call_id).with('123').returns(@candidate)
+      @candidate.expects(:update_status).with(:denied)
       
       post 'callback', @parameters
       
       response.should render_template('callback')
-      @candidate.reload.is_denied?.should be true
     end
     
     it "should render plan if bad answer" do

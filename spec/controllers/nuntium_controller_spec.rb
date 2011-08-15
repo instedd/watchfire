@@ -14,15 +14,15 @@ describe NuntiumController do
     end
     
     it "should confirm candidate" do
+      Candidate.expects(:find_last_for_sms_number).with(@candidate.volunteer.sms_number).returns(@candidate)
+      @candidate.expects(:update_status).with(:confirmed)
       post 'receive', :from => "sms://#{@candidate.volunteer.sms_number}", :body => "1"
-      
-      @candidate.reload.is_confirmed?.should be true
     end
     
     it "should deny candidate" do
+      Candidate.expects(:find_last_for_sms_number).with(@candidate.volunteer.sms_number).returns(@candidate)
+      @candidate.expects(:update_status).with(:denied)
       post 'receive', :from => "sms://#{@candidate.volunteer.sms_number}", :body => "2"
-      
-      @candidate.reload.is_denied?.should be true
     end
     
     it "should not modify status if message isn't correct" do

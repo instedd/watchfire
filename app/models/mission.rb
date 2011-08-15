@@ -17,13 +17,13 @@ class Mission < ActiveRecord::Base
 		return self.candidates.where('status = ?', st).count
 	end
 
-	def obtain_volunteers
-		Volunteer.geo_scope(:origin => self).order('distance asc').limit((self.req_vols / Watchfire::Application.config.available_ratio).to_i)
+	def obtain_volunteers quantity, offset = 0
+		Volunteer.geo_scope(:origin => self).order('distance asc').limit(quantity).offset(offset)
 	end
 
 	def check_and_save
 		if self.valid?
-			vols = self.obtain_volunteers
+			vols = self.obtain_volunteers (self.req_vols / Watchfire::Application.config.available_ratio).to_i
 			Mission.transaction do
 				self.save!
 				set_candidates vols
@@ -57,11 +57,37 @@ class Mission < ActiveRecord::Base
     self.candidates.where(:status => :pending)
   end
   
+  def confirmed_candidates
+    self.candidates.where(:status => :confirmed)
+  end
+  
+  def check_for_more_volunteers
+    pending = pending_candidates.count
+    confirmed = confirmed_candidates.count
+    needed = ((req_vols - confirmed) / available_ratio).to_i
+    
+    if pending < needed
+      recruit = needed - pending
+      volunteers = obtain_volunteers recruit, candidates.count
+      Mission.transaction do
+        volunteers.each{|v| add_volunteer v}
+      end
+    end
+  end
+  
+  def add_volunteer volunteer
+    self.candidates.create! :volunteer => volunteer
+  end
+  
   private
   
   def update_status status
     self.status = status
     self.save!
   end
-
+  
+  def available_ratio
+    Watchfire::Application.config.available_ratio
+  end
+  
 end

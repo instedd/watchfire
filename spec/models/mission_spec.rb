@@ -19,23 +19,67 @@ describe Mission do
     mission.is_running?.should be true
   end
   
-  it "should tell pending candidates" do
-    mission = Mission.make!
-    c1 = Candidate.make! :mission => mission, :status => :pending
-    c2 = Candidate.make! :mission => mission, :status => :unresponsive
-    c3 = Candidate.make! :mission => mission, :status => :pending
+  %w(pending confirmed).each do |status|
+    it "should tell #{status} candidates" do
+      mission = Mission.make!
+      c1 = Candidate.make! :mission => mission, :status => status.to_sym
+      c2 = Candidate.make! :mission => mission, :status => :unresponsive
+      c3 = Candidate.make! :mission => mission, :status => status.to_sym
     
-    volunteers = mission.pending_candidates
+      volunteers = mission.send "#{status}_candidates"
     
-    volunteers.length.should == 2
-    volunteers.should include c1
-    volunteers.should include c3
+      volunteers.length.should == 2
+      volunteers.should include c1
+      volunteers.should include c3
+    end
   end
   
   it "should stop calling volunteers" do
     mission = Mission.make! :status => :running
     mission.stop_calling_volunteers
     mission.reload.is_paused?.should be true
+  end
+  
+  it "should add a volunteer" do
+    mission = Mission.make!
+    mission.candidates.length.should == 0
+    volunteer = Volunteer.make!
+    mission.add_volunteer volunteer
+    mission.candidates.length.should == 1
+    mission.candidates.first.volunteer.should == volunteer
+  end
+  
+  describe "get more volunteers" do
+    before(:each) do
+      @mission = Mission.new
+      @mission.stubs(:available_ratio).returns(0.5)
+    end
+    
+    it "should increase volunteers if pending is not enough" do
+      @mission.req_vols = 5
+      @mission.expects(:pending_candidates).returns((1..8).to_a)
+      @mission.expects(:confirmed_candidates).returns([])
+      @mission.expects(:candidates).returns((1..10).to_a)
+      
+      @mission.expects(:obtain_volunteers).with(2,10).returns(['c1','c2'])
+      
+      @mission.expects(:add_volunteer).with('c1')
+      @mission.expects(:add_volunteer).with('c2')
+      
+      @mission.check_for_more_volunteers
+    end
+    
+    it "should not increase volunteers if there are enough pendings" do
+      @mission.req_vols = 5
+      @mission.expects(:pending_candidates).returns((1..8).to_a)
+      @mission.expects(:confirmed_candidates).returns((1..2).to_a)
+      
+      @mission.expects(:obtain_volunteers).never
+      @mission.expects(:add_volunteer).never
+      
+      @mission.check_for_more_volunteers
+    end
+    
   end
   
 end

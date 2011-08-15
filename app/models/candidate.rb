@@ -36,6 +36,12 @@ class Candidate < ActiveRecord::Base
     self.sms_retries < config.max_sms_retries || self.voice_retries < config.max_voice_retries
   end
   
+  def update_status status
+    self.status = status
+    self.save!
+    mission.check_for_more_volunteers
+  end
+  
   private
 
   def not_same_volunteer_same_mission

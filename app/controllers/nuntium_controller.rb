@@ -26,11 +26,10 @@ class NuntiumController < ApplicationController
     
       # update status based on response
       if response == 1
-        candidate.status = :confirmed
+        candidate.update_status :confirmed
       elsif response == 2
-        candidate.status = :denied
+        candidate.update_status :denied
       end
-      candidate.save!
       
     rescue => e
       logger.error e

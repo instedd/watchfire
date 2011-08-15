@@ -110,6 +110,12 @@ describe SmsJob do
       Delayed::Job.count.should == 0
     end
     
+    it "should call update_status on candidate" do
+      Candidate.any_instance.expects(:update_status)
+      
+      @sms_job.perform
+    end
+    
   end
   
   describe "mission is paused" do

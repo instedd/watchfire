@@ -8,8 +8,7 @@ class SmsJob < Struct.new(:candidate_id)
     
     # check if candidate has run out of retries
     unless candidate.has_retries?
-      candidate.status = :unresponsive
-      candidate.save :validate => false
+      candidate.update_status :unresponsive
       return
     end
     
