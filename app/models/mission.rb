@@ -28,6 +28,7 @@ class Mission < ActiveRecord::Base
 				self.save!
 				set_candidates vols
 			end
+			self.candidates.reload
 			return vols.last.distance_from(self) rescue nil
 		end
 		nil
