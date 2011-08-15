@@ -29,7 +29,7 @@ class Mission < ActiveRecord::Base
 				set_candidates vols
 			end
 			self.candidates.reload
-			return vols.last.distance_from(self) rescue nil
+			return vols.last.distance_from(self).round(2) rescue nil
 		end
 		nil
 	end
@@ -42,7 +42,7 @@ class Mission < ActiveRecord::Base
 	end
 
 	def obtain_farthest
-		self.candidates.last.volunteer.distance_from(self) rescue nil
+		self.candidates.last.volunteer.distance_from(self).round(2) rescue nil
 	end
 	
 	def call_volunteers

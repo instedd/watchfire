@@ -44,8 +44,8 @@ function init_map() {
 	
 function changeMarker(event) {
 	var location = event.latLng;
-	$("#mission_lat").val(location.lat());
-	$("#mission_lng").val(location.lng());
+	$("#mission_lat").val(location.lat().toFixed(4));
+	$("#mission_lng").val(location.lng().toFixed(4));
 	map.setCenter(location);
 	marker.setPosition(location);
 	reverseGeocode(location);
@@ -55,8 +55,8 @@ function geocodeLocation(location) {
 	geocoder.geocode( { 'address': location }, function(results, status) {
 		if (status == google.maps.GeocoderStatus.OK) {
 			var location = results[0].geometry.location;
-			$("#mission_lat").val(location.lat());
-			$("#mission_lng").val(location.lng());
+			$("#mission_lat").val(location.lat().toFixed(4));
+			$("#mission_lng").val(location.lng().toFixed(4));
 			map.setCenter(location);
 			marker.setPosition(location);
 			checkSubmit();
