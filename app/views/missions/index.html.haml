@@ -8,6 +8,6 @@
 		here goes the map!
 	= render :partial => "distance", :locals => { :distance => @distance }
 #right-panel
-	#volunteers_canvas
+	#volunteers_canvas{'data-refresh-url' => refresh_mission_path(@mission)}
 		= render :partial => "candidates", :locals => { :mission => @mission }
 

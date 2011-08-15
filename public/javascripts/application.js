@@ -5,6 +5,7 @@ var map;
 var mission_marker;
 var geocoder;
 var circle;
+var refreshing;
 
 $(function(){
 	init_map();
@@ -134,5 +135,22 @@ function reverseGeocode(loc) {
 			$("#mission_address").val('');
 		}
 		checkSubmit();
+	});
+}
+
+function start_refreshing() {
+	refreshing = true;
+	refresh();
+}
+
+function stop_refreshing()  {
+	refreshing = false;
+}
+
+function refresh() {
+	if (!refreshing) return;
+	
+	$.getScript($("#volunteers_canvas").attr('data-refresh-url'), function(data, textStatus){
+		setTimeout(refresh, 5000);  
 	});
 }

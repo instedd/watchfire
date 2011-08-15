@@ -1,0 +1,7 @@
+$('#volunteers_canvas').html('<%=escape_javascript(render :partial => "candidates", :locals => { :mission => @mission } )%>');
+
+$('#distance_canvas').html('<%=escape_javascript(render :partial => "distance", :locals => { :distance => @distance } )%>');
+
+<% if @distance %>
+	setMapCircle(<%= @distance %>);
+<% end %>

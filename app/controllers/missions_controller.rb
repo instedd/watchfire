@@ -27,5 +27,13 @@ class MissionsController < ApplicationController
 	  @mission.stop_calling_volunteers
 	  render :nothing => true
   end
+  
+  def refresh
+    @mission = Mission.find(params[:id])
+    respond_to do |format|
+      format.html { render 'index' }
+      format.js
+    end
+  end
 
 end
