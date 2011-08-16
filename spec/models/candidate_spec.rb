@@ -58,30 +58,16 @@ describe Candidate do
     
     it "should send sms if it has sms" do
       @candidate.expects(:has_sms?).returns(true)
+      Delayed::Job.expects(:enqueue).with(SmsJob.new(@candidate.id))
       
       @candidate.call
-      
-      jobs = Delayed::Job.all
-      jobs.length.should == 1
-
-      job = jobs[0]
-      job = YAML::load job.handler
-      job.class.to_s.should == 'SmsJob'
-      job.candidate_id.should == @candidate.id
     end
     
     it "should call if it has voice" do
       @candidate.expects(:has_voice?).returns(true)
+      Delayed::Job.expects(:enqueue).with(VoiceJob.new(@candidate.id))
       
       @candidate.call
-      
-      jobs = Delayed::Job.all
-      jobs.length.should == 1
-
-      job = jobs[0]
-      job = YAML::load job.handler
-      job.class.to_s.should == 'VoiceJob'
-      job.candidate_id.should == @candidate.id
     end
   end
   
