@@ -1,4 +1,4 @@
-class SmsJob < Struct.new(:candidate_id)
+class SmsJob < CandidateJob
   def perform
     config = Watchfire::Application.config
     candidate = Candidate.find(candidate_id)

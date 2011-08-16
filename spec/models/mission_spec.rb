@@ -34,10 +34,23 @@ describe Mission do
     end
   end
   
-  it "should stop calling volunteers" do
-    mission = Mission.make! :status => :running
-    mission.stop_calling_volunteers
-    mission.reload.is_paused?.should be true
+  describe "stop calling volunteers" do
+    before(:each) do
+      @mission = Mission.make! :status => :running
+    end
+    
+    it "should change status to paused" do
+      @mission.stop_calling_volunteers
+      @mission.reload.is_paused?.should be true
+    end
+    
+    it "should destroy any mission jobs" do
+      (1..3).each{ MissionJob.make! :mission => @mission }
+      @mission.should have(3).mission_jobs
+      @mission.stop_calling_volunteers
+      @mission.should have(0).mission_jobs
+    end
+    
   end
   
   it "should add a volunteer" do

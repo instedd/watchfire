@@ -21,6 +21,11 @@ Mission.blueprint do
   address { _address }
 end
 
+MissionJob.blueprint do
+  mission { Mission.make! }
+  job { Delayed::Job.create! }
+end
+
 def _name
   Faker::Name.name
 end

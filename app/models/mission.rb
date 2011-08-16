@@ -6,6 +6,7 @@ class Mission < ActiveRecord::Base
 
   has_many :candidates, :dependent => :destroy, :include => :volunteer
   has_many :volunteers, :through => :candidates
+  has_many :mission_jobs
 
   validates_presence_of :req_vols, :lat, :lng
 
@@ -52,6 +53,7 @@ class Mission < ActiveRecord::Base
   
   def stop_calling_volunteers
     update_status :paused
+    self.mission_jobs.destroy_all
   end
   
   def pending_candidates
