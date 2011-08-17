@@ -1,6 +1,7 @@
 #distance_canvas
 	- if distance
-		Will call volunteers up to
+		%span#distance_label
+			= mission.status_running? ? 'Calling volunteers up to' : 'Will call volunteers up to'
 		%span#distance_value
 			= distance
 		mi

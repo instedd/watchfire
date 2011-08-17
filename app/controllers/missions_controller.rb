@@ -19,7 +19,6 @@ class MissionsController < ApplicationController
 	def start
 	  @mission = Mission.find(params[:id])
 	  @mission.call_volunteers
-	  render :nothing => true
 	end
 	
 	def stop
@@ -30,6 +29,7 @@ class MissionsController < ApplicationController
   
   def refresh
     @mission = Mission.find(params[:id])
+		@distance = @mission.obtain_farthest
     respond_to do |format|
       format.html { render 'index' }
       format.js

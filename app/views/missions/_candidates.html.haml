@@ -5,12 +5,13 @@
 	= radio_button_tag 'filter_btn', 'confirmed'
 	Confirmed
 	- if mission.candidate_count('pending') > 0
-		- if mission.status_created?
-			= button_to 'Start Recruiting', start_mission_path(@mission), :remote => true
-		- if mission.status_running?
-			= button_to 'Stop Recruiting', stop_mission_path(@mission), :remote => true
-		- if mission.status_paused?
-			= button_to 'Resume Recruiting', start_mission_path(@mission), :remote => true
+		%div#call_button_canvas
+			- if mission.status_created?
+				= button_to 'Start Recruiting', start_mission_path(@mission), :remote => true
+			- if mission.status_running?
+				= button_to 'Stop Recruiting', stop_mission_path(@mission), :remote => true
+			- if mission.status_paused?
+				= button_to 'Resume Recruiting', start_mission_path(@mission), :remote => true
 #volunteers
 	%table
 		- mission.candidates.each do |c|

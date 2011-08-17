@@ -10,6 +10,7 @@ var refreshing;
 $(function(){
 	init_map();
 	init_events();
+	check_running();
 });
 
 function init_map() {
@@ -26,7 +27,6 @@ function init_map() {
 	
 	marker = new google.maps.Marker({
 		map: map,
-		draggable: true
   });
 	
 	var loc = new google.maps.LatLng(parseFloat($("#mission_lat").val()), parseFloat($("#mission_lng").val()));
@@ -37,10 +37,21 @@ function init_map() {
 	}
 
 	geocoder = new google.maps.Geocoder();
-	
+
+	init_map_events();
+}
+
+function init_map_events() {
+	marker.setDraggable(true);
 	google.maps.event.addListener(map, 'click', changeMarker);
 	google.maps.event.addListener(map, 'rightclick', changeMarker);
 	google.maps.event.addListener(marker, 'dragend', changeMarker);
+}
+
+function remove_map_events() {
+	google.maps.event.clearInstanceListeners(map);
+	google.maps.event.clearInstanceListeners(marker);
+	marker.setDraggable(false);
 }
 	
 function changeMarker(event) {
@@ -153,4 +164,16 @@ function refresh() {
 	$.getScript($("#volunteers_canvas").attr('data-refresh-url'), function(data, textStatus){
 		setTimeout(refresh, 5000);  
 	});
+}
+
+function refresh_disable_inputs() {
+		start_refreshing();
+		$('#form_canvas input').attr('disabled','disabled');
+		remove_map_events();
+}
+
+function check_running() {
+	if($('#status_field').val() == 'running') {
+		refresh_disable_inputs();
+	}
 }
