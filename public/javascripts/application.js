@@ -88,7 +88,7 @@ function checkSubmit() {
 }
 
 function init_events() {
-	$('#mission_req_vols').change(function(){
+	$('#mission_req_vols, #mission_reason').change(function(){
 		checkSubmit();
 	});
 
@@ -168,12 +168,21 @@ function refresh() {
 
 function refresh_disable_inputs() {
 		start_refreshing();
-		$('#form_canvas input').attr('disabled','disabled');
+		$('.mission_form_input').attr('disabled','disabled');
 		remove_map_events();
 }
 
+function stop_refresh_enable_inputs() {
+	stop_refreshing();
+	$('#mission_req_vols, #mission_reason').removeAttr('disabled');
+}
+
 function check_running() {
-	if($('#status_field').val() == 'running') {
+	var status = $('#status_field').val();
+	if(status == 'running') {
 		refresh_disable_inputs();
+	} else if(status == 'paused' || status == 'finished') {
+		$('.strict_mission_form_input').attr('disabled','disabled');
+		remove_map_events();
 	}
 }

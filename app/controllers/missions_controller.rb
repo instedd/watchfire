@@ -24,7 +24,6 @@ class MissionsController < ApplicationController
 	def stop
 	  @mission = Mission.find(params[:id])
 	  @mission.stop_calling_volunteers
-	  render :nothing => true
   end
   
   def refresh
