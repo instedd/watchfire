@@ -161,7 +161,7 @@ function stop_refreshing()  {
 function refresh() {
 	if (!refreshing) return;
 	
-	$.getScript($("#volunteers_canvas").attr('data-refresh-url'), function(data, textStatus){
+	$.getScript($("#volunteers").attr('data-refresh-url'), function(data, textStatus){
 		setTimeout(refresh, 5000);  
 	});
 }

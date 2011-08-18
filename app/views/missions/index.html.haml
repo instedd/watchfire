@@ -8,7 +8,7 @@
 		here goes the map!
 	= render :partial => "distance", :locals => { :distance => @distance, :mission => @mission }
 #right-panel
-	#volunteers_canvas{'data-refresh-url' => refresh_mission_path(@mission)}
+	#volunteers_canvas
 		= render :partial => "candidates", :locals => { :mission => @mission }
 
 = hidden_field_tag :status, @mission.status, :id => 'status_field'

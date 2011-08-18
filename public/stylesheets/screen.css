@@ -97,3 +97,8 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
 #status {
   margin-top: 20px;
 }
+
+/* line 39, ../../app/stylesheets/screen.sass */
+.field_with_errors {
+  display: inline;
+}

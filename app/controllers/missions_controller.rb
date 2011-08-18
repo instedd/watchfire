@@ -6,14 +6,20 @@ class MissionsController < ApplicationController
 
 	def create
 		@mission = Mission.new(params[:mission])
-		@distance = @mission.check_and_save
+		@mission.check_and_save
+		@distance = @mission.obtain_farthest
 		render 'update.js'
 	end
 
 	def update
 		@mission = Mission.find(params[:id])
 		@mission.attributes = params[:mission]
-		@distance = @mission.check_and_save
+		if @mission.need_check_candidates
+			@mission.check_and_save
+		else
+			@mission.save
+		end
+		@distance = @mission.obtain_farthest
 	end
 	
 	def start

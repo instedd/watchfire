@@ -24,13 +24,16 @@ class Mission < ActiveRecord::Base
 
 	def check_and_save
 		if self.valid?
-			vols = self.obtain_volunteers (self.req_vols / Watchfire::Application.config.available_ratio).to_i
-			Mission.transaction do
-				self.save!
-				set_candidates vols
+			if self.status_created?
+				vols = self.obtain_volunteers (self.req_vols / available_ratio).to_i
+				Mission.transaction do
+					self.save!
+					set_candidates vols
+				end
+				self.candidates.reload
+			else
+				self.check_for_more_volunteers
 			end
-			self.candidates.reload
-			return vols.last.distance_from(self).round(2) rescue nil
 		end
 		nil
 	end
@@ -75,12 +78,19 @@ class Mission < ActiveRecord::Base
       Mission.transaction do
         volunteers.each{|v| add_volunteer v}
       end
+			self.candidates.reload
     end
+		update_status :finished if needed <= 0
+		self.save! if self.changed?
   end
   
   def add_volunteer volunteer
     self.candidates.create! :volunteer => volunteer
   end
+
+	def need_check_candidates
+		self.req_vols != self.req_vols_was || self.lat != self.lat_was || self.lng != self.lng_was
+	end
   
   private
   
