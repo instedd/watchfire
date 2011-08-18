@@ -42,4 +42,5 @@ group :development, :test do
 	gem 'faker'
 	gem 'mocha'
 	gem 'timecop'
+	gem 'cover_me', '>= 1.0.0.rc6'
 end
