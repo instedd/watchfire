@@ -125,7 +125,6 @@ function init_events() {
 }
 
 function setMapCircle(distance) {
-	var status = $('#status_field').val();
 	circle.setOptions({
 		center: marker.getPosition(),
 		map: map,
@@ -133,8 +132,8 @@ function setMapCircle(distance) {
 		fillOpacity: 0,
 		clickable: false,
 		fillColor: '#AAAA00',
-		strokeWeight: 3,
-		strokeColor: status == 'running' ? '#FF0000' : '#666666'
+		strokeWeight: circle.strokeWeight != null ? circle.strokeWeight : 3,
+		strokeColor: circle.strokeColor != null ? circle.strokeColor : '#666666'
 	});
 	map.fitBounds(circle.getBounds());
 }
