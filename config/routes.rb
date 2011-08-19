@@ -1,4 +1,6 @@
 Watchfire::Application.routes.draw do
+  devise_for :users
+
   # Verboice callbacks
   post "verboice/plan" => "verboice#plan", :defaults => { :format => 'xml' }
   post "verboice/callback" => "verboice#callback", :defaults => { :format => 'xml' }

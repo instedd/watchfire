@@ -31,6 +31,7 @@ gem 'rest-client'
 gem 'nuntium_api', :require => 'nuntium'
 gem 'geokit-rails3'
 gem 'verboice'
+gem 'devise'
 
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators

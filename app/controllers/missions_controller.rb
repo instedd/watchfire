@@ -1,4 +1,7 @@
 class MissionsController < ApplicationController
+
+	before_filter :authenticate_user!
+
   def index
     @mission = Mission.first || Mission.new
 		@distance = @mission.obtain_farthest
