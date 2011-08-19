@@ -6,6 +6,8 @@ var mission_marker;
 var geocoder;
 var circle;
 var refreshing;
+var beating;
+var alternance;
 
 $(function(){
 	init_map();
@@ -123,14 +125,16 @@ function init_events() {
 }
 
 function setMapCircle(distance) {
+	var status = $('#status_field').val();
 	circle.setOptions({
 		center: marker.getPosition(),
 		map: map,
 		radius: distance * 1609,
-		fillOpacity: 0.3,
+		fillOpacity: 0,
 		clickable: false,
 		fillColor: '#AAAA00',
-		strokeWeight: 1
+		strokeWeight: 3,
+		strokeColor: status == 'running' ? '#FF0000' : '#666666'
 	});
 	map.fitBounds(circle.getBounds());
 }
@@ -170,11 +174,13 @@ function refresh_disable_inputs() {
 		start_refreshing();
 		$('.mission_form_input').attr('disabled','disabled');
 		remove_map_events();
+		make_circle_beat();
 }
 
 function stop_refresh_enable_inputs() {
 	stop_refreshing();
 	$('#mission_req_vols, #mission_reason').removeAttr('disabled');
+	stop_circle_beat();
 }
 
 function check_running() {
@@ -185,4 +191,22 @@ function check_running() {
 		$('.strict_mission_form_input').attr('disabled','disabled');
 		remove_map_events();
 	}
+}
+
+function make_circle_beat() {
+	beating = true;
+	alternance = 0;
+	beat();
+}
+
+function stop_circle_beat()  {
+	beating = false;
+	circle.setOptions({strokeColor: '#666666', strokeWeight: 3});
+}
+
+function beat() {
+	if (!beating) return;
+	alternance = (alternance + 1) % 2;
+	circle.setOptions({strokeWeight: (2 + 2 * alternance), strokeColor: '#FF0000'});
+	setTimeout(beat, 250);
 }
