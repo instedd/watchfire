@@ -52,6 +52,9 @@ GEM
       bcrypt-ruby (~> 2.1.2)
       orm_adapter (~> 0.0.3)
       warden (~> 1.0.3)
+    devise_invitable (0.5.4)
+      devise (~> 1.4.1)
+      rails (>= 3.0.0, < 3.2)
     diff-lcs (1.1.2)
     enumerated_attribute (0.2.16)
       meta_programming (>= 0.2.1)
@@ -163,6 +166,7 @@ DEPENDENCIES
   cover_me (>= 1.0.0.rc6)
   delayed_job
   devise
+  devise_invitable
   enumerated_attribute
   faker
   geokit-rails3
