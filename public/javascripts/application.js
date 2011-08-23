@@ -17,13 +17,13 @@ $(function(){
 
 function init_map() {
 	var myOptions = {
-		zoom: 6,
+		zoom: 10,
 		mapTypeId: google.maps.MapTypeId.ROADMAP
 	};
 	
 	circle = new google.maps.Circle(); 
 
-	var initialLocation = new google.maps.LatLng(35, -98);
+	var initialLocation = new google.maps.LatLng(37.520619, -122.342377);
 	map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
 	map.setCenter(initialLocation);
 	
