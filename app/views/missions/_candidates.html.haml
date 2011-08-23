@@ -10,7 +10,7 @@
 				= button_to 'Start Recruiting', start_mission_path(@mission), :remote => true
 			- if mission.status_running?
 				= button_to 'Stop Recruiting', stop_mission_path(@mission), :remote => true
-			- if mission.status_paused?
+			- if mission.status_paused? || mission.status_finished?
 				= button_to 'Resume Recruiting', start_mission_path(@mission), :remote => true
 #volunteers{'data-refresh-url' => (refresh_mission_path(@mission) rescue nil)}
 	%table

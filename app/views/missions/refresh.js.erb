@@ -5,3 +5,7 @@ $('#distance_canvas').html('<%=escape_javascript(render :partial => "distance", 
 <% if @distance %>
 	setMapCircle(<%= @distance %>);
 <% end %>
+
+<% if @mission.status_finished? %>
+	stop_refresh_enable_inputs();
+<% end %>
