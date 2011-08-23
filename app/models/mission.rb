@@ -6,7 +6,7 @@ class Mission < ActiveRecord::Base
 
   has_many :candidates, :dependent => :destroy, :include => :volunteer
   has_many :volunteers, :through => :candidates
-  has_many :mission_jobs
+  has_many :mission_jobs, :dependent => :destroy
 
   validates_presence_of :req_vols, :lat, :lng
 
