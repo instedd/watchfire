@@ -7,9 +7,9 @@
 #left-panel
 	#form_canvas
 		= render :partial => "form", :locals => { :mission => @mission }
+	= render :partial => "distance", :locals => { :distance => @distance, :mission => @mission }
 	#map_canvas
 		here goes the map!
-	= render :partial => "distance", :locals => { :distance => @distance, :mission => @mission }
 #right-panel
 	#volunteers_canvas
 		= render :partial => "candidates", :locals => { :mission => @mission }

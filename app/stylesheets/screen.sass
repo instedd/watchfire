@@ -2,7 +2,7 @@
   Welcome to Compass.
   In this file you should write your main styles. (or centralize your imports)
   Import this file using the following HTML or equivalent:
-  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" />
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" />*/
 
 @import compass/reset
 
@@ -15,26 +15,75 @@
 @mixin clear
 	clear: both
 
+@mixin left_width
+	width: 700px
+
 #left-panel
 	@include left
+	padding: 10px
+	background-color: #cccccc
 
 #right-panel
 	@include left
-	margin-left: 30px
+	margin-left: 20px
 
 #map_canvas
-	width: 500px
+	@include left_width
 	height: 500px
 
 #volunteers
 	border: 1px solid
-	padding: 5px
-	margin-top: 20px
-	height: 470px
+	margin-top: 10px
+	height: 465px
 	overflow: auto
 
 #status
-	margin-top: 20px
+	margin-top: 15px
 
 .field_with_errors
 	display: inline
+
+body
+	padding: 5px
+
+.right
+	float: right
+
+.left
+	float: left
+
+.clear
+	clear: both
+
+.header
+	padding-bottom: 10px
+	margin-bottom: 10px
+	border-bottom: 2px solid black
+
+#form_canvas
+	@include left_width
+	margin-bottom: 5px
+
+#mission_req_vols
+	width: 50px
+
+#mission_reason
+	width: 450px
+
+#mission_address
+	width: 651px
+
+.coord
+	width: 307px
+
+#distance_canvas
+	padding-bottom: 5px
+
+.btn
+	display: inline
+	div, form
+		display: inline
+
+table
+	td
+		padding: 3px 5px

@@ -67,38 +67,111 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   display: block;
 }
 
-/* line 18, ../../app/stylesheets/screen.sass */
+/* line 21, ../../app/stylesheets/screen.sass */
 #left-panel {
   float: left;
+  padding: 10px;
+  background-color: #cccccc;
 }
 
-/* line 21, ../../app/stylesheets/screen.sass */
+/* line 26, ../../app/stylesheets/screen.sass */
 #right-panel {
   float: left;
-  margin-left: 30px;
+  margin-left: 20px;
 }
 
-/* line 25, ../../app/stylesheets/screen.sass */
+/* line 30, ../../app/stylesheets/screen.sass */
 #map_canvas {
-  width: 500px;
+  width: 700px;
   height: 500px;
 }
 
-/* line 29, ../../app/stylesheets/screen.sass */
+/* line 34, ../../app/stylesheets/screen.sass */
 #volunteers {
   border: 1px solid;
-  padding: 5px;
-  margin-top: 20px;
-  height: 470px;
+  margin-top: 10px;
+  height: 465px;
   overflow: auto;
 }
 
-/* line 36, ../../app/stylesheets/screen.sass */
+/* line 40, ../../app/stylesheets/screen.sass */
 #status {
-  margin-top: 20px;
+  margin-top: 15px;
 }
 
-/* line 39, ../../app/stylesheets/screen.sass */
+/* line 43, ../../app/stylesheets/screen.sass */
 .field_with_errors {
   display: inline;
+}
+
+/* line 46, ../../app/stylesheets/screen.sass */
+body {
+  padding: 5px;
+}
+
+/* line 49, ../../app/stylesheets/screen.sass */
+.right {
+  float: right;
+}
+
+/* line 52, ../../app/stylesheets/screen.sass */
+.left {
+  float: left;
+}
+
+/* line 55, ../../app/stylesheets/screen.sass */
+.clear {
+  clear: both;
+}
+
+/* line 58, ../../app/stylesheets/screen.sass */
+.header {
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 2px solid black;
+}
+
+/* line 63, ../../app/stylesheets/screen.sass */
+#form_canvas {
+  width: 700px;
+  margin-bottom: 5px;
+}
+
+/* line 67, ../../app/stylesheets/screen.sass */
+#mission_req_vols {
+  width: 50px;
+}
+
+/* line 70, ../../app/stylesheets/screen.sass */
+#mission_reason {
+  width: 450px;
+}
+
+/* line 73, ../../app/stylesheets/screen.sass */
+#mission_address {
+  width: 651px;
+}
+
+/* line 76, ../../app/stylesheets/screen.sass */
+.coord {
+  width: 307px;
+}
+
+/* line 79, ../../app/stylesheets/screen.sass */
+#distance_canvas {
+  padding-bottom: 5px;
+}
+
+/* line 82, ../../app/stylesheets/screen.sass */
+.btn {
+  display: inline;
+}
+/* line 84, ../../app/stylesheets/screen.sass */
+.btn div, .btn form {
+  display: inline;
+}
+
+/* line 88, ../../app/stylesheets/screen.sass */
+table td {
+  padding: 3px 5px;
 }
