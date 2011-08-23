@@ -44,4 +44,10 @@ class MissionsController < ApplicationController
     end
   end
 
+	def destroy
+		@mission = Mission.find(params[:id])
+		@mission.destroy
+		redirect_to root_path
+	end
+
 end

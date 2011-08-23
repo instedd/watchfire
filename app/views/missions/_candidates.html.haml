@@ -38,3 +38,5 @@
 			%td LOGO
 			%td Unresponsive
 			%td= mission.candidate_count('unresponsive')
+
+= button_to 'New mission', mission, :confirm => 'Abandon current mission and start a new one?', :method => :delete unless mission.status_created?
