@@ -1,5 +1,5 @@
 xml.instruct!
 xml.Response do
-  xml.Say "Your answer has been recorded. Thank you"
+  xml.Say I18n.t(:voice_successful)
   xml.Hangup
 end

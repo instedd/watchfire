@@ -2,4 +2,9 @@
 # See http://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 en:
-  hello: "Hello world"
+  emergency_message: "Red Cross needs your assistance because of %{reason} %{location}."
+  location: "near %{location}"
+  an_emergency: "an emergency"
+  voice_confirmation: "Press 1 if you are available or 2 if you are not."
+  sms_confirmation: "Respond with '1' if you are available or '2' if you are not."
+  voice_successful: "Your answer has been recorded. Thank you"

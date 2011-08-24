@@ -91,8 +91,22 @@ class Mission < ActiveRecord::Base
 	def need_check_candidates
 		self.req_vols != self.req_vols_was || self.lat != self.lat_was || self.lng != self.lng_was
 	end
+	
+	def sms_message
+	  "#{base_message} #{I18n.t :sms_confirmation}"
+  end
+  
+  def voice_message
+    base_message
+  end
   
   private
+  
+  def base_message
+    reason = self.reason.present? ? self.reason : I18n.t(:an_emergency)
+    location = self.address.present? ? I18n.t(:location, :location => self.address) : ""
+    I18n.t :emergency_message, :reason => reason, :location => location
+  end
   
   def update_status status
     self.status = status

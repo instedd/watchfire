@@ -18,7 +18,7 @@ class SmsJob < CandidateJob
     message = {
       :from => "sms://0",
       :to => "sms://#{candidate.volunteer.sms_number}",
-      :body => "You are needed for an emergency. Reply 1 for Yes, 2 for No",
+      :body => candidate.mission.sms_message
     }
     
     response = api.send_ao message

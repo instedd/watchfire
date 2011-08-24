@@ -53,9 +53,23 @@ describe SmsJob do
       assert_equal @candidate.id, job.candidate_id
     end
     
-    pending "should send sms to the candidate sms phone number"
+    it "should send sms to the candidate sms phone number" do
+      @nuntium.expects(:send_ao).with do |message|
+        message[:to] == "sms://#{@candidate.volunteer.sms_number}"
+      end.returns(@response)
+      @response.stubs(:code).returns(200)
+      
+      @sms_job.perform
+    end
     
-    pending "should send sms with appropiate text"
+    it "should send sms with appropiate text" do
+      @nuntium.expects(:send_ao).with do |message|
+        message[:body] == @candidate.mission.sms_message
+      end.returns(@response)
+      @response.stubs(:code).returns(200)
+      
+      @sms_job.perform
+    end
   end
   
   describe "candidate not pending" do
