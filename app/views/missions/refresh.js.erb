@@ -2,8 +2,10 @@ $('#volunteers_canvas').html('<%=escape_javascript(render :partial => "candidate
 
 $('#distance_canvas').html('<%=escape_javascript(render :partial => "distance", :locals => { :distance => @distance, :mission => @mission } )%>');
 
+checkFilter($('input:radio[name=filter_btn]:checked').val());
+
 <% if @distance %>
-	setMapCircle(<%= @distance %>);
+	setMapCircle(<%= @distance %>, true);
 <% end %>
 
 <% if @mission.status_finished? %>

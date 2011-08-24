@@ -90,7 +90,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
 #volunteers {
   border: 1px solid;
   margin-top: 10px;
-  height: 465px;
+  height: 460px;
   overflow: auto;
 }
 /* line 39, ../../app/stylesheets/screen.sass */
@@ -175,7 +175,12 @@ body {
   display: inline;
 }
 
-/* line 90, ../../app/stylesheets/screen.sass */
+/* line 89, ../../app/stylesheets/screen.sass */
+.btns {
+  padding-top: 5px;
+}
+
+/* line 93, ../../app/stylesheets/screen.sass */
 table td {
   padding: 3px 5px;
 }

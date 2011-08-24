@@ -103,12 +103,7 @@ function init_events() {
 	});
 
 	$('input:radio[name=filter_btn]').change(function(){
-		var value = $(this).val();
-		if (value == 'all') $('tr.candidate').show();
-		else {
-			$('tr.candidate').hide();
-			$('tr.candidate-confirmed').show();
-		}
+		checkFilter($(this).val());
 	});
 
 	$('.coord').change(function(){
@@ -121,7 +116,15 @@ function init_events() {
 	});
 }
 
-function setMapCircle(distance) {
+function checkFilter(value) {
+		if (value == 'all') $('tr.candidate').show();
+		else {
+			$('tr.candidate').hide();
+			$('tr.candidate-confirmed').show();
+		}
+}
+
+function setMapCircle(distance, avoidFit) {
 	circle.setOptions({
 		center: marker.getPosition(),
 		map: map,
@@ -132,7 +135,7 @@ function setMapCircle(distance) {
 		strokeWeight: circle.strokeWeight != null ? circle.strokeWeight : 3,
 		strokeColor: circle.strokeColor != null ? circle.strokeColor : '#666666'
 	});
-	map.fitBounds(circle.getBounds());
+	if (!avoidFit) map.fitBounds(circle.getBounds());
 }
 
 function reverseGeocode(loc) {

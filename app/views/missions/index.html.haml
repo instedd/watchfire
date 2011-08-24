@@ -11,6 +11,12 @@
 	#map_canvas
 		here goes the map!
 #right-panel
+	%p 
+		Calling List
+		= radio_button_tag 'filter_btn', 'all', true
+		All
+		= radio_button_tag 'filter_btn', 'confirmed'
+		Confirmed
 	#volunteers_canvas
 		= render :partial => "candidates", :locals => { :mission => @mission }
 
