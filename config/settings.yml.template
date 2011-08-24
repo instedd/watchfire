@@ -4,13 +4,13 @@ defaults: &defaults
   sms_timeout: 5
   voice_timeout: 5
   nuntium_host: https://nuntium.instedd.org
-  nuntium_account: aromero
-  nuntium_app: watchfire
-  nuntium_app_passwd: watchfire
-  verboice_host: http://localhost:3000
-  verboice_account: aromero@manas.com.ar
-  verboice_password: 123456
-  verboice_channel: watchfire
+  nuntium_account: COMPLETE
+  nuntium_app: COMPLETE
+  nuntium_app_passwd: COMPLETE
+  verboice_host: http://verboice.instedd.org
+  verboice_account: COMPLETE
+  verboice_password: COMPLETE
+  verboice_channel: COMPLETE
   available_ratio: 0.5
 
 development:
