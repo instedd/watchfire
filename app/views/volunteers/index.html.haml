@@ -1,0 +1,29 @@
+%h1 Listing volunteers
+
+%table
+  %tr
+    %th Name
+    %th Lat
+    %th Lng
+    %th Address
+    %th Voice number
+    %th Sms number
+    %th
+    %th
+    %th
+
+  - @volunteers.each do |volunteer|
+    %tr
+      %td= volunteer.name
+      %td= volunteer.lat
+      %td= volunteer.lng
+      %td= volunteer.address
+      %td= volunteer.voice_number
+      %td= volunteer.sms_number
+      %td= link_to 'Show', volunteer
+      %td= link_to 'Edit', edit_volunteer_path(volunteer)
+      %td= link_to 'Destroy', volunteer, :confirm => 'Are you sure?', :method => :delete
+
+%br
+
+= link_to 'New Volunteer', new_volunteer_path

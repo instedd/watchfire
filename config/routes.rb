@@ -16,5 +16,7 @@ Watchfire::Application.routes.draw do
     end
   end
   
+  resources :volunteers
+  
   root :to => "missions#index"
 end
