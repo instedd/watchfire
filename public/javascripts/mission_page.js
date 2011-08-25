@@ -5,6 +5,8 @@ var circle;
 var refreshing;
 var beating;
 var alternance;
+var info_window;
+var volunteer_marker;
 
 $(function(){
 	init_map();
@@ -26,7 +28,7 @@ function init_map() {
 	
 	marker = new google.maps.Marker({
 		map: map,
-  });
+	});
 	
 	var loc = new google.maps.LatLng(parseFloat($("#mission_lat").val()), parseFloat($("#mission_lng").val()));
 	if(!isNaN(loc.lat()) && !isNaN(loc.lng())){		
@@ -36,6 +38,13 @@ function init_map() {
 	}
 
 	geocoder = new google.maps.Geocoder();
+	
+	info_window = new google.maps.InfoWindow({
+	    content: document.getElementById("info_window_content")
+	});
+	volunteer_marker = new google.maps.Marker({
+		map: map
+	});
 
 	init_map_events();
 }
@@ -45,6 +54,7 @@ function init_map_events() {
 	google.maps.event.addListener(map, 'click', changeMarker);
 	google.maps.event.addListener(map, 'rightclick', changeMarker);
 	google.maps.event.addListener(marker, 'dragend', changeMarker);
+	google.maps.event.addListener(info_window, 'closeclick', on_info_window_closed)
 }
 
 function remove_map_events() {
@@ -113,6 +123,10 @@ function init_events() {
 			marker.setPosition(loc);
 			reverseGeocode(loc);
 		}	
+	});
+	
+	$('.candidate').click(function(){
+		open_volunteer_info_window($(this));
 	});
 }
 
@@ -208,4 +222,24 @@ function beat() {
 	alternance = (alternance + 1) % 2;
 	circle.setOptions({strokeWeight: (2 + 2 * alternance), strokeColor: '#FF0000'});
 	setTimeout(beat, 250);
+}
+
+function open_volunteer_info_window(volunteer) {
+	var url = volunteer.attr('data-url');
+	var lat = volunteer.attr('data-lat');
+	var lng = volunteer.attr('data-lng');
+	var location = new google.maps.LatLng(lat, lng);
+	
+	$.get(url, function(data) {
+		$('#info_window_content').html(data);
+		volunteer_marker.setPosition(location);
+		volunteer_marker.setVisible(true);
+		info_window.open(map, volunteer_marker);
+		volunteer.addClass('hilighted');
+	});
+}
+
+function on_info_window_closed(event) {
+	$('.candidate.hilighted').removeClass('hilighted');
+	volunteer_marker.setVisible(false);
 }

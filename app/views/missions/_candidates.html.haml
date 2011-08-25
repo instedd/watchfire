@@ -13,7 +13,7 @@
 #volunteers{'data-refresh-url' => (refresh_mission_path(@mission) rescue nil)}
 	%table
 		- mission.candidates.each do |c|
-			%tr{:class => ('candidate candidate-'+c.status.to_s)}
+			%tr{:class => ('candidate candidate-'+c.status.to_s), 'data-lat' => c.volunteer.lat, 'data-lng' => c.volunteer.lng, 'data-url' => volunteer_path(c.volunteer)}
 				%td= c.status
 				%td= c.volunteer.name
 				%td= c.volunteer.voice_number

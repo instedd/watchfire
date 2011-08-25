@@ -9,7 +9,8 @@
 		= render :partial => "form", :locals => { :mission => @mission }
 	= render :partial => "distance", :locals => { :distance => @distance, :mission => @mission }
 	#map_canvas
-		here goes the map!
+	.hidden
+		#info_window_content Foobar
 #right-panel
 	%p 
 		Calling List
