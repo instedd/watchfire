@@ -51,7 +51,6 @@ function init_map() {
 
 function init_map_events() {
 	marker.setDraggable(true);
-	google.maps.event.addListener(map, 'click', changeMarker);
 	google.maps.event.addListener(map, 'rightclick', changeMarker);
 	google.maps.event.addListener(marker, 'dragend', changeMarker);
 	google.maps.event.addListener(info_window, 'closeclick', on_info_window_closed)
