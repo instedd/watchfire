@@ -60,7 +60,7 @@ describe VoiceJob do
       
       @voice_job.perform
       
-      @candidate.reload.call_id.should == '123'
+      @candidate.reload.call_id.should == 123
     end
     
   end

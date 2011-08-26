@@ -51,7 +51,7 @@ class Mission < ActiveRecord::Base
 	
 	def call_volunteers
 	  update_status :running
-	  pending_candidates.each{|c| c.call}
+	  candidates_to_call.each{|c| c.call}
   end
   
   def stop_calling_volunteers
@@ -62,6 +62,10 @@ class Mission < ActiveRecord::Base
   def pending_candidates
     self.candidates.where(:status => :pending)
   end
+
+	def candidates_to_call
+		self.candidates.where(:status => :pending, :paused => false)
+	end
   
   def confirmed_candidates
     self.candidates.where(:status => :confirmed)

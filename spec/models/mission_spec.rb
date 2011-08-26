@@ -9,9 +9,12 @@ describe Mission do
     c1 = mock('c1')
     c2 = mock('c2')
     
-    mission.expects(:pending_candidates).returns([c1,c2])
+    mission.expects(:candidates_to_call).returns([c2])
+		mission.expects(:pending_candidates).never
+
+		c1.stubs(:paused).returns(true)
     
-    c1.expects(:call)
+    c1.expects(:call).never
     c2.expects(:call)
     
     mission.call_volunteers
@@ -70,9 +73,14 @@ describe Mission do
     
     it "should increase volunteers if pending is not enough" do
       @mission.req_vols = 5
+			@mission.lat = 10.0
+			@mission.lng = 10.0
       @mission.expects(:pending_candidates).returns((1..8).to_a)
       @mission.expects(:confirmed_candidates).returns([])
-      @mission.expects(:candidates).returns((1..10).to_a)
+
+			candidates = (1..10).to_a
+			candidates.expects :reload
+      @mission.expects(:candidates).twice.returns(candidates)
       
       @mission.expects(:obtain_volunteers).with(2,10).returns(['c1','c2'])
       
@@ -82,8 +90,10 @@ describe Mission do
       @mission.check_for_more_volunteers
     end
     
-    it "should not increase volunteers if there are enough pendings" do
+    it "should not increase volunteers if there are enough pendings and set as finished" do
       @mission.req_vols = 5
+			@mission.lat = 10.0
+			@mission.lng = 10.0
       @mission.expects(:pending_candidates).returns((1..8).to_a)
       @mission.expects(:confirmed_candidates).returns((1..2).to_a)
       

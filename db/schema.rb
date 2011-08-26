@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110823152010) do
+ActiveRecord::Schema.define(:version => 20110826161508) do
 
   create_table "candidates", :force => true do |t|
     t.integer  "mission_id"
@@ -23,6 +23,7 @@ ActiveRecord::Schema.define(:version => 20110823152010) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "call_id"
+    t.boolean  "paused",         :default => false, :null => false
   end
 
   create_table "delayed_jobs", :force => true do |t|

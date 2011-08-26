@@ -14,6 +14,10 @@
 	%table
 		- mission.candidates.each do |c|
 			%tr{:class => ('candidate candidate-'+c.status.to_s), 'data-lat' => c.volunteer.lat, 'data-lng' => c.volunteer.lng, 'data-url' => volunteer_path(c.volunteer)}
+				-if c.status_pending?
+					%td.toggle_pause
+						= form_for c, :remote => true do |f|
+							= f.check_box :paused
 				%td= c.status
 				%td= c.volunteer.name
 				%td= c.volunteer.voice_number

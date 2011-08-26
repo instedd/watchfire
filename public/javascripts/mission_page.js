@@ -95,6 +95,12 @@ function checkSubmit() {
 	}
 }
 
+function init_pause_checkbox() {
+	$('.candidate input:checkbox').click(function() {
+		$(this).parent().submit();
+	});
+}
+
 function init_events() {
 	$('#mission_req_vols, #mission_reason').change(function(){
 		checkSubmit();
@@ -124,9 +130,11 @@ function init_events() {
 		}	
 	});
 	
-	$('.candidate').click(function(){
-		open_volunteer_info_window($(this));
+	$('.candidate td:not(.toggle_pause)').click(function(){
+		open_volunteer_info_window($(this).parent());
 	});
+
+	init_pause_checkbox();
 }
 
 function checkFilter(value) {

@@ -4,6 +4,8 @@ $('#distance_canvas').html('<%=escape_javascript(render :partial => "distance", 
 
 checkFilter($('input:radio[name=filter_btn]:checked').val());
 
+init_pause_checkbox();
+
 <% if @distance %>
 	setMapCircle(<%= @distance %>, true);
 <% end %>
