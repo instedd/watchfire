@@ -57,7 +57,7 @@ function init_map_events() {
 }
 
 function remove_map_events() {
-	google.maps.event.clearInstanceListeners(map);
+	google.maps.event.clearInstanceListeners(map, 'rightclick');
 	google.maps.event.clearInstanceListeners(marker);
 	marker.setDraggable(false);
 }
