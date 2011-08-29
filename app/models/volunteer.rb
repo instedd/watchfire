@@ -4,6 +4,7 @@ class Volunteer < ActiveRecord::Base
 
   has_many :candidates, :dependent => :destroy
   has_many :missions, :through => :candidates
+	has_and_belongs_to_many :skills
 
   validates_presence_of :name, :lat, :lng
   
