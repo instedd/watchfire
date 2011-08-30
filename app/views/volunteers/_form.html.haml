@@ -1,3 +1,9 @@
+- content_for :head do
+  = javascript_include_tag "jquery-ui-1.8.16.min"
+  = javascript_include_tag "theme"
+  = stylesheet_link_tag "theme"
+  = javascript_include_tag "volunteer_page"
+
 = form_for @volunteer do |f|
   -if @volunteer.errors.any?
     #error_explanation
@@ -24,5 +30,16 @@
   .field
     = f.label :sms_number
     = f.text_field :sms_number
+  .field
+    = label_tag 'Roles'
+    = text_field_tag 'volunteer[skill_names]', nil, :id => 'skills'
   .actions
     = f.submit 'Save'
+
+%ul.hidden#allSkills
+  - Skill.all.each do |s|
+    %li= s.name
+
+%ul.hidden#volSkills
+  - @volunteer.skills.each do |s|
+    %li= s.name

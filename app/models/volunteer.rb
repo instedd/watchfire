@@ -13,6 +13,10 @@ class Volunteer < ActiveRecord::Base
   
   validate :has_phone_or_sms
 
+	def skill_names=(names)
+		self.skills = names.split(',').map{|n| Skill.find_or_create_by_name(n)}
+	end
+
   private
 
   def has_phone_or_sms

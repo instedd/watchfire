@@ -8,6 +8,8 @@ class Mission < ActiveRecord::Base
   has_many :volunteers, :through => :candidates
   has_many :mission_jobs, :dependent => :destroy
 
+	belongs_to :skill
+
   validates_presence_of :req_vols, :lat, :lng
 
   validates_numericality_of :req_vols, :only_integer => true, :greater_than => 0
