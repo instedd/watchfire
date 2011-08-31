@@ -8,4 +8,8 @@ class Skill < ActiveRecord::Base
 
 	has_many :missions
 
+	def pluralized
+		self.name.pluralize
+	end
+
 end

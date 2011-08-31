@@ -102,7 +102,7 @@ function init_pause_checkbox() {
 }
 
 function init_events() {
-	$('#mission_req_vols, #mission_reason').change(function(){
+	$('#mission_req_vols, #mission_reason, #mission_skill_id').change(function(){
 		checkSubmit();
 	});
 

@@ -21,7 +21,9 @@ class Mission < ActiveRecord::Base
 	end
 
 	def obtain_volunteers quantity, offset = 0
-		Volunteer.geo_scope(:origin => self).order('distance asc').limit(quantity).offset(offset)
+		self.skill.nil? ?
+			Volunteer.geo_scope(:origin => self).order('distance asc').limit(quantity).offset(offset)
+		: Volunteer.joins('INNER JOIN skills_volunteers sv ON sv.volunteer_id = volunteers.id').where('sv.skill_id' => self.skill_id).geo_scope(:origin => self).order('distance asc').limit(quantity).offset(offset)
 	end
 
 	def check_and_save
@@ -95,7 +97,7 @@ class Mission < ActiveRecord::Base
   end
 
 	def need_check_candidates
-		self.req_vols != self.req_vols_was || self.lat != self.lat_was || self.lng != self.lng_was
+		self.req_vols != self.req_vols_was || self.lat != self.lat_was || self.lng != self.lng_was || self.skill_id != self.skill_id_was
 	end
 	
 	def sms_message
