@@ -9,6 +9,7 @@ class Mission < ActiveRecord::Base
   has_many :mission_jobs, :dependent => :destroy
 
 	belongs_to :skill
+	belongs_to :user
 
   validates_presence_of :req_vols, :lat, :lng
 
