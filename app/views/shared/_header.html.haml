@@ -1,6 +1,7 @@
 .header
 	.link.left
 		= link_to 'Volunteers', volunteers_path
+		= link_to 'My missions', missions_path
 	.user_status.right
 		- if user_signed_in?
 			= "Signed in as #{current_user.email}"
