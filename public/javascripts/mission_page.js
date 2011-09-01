@@ -7,6 +7,7 @@ var beating;
 var alternance;
 var info_window;
 var volunteer_marker;
+var listener;
 
 $(function(){
 	init_map();
@@ -51,13 +52,13 @@ function init_map() {
 
 function init_map_events() {
 	marker.setDraggable(true);
-	google.maps.event.addListener(map, 'rightclick', changeMarker);
+	listener = google.maps.event.addListener(map, 'rightclick', changeMarker); //removing right click also disables zoom, so I store it to be removed later
 	google.maps.event.addListener(marker, 'dragend', changeMarker);
 	google.maps.event.addListener(info_window, 'closeclick', on_info_window_closed)
 }
 
 function remove_map_events() {
-	google.maps.event.clearInstanceListeners(map, 'rightclick');
+	google.maps.event.removeListener(listener);
 	google.maps.event.clearInstanceListeners(marker);
 	marker.setDraggable(false);
 }

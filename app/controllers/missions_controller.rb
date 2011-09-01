@@ -9,6 +9,7 @@ class MissionsController < ApplicationController
 
 	def create
 		@mission = Mission.new(params[:mission])
+		@mission.user = current_user
 		@mission.check_and_save
 		@distance = @mission.obtain_farthest
 		render 'update.js'
