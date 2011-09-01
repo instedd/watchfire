@@ -22,9 +22,13 @@ class Mission < ActiveRecord::Base
 	end
 
 	def obtain_volunteers quantity, offset = 0
-		self.skill.nil? ?
-			Volunteer.geo_scope(:origin => self).order('distance asc').limit(quantity).offset(offset)
-		: Volunteer.joins('INNER JOIN skills_volunteers sv ON sv.volunteer_id = volunteers.id').where('sv.skill_id' => self.skill_id).geo_scope(:origin => self).order('distance asc').limit(quantity).offset(offset)
+	  if self.skill.nil?
+	    vols = Volunteer.geo_scope(:origin => self).order('distance asc')
+    else
+      vols = Volunteer.joins('INNER JOIN skills_volunteers sv ON sv.volunteer_id = volunteers.id')
+      .where('sv.skill_id' => self.skill_id).geo_scope(:origin => self).order('distance asc')
+    end
+    vols.select{|v| v.available_at? Time.now.utc}[offset..offset+quantity-1] || []
 	end
 
 	def check_and_save

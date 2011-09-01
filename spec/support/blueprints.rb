@@ -26,6 +26,10 @@ MissionJob.blueprint do
   job { Delayed::Job.create! }
 end
 
+Skill.blueprint do
+  name { _name }
+end
+
 def _name
   Faker::Name.name
 end

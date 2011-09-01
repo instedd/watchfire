@@ -105,4 +105,53 @@ describe Mission do
     
   end
   
+  describe "obtain volunteers" do
+    before(:each) do
+      @time = Time.utc(2011, 9, 1, 10, 30, 0)
+      @mission = Mission.make! :lat => 0, :lng => 0
+      
+      @s1 = Skill.make!
+      @s2 = Skill.make!
+      
+      @v1 = Volunteer.make :lat => 1, :lng => 1
+
+      @v1.skills << @s1
+      @v1.save!
+      
+      @v2 = Volunteer.make :lat => 2, :lng => 2
+      @v2.skills = [@s1, @s2]
+      @v2.save!
+      
+      @v3 = Volunteer.make! :lat => 3, :lng => 3
+    end
+    
+    it "should not filter by skill if skill is not selected" do
+      @mission.skill.should be nil
+      volunteers = @mission.obtain_volunteers 3
+      volunteers.should == [@v1, @v2, @v3]
+    end
+    
+    it "should filter by skill" do
+      @mission.skill = @s1
+      @mission.save!
+      
+      volunteers = @mission.obtain_volunteers 3
+      volunteers.should == [@v1, @v2]
+    end
+    
+    it "should filter by shift" do
+      @v1.shifts = {'thursday' => {"10" => "1"}}
+      @v1.save!
+      @v2.shifts = {"thursday" => {"10" => "0"}}
+      @v2.save!
+      @v3.shifts = {"thursday" => {"10" => "1"}}
+      @v3.save!
+      
+      Timecop.travel(@time)
+      volunteers = @mission.obtain_volunteers 3
+      volunteers.should == [@v1, @v3]
+    end
+    
+  end
+  
 end

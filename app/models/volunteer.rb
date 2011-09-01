@@ -5,6 +5,8 @@ class Volunteer < ActiveRecord::Base
   has_many :candidates, :dependent => :destroy
   has_many :missions, :through => :candidates
 	has_and_belongs_to_many :skills
+	
+	serialize :shifts
 
   validates_presence_of :name, :lat, :lng
   
@@ -16,6 +18,20 @@ class Volunteer < ActiveRecord::Base
 	def skill_names=(names)
 		self.skills = names.split(',').map{|n| Skill.find_or_create_by_name(n)}
 	end
+	
+	def available? day, hour
+	  begin
+	    self.shifts[day.to_s][hour.to_s] == "1"
+    rescue
+      true
+    end
+  end
+  
+  def available_at? time
+    day = Day.at time
+    hour = time.hour
+    self.available? day, hour
+  end
 
   private
 
