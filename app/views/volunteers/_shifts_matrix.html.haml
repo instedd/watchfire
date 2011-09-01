@@ -1,0 +1,11 @@
+%table
+	%tr
+		%th Time
+		- Day.all.each do |day|
+			%th= day.capitalize
+	- (0..23).each do |i|
+		%tr
+			%td= "#{i} - #{i+1}"
+			- Day.all.each do |day|
+				= f.fields_for day do |day_form|
+					%td= day_form.check_box i, @volunteer.available?(day, i) ? {:checked => 'checked'} : {} rescue {}

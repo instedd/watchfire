@@ -22,7 +22,7 @@ ActiveRecord::Schema.define(:version => 20110901160428) do
     t.datetime "last_sms_att"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "call_id"
+    t.string   "call_id"
     t.boolean  "paused",         :default => false, :null => false
   end
 
@@ -106,6 +106,7 @@ ActiveRecord::Schema.define(:version => 20110901160428) do
     t.string   "sms_number"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.text     "shifts"
   end
 
   add_index "volunteers", ["lat", "lng"], :name => "index_volunteers_on_lat_and_lng"
