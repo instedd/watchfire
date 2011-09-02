@@ -1,5 +1,7 @@
 class VerboiceController < ApplicationController
   
+	http_basic_authenticate_with :name => app_config.basic_auth_name, :password => app_config.basic_auth_pwd
+
   def plan
     @candidate = Candidate.find_by_call_id params[:CallSid]
   end
