@@ -1,6 +1,4 @@
-class NuntiumController < ApplicationController
-
-	http_basic_authenticate_with :name => app_config.basic_auth_name, :password => app_config.basic_auth_pwd
+class NuntiumController < BasicAuthController
   
   def receive
     begin
