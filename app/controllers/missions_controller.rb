@@ -1,4 +1,6 @@
 class MissionsController < ApplicationController
+  
+  add_breadcrumb "Missions", :root_path
 
 	before_filter :authenticate_user!
 	before_filter :check_owner, :except => [:create, :new, :index]
@@ -13,6 +15,7 @@ class MissionsController < ApplicationController
 	end
 
 	def index
+	  add_breadcrumb "Index", missions_path
 		@missions = Mission.where(:user_id => current_user.id).order('id DESC')
 	end
 

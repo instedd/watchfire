@@ -16,9 +16,8 @@
       
       <div id="NavMenu">
           <ul>
-            <li class="active"><%= link_to 'Home', root_path %></li>
-			<li><%= link_to 'Missions', missions_path %></li>
-            <li><%= link_to 'Volunteers', volunteers_path %></li>
+			<%= section 'Missions', missions_path, :missions %>
+			<%= section 'Volunteers', volunteers_path, :volunteers %>
           </ul><!-- #menu -->
       </div><!-- #NavMenu -->
       
@@ -55,7 +54,7 @@
       <div class="left"><a href="/"><img src="../theme/images/header/logos/watchfire.png"/></a></div>
 
       <div class="BreadCrumb">
-      	<ul><li><a href="#">Missions</a><span></span></li><li><a href="#">Rangeland near Roswell</a></li></ul>
+		<%= raw(render_breadcrumbs :builder => BreadcrumbBuilder) %>
       </div><!-- #BreadCrumb -->
       
       <div class="clear"></div><!-- #clear -->
