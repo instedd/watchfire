@@ -1,0 +1,111 @@
+/* ------------ Replace in Theme.css ------------------- */
+h1, h2, h3 { padding:0; margin:0 0 6px 0 }
+h1 { font-size:18px; font-weight:normal; color:#555555 }
+#User div p { margin: 0 0 7px 0; padding:0 }
+#User div hr { margin: 6px 0; padding:0 }
+
+#toolbar button.icon { position:absolute; right:2px; top:5px; padding-left:12px }
+
+textarea.ux-text { padding:0 }
+
+#container { padding-top:15px }
+
+.w100 { width: 100% !important }
+
+.disabled .TaskBox div.M { background:#d0d0d0 }
+.disabled .TaskBox div.R { color:#d0d0d0 }
+
+/* ------------ User Menu ------------------- */
+.avatar { width:65px; height:65px; text-align:center; margin:0 0 2px 0; padding:0 5px 0 0; border:none; display: table; position:relative }
+.avatar span { display:block; position:absolute; margin:0px auto; width:65px; height:65px; z-index:1; box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.2)inset; -moz-box-shadow:0px 0px 2px 1px rgba(0, 0, 0, 0.2)inset; -webkit-box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.2)inset; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px }
+.avatar img { border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px }
+
+.location { background:#555555 url(../theme/images/icons/small/white/location.png) no-repeat; color:#FFFFFF; padding:2px 3px 2px 16px; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px }
+#achannels { color:#555555 }
+.mobile { background: url(../theme/images/icons/small/grey/mobile.png) no-repeat left; padding-left:20px }
+.message { background: url(../theme/images/icons/small/grey/message.png) no-repeat left; padding-left:20px }
+.twitter { background: url(../theme/images/icons/small/grey/twitter.png) no-repeat left; padding-left:20px }
+
+
+/* ------------ Power button ------------------- */
+button.power { background:url(../theme/images/buttons/other/power.png) no-repeat left top; width:50px; height:20px; border:none; display:inline-block; vertical-align:middle; cursor:pointer }
+button.power:hover { background:url(../theme/images/buttons/other/power.png) no-repeat left -30px }
+button.power:active { background:url(../theme/images/buttons/other/power.png) no-repeat left -60px }
+button.power.disabled { background:url(../theme/images/buttons/other/power.png) no-repeat left bottom }
+button.power.on { background:url(../theme/images/buttons/other/power.png) no-repeat right top; width:50px; height:20px; cursor:pointer }
+button.power.on:hover { background:url(../theme/images/buttons/other/power.png) no-repeat right -30px }
+button.power.on:active { background:url(../theme/images/buttons/other/power.png) no-repeat right -60px }
+button.power.on.disabled { background:url(../theme/images/buttons/other/power.png) no-repeat right bottom }
+
+
+/* ------------ Gral BOX ------------------- */
+.box { background:#FFFFFF; padding:5px; box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.2); -moz-box-shadow:1px 1px 1px 1px rgba(0, 0, 0, 0.2); -webkit-box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.2); border-radius:5px; -moz-border-radius:5px; -webkit-border-radius:5px }
+.sbox { padding:2px; border-radius:5px; -moz-border-radius:5px; -webkit-border-radius:5px }
+
+.box.grey, .sbox.grey { background:#d0d0d0; color:#555555 }
+
+
+
+/* ------------ Watchfire ------------------- */
+.LeftContent { width:620px; float:left }
+.RightContent { width:310px; float:right }
+#scroll { height:350px;; width:304px; overflow:auto; overflow-x:hidden }
+table { width:100% }
+table td { padding:4px; vertical-align:top }
+table td div { display:inline-block; vertical-align:middle }
+
+hr.shadow { background: #e5e6ec; background: -moz-linear-gradient(top, #e5e6ec 0%, #ffffff 100%); background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #e5e6ec), color-stop(100%, #ffffff));
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#e5e6ec', endColorstr='#ffffff',GradientType=0 ); height:15px; width:310px; margin:3px 0 3px -5px }
+  
+  
+  
+#scroll table { width: 100% }
+#scroll table td { padding:6px 2px; border-top: 1px solid #eeeeee }
+  
+  
+  
+  
+
+/* ------------ State Display ------------------- */
+
+.StateDisplay { text-align:center }
+.StateDisplay .values { display:inline-block; width:50%; vertical-align:middle }
+.StateDisplay button { display:inline-block; vertical-align:middle }
+
+
+
+.values {
+  font-size: 11px;
+  letter-spacing: -0.02em;
+  line-height:9px;
+  padding: 2px 0;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.values div.L {
+  color: #777777;
+  text-align:left;
+  padding-bottom:3px;
+  float: left;
+
+}
+
+.values div.R {
+  color: #f86808;
+  text-align:right;
+  padding-bottom:3px;
+  float: right;
+}
+.values div.L span, .values div.R span { display:block }
+
+.values div.M {
+  background: #f86808;
+}
+
+.values div.M span {
+  background: #777777;
+  height: 4px;
+  display: block;
+  width: 40%;
+}

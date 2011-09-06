@@ -3,17 +3,101 @@
 <head>
   <title>Watchfire</title>
   <%= stylesheet_link_tag :all %>
+  <%= stylesheet_link_tag '../theme/stylesheets/theme.css' %>
   <%= javascript_include_tag :defaults %>
+  <%= javascript_include_tag '../theme/javascripts/theme.js' %>
   <%= csrf_meta_tag %>
   <%= yield :head %>
 </head>
-<body>
-<!---<p class="notice"><%= notice %></p>
-<p class="alert"><%= alert %></p>--->
+<body class="smallfooter">
+  <div id="wrapper">
+    <div id="toolbar">
+      <ul id="instedd-pulldown"></ul>
+      
+      <div id="NavMenu">
+          <ul>
+            <li class="active"><%= link_to 'Home', root_path %></li>
+			<li><%= link_to 'Missions', missions_path %></li>
+            <li><%= link_to 'Volunteers', volunteers_path %></li>
+          </ul><!-- #menu -->
+      </div><!-- #NavMenu -->
+      
+      
+          <div id="User">John Doe<br><br>
+          	<div class="container">
+            	<div class="avatar left"><span></span><img src="../theme/images/avatars/male1.png" /></div>
+            	<!--<img src="../theme/images/avatars/male1.png" class="left">-->
+                <p>jdoe</p>
+                <p>at <span class="location">Office</span></p>
+                <p>GMT -03:00 (Brasilia)</p>
+                <div class="clear"></div>
+                <hr>
+                <div id="achannels">
+                <p>Active channels</p>
+                <p><span class="mobile">+54 1134075826</span></p>
+                <p><span class="message">jdoe@instedd.com</span></p>
+                <p><span class="twitter">johndoe</span></p>
+                </div>
+                <hr>
+                <p>Privacy</p>
+                <p>Report a bug</p>
+                <hr>
+                <p>Sign Out</p>
+            </div>
+          </div><!-- #User --> 
 
-<%= render 'shared/header' %>
+          <button type="button" class="icon fsettings"></button>
+          
+    </div><!-- #toolbar -->
 
-<%= yield %>
+    <div id="header">
+    
+      <div class="left"><a href="/"><img src="../theme/images/header/logos/watchfire.png"/></a></div>
 
+      <div class="BreadCrumb">
+      	<ul><li><a href="#">Missions</a><span></span></li><li><a href="#">Rangeland near Roswell</a></li></ul>
+      </div><!-- #BreadCrumb -->
+      
+      <div class="clear"></div><!-- #clear -->
+      
+    </div><!-- #header -->
+
+    <div id="container">
+		<%= yield %>
+	</div><!-- #container -->
+
+    <div id="footer-span">
+      <div id="footer">
+        <div id="footer-container">
+          <div>
+            <div class="left platform">
+              InSTEDD has created an evolving platform of free and open source technologies to support humanitarian causes. These tools can be used individually or as building blocks for larger solutions. <a href="http://instedd.org/technologies/">Click here</a> to learn more
+            </div>
+            <div class="right">
+              <a href="http://instedd.org/technologies/" class="more">Learn more</a>
+              <div id="instedd-footer" data-app-name="nuntium"></div>
+            </div>
+            <div class="clear"></div>
+          </div>
+          <div>
+            <div class="left">
+              <a href="http://instedd.org">&copy; 2011 InSTEDD</a>
+              <a href="#TODO">Terms and conditions</a>
+              <a href="#TODO">Contact us</a>
+            </div>
+            <div class="right">
+              <a href="/">Home</a>
+              <a href="#TODO">Tour</a>
+              <a href="#TODO">Community</a>
+              <a href="#TODO">Help</a>
+              <a href="#TODO">Language: English</a>              
+            </div>
+            <div class="clear">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- #footer-span -->
+  </div><!-- #wrapper -->
 </body>
 </html>
