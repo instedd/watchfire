@@ -1,5 +1,13 @@
 %h1 Listing volunteers
 
+%p 
+  Import
+  = form_for :import_volunteers, :url => import_volunteers_path, :html => {:multipart => true} do |f|
+    = file_field_tag :file
+    = f.submit 'Upload'
+
+%br
+
 %table
   %tr
     %th Name

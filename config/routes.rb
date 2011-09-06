@@ -16,7 +16,11 @@ Watchfire::Application.routes.draw do
     end
   end
   
-  resources :volunteers
+  resources :volunteers do
+    collection do
+      post 'import'
+    end
+  end
   
 	resources :candidates, :only => [:update]
 

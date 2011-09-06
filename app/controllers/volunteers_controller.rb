@@ -83,4 +83,10 @@ class VolunteersController < ApplicationController
       format.xml  { head :ok }
     end
   end
+  
+  # POST /volunteers/import
+  def import
+    VolunteerImporter.new.import params[:file].read
+    redirect_to :action => "index"
+  end
 end
