@@ -1,5 +1,7 @@
+<%= render :partial => 'refresh_candidates' %>
 $('#distance_label').html('Will call volunteers up to');
-
-$('#call_button_canvas').html('<%=button_to 'Resume Recruiting', start_mission_path(@mission), :remote => true%>');
-
+$('#mission_title').html('<%=escape_javascript(render :partial => "title", :locals => { :mission => @mission } )%>');
+$('#form_container').html('<%=escape_javascript(render :partial => "form", :locals => { :mission => @mission } )%>');
+$.instedd.init_components($('#form_container'));
 stop_refresh_enable_inputs();
+init_events();

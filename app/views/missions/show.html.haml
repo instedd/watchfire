@@ -1,22 +1,30 @@
 - content_for :head do
 	= javascript_include_tag 'http://maps.googleapis.com/maps/api/js?sensor=false'
 	= javascript_include_tag 'mission_page'
-
-#left-panel
-	#form_canvas
-		= render :partial => "form", :locals => { :mission => @mission }
-	= render :partial => "distance", :locals => { :distance => @distance, :mission => @mission }
-	#map_canvas
-	.hidden
-		#info_window_content Foobar
-#right-panel
-	%p 
-		Calling List
-		= radio_button_tag 'filter_btn', 'all', true
-		All
-		= radio_button_tag 'filter_btn', 'confirmed'
-		Confirmed
-	#volunteers_canvas
+#mission_title
+	= render :partial => 'title', :locals => { :mission => @mission }
+%br
+.left
+	#left_panel.box.w60
+		#form_container
+			= render :partial => "form", :locals => { :mission => @mission }
+		= render :partial => "distance", :locals => { :distance => @distance, :mission => @mission }
+		#map_canvas
+		.hidden
+			#info_window_content
+.right
+	.box.w30
 		= render :partial => "candidates", :locals => { :mission => @mission }
+.clear
+
+/ #right-panel
+/ 	%p 
+/ 		Calling List
+/ 		= radio_button_tag 'filter_btn', 'all', true
+/ 		All
+/ 		= radio_button_tag 'filter_btn', 'confirmed'
+/ 		Confirmed
+/ 	#volunteers_canvas
+/ 		= render :partial => "candidates", :locals => { :mission => @mission }
 
 = hidden_field_tag :status, @mission.status, :id => 'status_field'

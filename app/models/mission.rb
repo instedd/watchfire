@@ -71,14 +71,22 @@ class Mission < ActiveRecord::Base
   def pending_candidates
     self.candidates.where(:status => :pending)
   end
-
-	def candidates_to_call
-		self.candidates.where(:status => :pending, :paused => false)
-	end
   
   def confirmed_candidates
     self.candidates.where(:status => :confirmed)
   end
+  
+  def denied_candidates
+    self.candidates.where(:status => :denied)
+  end
+  
+  def unresponsive_candidates
+    self.candidates.where(:status => :unresponsive)
+  end
+  
+  def candidates_to_call
+		self.candidates.where(:status => :pending, :paused => false)
+	end
   
   def check_for_more_volunteers
     pending = pending_candidates.count
@@ -111,6 +119,10 @@ class Mission < ActiveRecord::Base
   
   def voice_message
     base_message
+  end
+  
+  def progress
+    candidate_count(:confirmed) / req_vols rescue 0 
   end
   
   private

@@ -2,131 +2,18 @@
  * In this file you should write your main styles. (or centralize your imports)
  * Import this file using the following HTML or equivalent:
  * <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" /> */
-/* line 21, ../../app/stylesheets/screen.sass */
-#left-panel {
-  float: left;
-  padding: 10px;
-  background-color: #cccccc;
-}
-
-/* line 26, ../../app/stylesheets/screen.sass */
-#right-panel {
-  float: left;
-  margin-left: 20px;
-}
-
 /* line 30, ../../app/stylesheets/screen.sass */
+form {
+  display: inline;
+}
+
+/* line 33, ../../app/stylesheets/screen.sass */
 #map_canvas {
-  width: 700px;
-  height: 500px;
+  width: 600px;
+  height: 278px;
 }
 
-/* line 34, ../../app/stylesheets/screen.sass */
-#volunteers {
-  border: 1px solid;
-  margin-top: 10px;
-  height: 460px;
-  overflow: auto;
-}
-/* line 39, ../../app/stylesheets/screen.sass */
-#volunteers tr:nth-child(even) {
-  background-color: #dddddd;
-}
-
-/* line 42, ../../app/stylesheets/screen.sass */
-#status {
-  margin-top: 15px;
-}
-
-/* line 45, ../../app/stylesheets/screen.sass */
-.field_with_errors {
-  display: inline;
-}
-
-/* line 48, ../../app/stylesheets/screen.sass */
-body {
-  padding: 5px;
-}
-
-/* line 51, ../../app/stylesheets/screen.sass */
-.right {
-  float: right;
-}
-
-/* line 54, ../../app/stylesheets/screen.sass */
-.left {
-  float: left;
-}
-
-/* line 57, ../../app/stylesheets/screen.sass */
-.clear {
-  clear: both;
-}
-
-/* line 60, ../../app/stylesheets/screen.sass */
-.header {
-  padding-bottom: 10px;
-  margin-bottom: 10px;
-  border-bottom: 2px solid black;
-}
-
-/* line 65, ../../app/stylesheets/screen.sass */
-#form_canvas {
-  width: 700px;
-  margin-bottom: 5px;
-}
-
-/* line 69, ../../app/stylesheets/screen.sass */
-#mission_req_vols {
-  width: 50px;
-}
-
-/* line 72, ../../app/stylesheets/screen.sass */
-#mission_reason {
-  width: 450px;
-}
-
-/* line 75, ../../app/stylesheets/screen.sass */
-#mission_address {
-  width: 651px;
-}
-
-/* line 78, ../../app/stylesheets/screen.sass */
-.coord {
-  width: 307px;
-}
-
-/* line 81, ../../app/stylesheets/screen.sass */
-#distance_canvas {
-  padding-bottom: 5px;
-}
-
-/* line 84, ../../app/stylesheets/screen.sass */
-.btn {
-  display: inline;
-}
-/* line 86, ../../app/stylesheets/screen.sass */
-.btn div, .btn form {
-  display: inline;
-}
-
-/* line 89, ../../app/stylesheets/screen.sass */
-.btns {
-  padding-top: 5px;
-}
-
-/* line 93, ../../app/stylesheets/screen.sass */
-table td {
-  padding: 3px 5px;
-}
-
-/* line 96, ../../app/stylesheets/screen.sass */
-h2 {
-  font-size: 30px;
-  margin-bottom: 10px;
-}
-
-/* line 100, ../../app/stylesheets/screen.sass */
+/* line 104, ../../app/stylesheets/screen.sass */
 .hidden {
   display: none;
 }

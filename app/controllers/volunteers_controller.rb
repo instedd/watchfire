@@ -19,7 +19,7 @@ class VolunteersController < ApplicationController
     @volunteer = Volunteer.find(params[:id])
 
     respond_to do |format|
-      format.html # show.html.erb
+      format.html { render 'show', :layout => false}
       format.xml  { render :xml => @volunteer }
     end
   end

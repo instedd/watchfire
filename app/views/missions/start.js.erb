@@ -1,3 +1,7 @@
-$('#call_button_canvas').html('<%=button_to 'Stop Recruiting', stop_mission_path(@mission), :remote => true%>');
-
+<%= render :partial => 'refresh_candidates' %>
+$('#mission_title').html('<%=escape_javascript(render :partial => "title", :locals => { :mission => @mission } )%>');
+$('#mission_status').html('<%=escape_javascript(render :partial => "status", :locals => { :mission => @mission } )%>');
+$('#form_container').html('<%=escape_javascript(render :partial => "form", :locals => { :mission => @mission } )%>');
+$.instedd.init_components($('#form_container'));
 refresh_disable_inputs();
+init_events();

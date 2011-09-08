@@ -1,21 +1,22 @@
 class MissionsController < ApplicationController
   
-  add_breadcrumb "Missions", :root_path
+  add_breadcrumb "Events", :root_path
 
 	before_filter :authenticate_user!
 	before_filter :check_owner, :except => [:create, :new, :index]
 
   def show
+    add_breadcrumb @mission.reason, mission_path(@mission)
 		@distance = @mission.obtain_farthest
   end
 
 	def new
+	  add_breadcrumb "New", :new_mission_path
 		@mission = Mission.new
 		render 'show'
 	end
 
 	def index
-	  add_breadcrumb "Index", missions_path
 		@missions = Mission.where(:user_id => current_user.id).order('id DESC')
 	end
 
@@ -48,7 +49,7 @@ class MissionsController < ApplicationController
   def refresh
 		@distance = @mission.obtain_farthest
     respond_to do |format|
-      format.html { render 'index' }
+      format.html { render 'show' }
       format.js
     end
   end

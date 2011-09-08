@@ -1,8 +1,8 @@
-$('#volunteers_canvas').html('<%=escape_javascript(render :partial => "candidates", :locals => { :mission => @mission } )%>');
+<%= render :partial => 'refresh_candidates' %>
+
+$('#progress').html('<%= escape_javascript(render :partial => 'progress', :locals => {:mission => @mission} )%>')
 
 $('#distance_canvas').html('<%=escape_javascript(render :partial => "distance", :locals => { :distance => @distance, :mission => @mission } )%>');
-
-checkFilter($('input:radio[name=filter_btn]:checked').val());
 
 init_pause_checkbox();
 
@@ -10,6 +10,6 @@ init_pause_checkbox();
 	setMapCircle(<%= @distance %>, true);
 <% end %>
 
-<% if @mission.status_finished? %>
+<% if @mission.finished? %>
 	stop_refresh_enable_inputs();
 <% end %>

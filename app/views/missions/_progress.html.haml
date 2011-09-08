@@ -1,0 +1,9 @@
+.L
+	%span= mission.candidate_count(:confirmed) > 0 ? mission.candidate_count(:confirmed) : "No volunteers"
+	%span confirmed
+.R
+	%span= mission.req_vols
+	%span needed
+%br{:clear => "all"}
+.M
+	%span.Fill{:style => progress_percentage(mission)}

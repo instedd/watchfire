@@ -1,0 +1,3 @@
+= form_for candidate, :remote => true do |f|
+	= f.hidden_field :paused, {:value => !candidate.paused}
+	%button.icon.lblock{:disabled => @mission.running?}

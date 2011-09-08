@@ -1,0 +1,3 @@
+var container = $('#candidate_paused_form_<%= @candidate.id %>');
+container.html('<%= escape_javascript(render :partial => 'shared/candidate_paused_form', :locals => {:candidate => @candidate} )%>');
+container.parents('tr.candidate').toggleClass('blocked');

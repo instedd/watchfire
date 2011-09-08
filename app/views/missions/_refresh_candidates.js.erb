@@ -1,0 +1,4 @@
+$('#confirmed_list').html('<%= escape_javascript(render :partial => "candidate_list", :locals => {:title => 'Confirmed', :candidates => @mission.confirmed_candidates} )%>')
+$('#pending_list').html('<%= escape_javascript(render :partial => "candidate_list", :locals => {:title => 'Pending', :candidates => @mission.pending_candidates} )%>')
+$('#unresponsive_list').html('<%= escape_javascript(render :partial => "candidate_list", :locals => {:title => 'No answer', :candidates => @mission.unresponsive_candidates} )%>')
+$('#denied_list').html('<%= escape_javascript(render :partial => "candidate_list", :locals => {:title => 'Denied', :candidates => @mission.denied_candidates} )%>')

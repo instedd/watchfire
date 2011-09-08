@@ -65,7 +65,7 @@
 		      
 					if (options.container == null) {
 						_this.after(barTemplate);
-						barTemplate.width(_this.outerWidth());
+						barTemplate.width(_this.outerWidth()-2); //due to border
 					} else {
 						options.container.append(barTemplate);
 					}

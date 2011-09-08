@@ -1,0 +1,8 @@
+%h1
+	- if mission.is_created?
+		New Event
+	- else
+		= form_tag mission.running? ? stop_mission_path(mission) : start_mission_path(mission), :remote => true do
+			%button.power{:class => mission.running? ? 'on' : ''}
+		= mission.reason
+= hidden_field_tag :refresh, (refresh_mission_path(@mission) rescue nil), :id => 'refresh_url'

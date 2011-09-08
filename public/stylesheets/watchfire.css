@@ -1,16 +1,8 @@
 /* ------------ Replace in Theme.css ------------------- */
 h1, h2, h3 { padding:0; margin:0 0 6px 0 }
 h1 { font-size:18px; font-weight:normal; color:#555555 }
-#User div p { margin: 0 0 7px 0; padding:0 }
-#User div hr { margin: 6px 0; padding:0 }
 
-#toolbar button.icon { position:absolute; right:2px; top:5px; padding-left:12px }
 
-textarea.ux-text { padding:0 }
-
-#container { padding-top:15px }
-
-.w100 { width: 100% !important }
 
 .disabled .TaskBox div.M { background:#d0d0d0 }
 .disabled .TaskBox div.R { color:#d0d0d0 }
@@ -22,9 +14,16 @@ textarea.ux-text { padding:0 }
 
 .location { background:#555555 url(../theme/images/icons/small/white/location.png) no-repeat; color:#FFFFFF; padding:2px 3px 2px 16px; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px }
 #achannels { color:#555555 }
-.mobile { background: url(../theme/images/icons/small/grey/mobile.png) no-repeat left; padding-left:20px }
-.message { background: url(../theme/images/icons/small/grey/message.png) no-repeat left; padding-left:20px }
-.twitter { background: url(../theme/images/icons/small/grey/twitter.png) no-repeat left; padding-left:20px }
+
+.mobile { background: url(../theme/images/icons/small/black/mobile.png) no-repeat left; padding-left:20px }
+.message { background: url(../theme/images/icons/small/black/message.png) no-repeat left; padding-left:20px }
+.twitter { background: url(../theme/images/icons/small/black/twitter.png) no-repeat left; padding-left:20px }
+.phone { background: url(../theme/images/icons/small/black/phone.png) no-repeat left; padding-left:20px }
+
+.gmobile { background: url(../theme/images/icons/small/grey/mobile.png) no-repeat left; padding-left:20px }
+.gmessage { background: url(../theme/images/icons/small/grey/message.png) no-repeat left; padding-left:20px }
+.gtwitter { background: url(../theme/images/icons/small/grey/twitter.png) no-repeat left; padding-left:20px }
+.gphone { background: url(../theme/images/icons/small/grey/phone.png) no-repeat left; padding-left:20px }
 
 
 /* ------------ Power button ------------------- */
@@ -38,74 +37,53 @@ button.power.on:active { background:url(../theme/images/buttons/other/power.png)
 button.power.on.disabled { background:url(../theme/images/buttons/other/power.png) no-repeat right bottom }
 
 
-/* ------------ Gral BOX ------------------- */
-.box { background:#FFFFFF; padding:5px; box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.2); -moz-box-shadow:1px 1px 1px 1px rgba(0, 0, 0, 0.2); -webkit-box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.2); border-radius:5px; -moz-border-radius:5px; -webkit-border-radius:5px }
-.sbox { padding:2px; border-radius:5px; -moz-border-radius:5px; -webkit-border-radius:5px }
-
-.box.grey, .sbox.grey { background:#d0d0d0; color:#555555 }
-
-
-
 /* ------------ Watchfire ------------------- */
 .LeftContent { width:620px; float:left }
 .RightContent { width:310px; float:right }
-#scroll { height:350px;; width:304px; overflow:auto; overflow-x:hidden }
+#scroll { height:350px; width:289px; margin:-4px 0 -5px 0; overflow:auto; overflow-x:hidden; padding-right: 10px; }
 table { width:100% }
 table td { padding:4px; vertical-align:top }
 table td div { display:inline-block; vertical-align:middle }
+  
+.listitem span.a { background:url(../theme/images/icons/misc/grey/arrowDown.png) no-repeat left 5px; color:#555555; display:block; padding:3px 0 3px 12px;  }
+.listitem.col span.a { background:url(../theme/images/icons/misc/grey/arrowRight.png ) no-repeat left 5px }  
+.listitem table { font-size:12px; width: 100%; border-collapse:collapse }
+.listitem table td { padding:8px 5px; vertical-align:top; letter-spacing:-0.01em; border-top: 1px solid #eeeeee; }
+.listitem table tr:hover td { background:#d0d0d0 }
+.listitem table tr td:first-child { border-radius:3px 0 0 3px; -moz-border-radius:3px 0 0 3px; -webkit-border-radius:3px 0 0 3px; width:50% }
+.listitem table tr td:last-child { border-radius:0 3px 3px 0; -moz-border-radius:0 3px 3px 0; -webkit-border-radius:0 3px 3px 0; text-align:right }
+.listitem table td button { margin:0 auto }
+.listitem table tr.blocked td button { background-position:right top }
+.listitem table tr.blocked td { color:#999999 }
+.listitem.col table { display:none }  
+ 
+ 
+/* --------  Events Table ------------ */ 
 
-hr.shadow { background: #e5e6ec; background: -moz-linear-gradient(top, #e5e6ec 0%, #ffffff 100%); background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #e5e6ec), color-stop(100%, #ffffff));
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#e5e6ec', endColorstr='#ffffff',GradientType=0 ); height:15px; width:310px; margin:3px 0 3px -5px }
-  
-  
-  
-#scroll table { width: 100% }
-#scroll table td { padding:6px 2px; border-top: 1px solid #eeeeee }
-  
-  
-  
-  
+.minactive, .Missions td.paused { color:#555555 }
+.mactive span { background:#9fc643; margin-right:5px; width:10px; height:10px; display:inline-block; border-radius:2px; -moz-border-radius:2px; -webkit-border-radius:2px }
+.mpaused span { background:#d0d0d0; margin-right:5px; width:10px; height:9px; border-top:1px solid #9c9c9c; display:inline-block; border-radius:2px; -moz-border-radius:2px; -webkit-border-radius:2px }
+.minactive span { background:#d0d0d0; margin-right:5px; width:10px; height:9px; border-top:1px solid #9c9c9c; display:inline-block; border-radius:2px; -moz-border-radius:2px; -webkit-border-radius:2px }
+
+
+
 
 /* ------------ State Display ------------------- */
-
 .StateDisplay { text-align:center }
 .StateDisplay .values { display:inline-block; width:50%; vertical-align:middle }
 .StateDisplay button { display:inline-block; vertical-align:middle }
-
-
-
-.values {
-  font-size: 11px;
-  letter-spacing: -0.02em;
-  line-height:9px;
-  padding: 2px 0;
-  text-align: center;
-  white-space: nowrap;
-}
-
-.values div.L {
-  color: #777777;
-  text-align:left;
-  padding-bottom:3px;
-  float: left;
-
-}
-
-.values div.R {
-  color: #f86808;
-  text-align:right;
-  padding-bottom:3px;
-  float: right;
-}
+.values { font-size: 11px; letter-spacing: -0.02em; line-height:9px; padding: 2px 0; text-align: center; white-space: nowrap }
+.values div.L { color: #777777; text-align:left; padding-bottom:3px; float: left }
+.values div.R { color: #f86808; text-align:right; padding-bottom:3px; float: right }
 .values div.L span, .values div.R span { display:block }
+.values div.M { background: #f86808 }
+.values div.M span { background: #777777; height: 4px; display: block; width: 40% }
 
-.values div.M {
-  background: #f86808;
-}
+.smvalues { background:#d0d0d0; font-size:11px; letter-spacing:-0.02em; line-height:9px; padding:3px; text-align: center; white-space: nowrap; width:50px; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px; border:1px solid #DDDDDD }
+.smvalues div.L { color: #777777; text-align:left; padding-bottom:3px; float: left }
+.smvalues div.R { color: #f86808; text-align:right; padding-bottom:3px; float: right }
+.smvalues div.L span, .values div.R span { display:block }
+.smvalues div.M { background: #f86808; display:block !important}
+.smvalues div.M span { background: #777777; height: 4px; display: block; width: 40% }
 
-.values div.M span {
-  background: #777777;
-  height: 4px;
-  display: block;
-  width: 40%;
-}
+

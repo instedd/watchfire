@@ -1,0 +1,10 @@
+#progress.values
+	= render :partial => 'progress', :locals => {:mission => mission}
+- if mission.created?
+	- if mission.new_record?
+		%button.orange.disabled Start recruiting
+	- else
+		= form_tag start_mission_path(mission), :remote => true do
+			%button.orange Start recruiting
+- else
+	%button.white{:type => 'button'} Download as CSV

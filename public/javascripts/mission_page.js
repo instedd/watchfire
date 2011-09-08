@@ -83,9 +83,6 @@ function geocodeLocation(location) {
 			checkSubmit();
 		} else {
 			alert("Location not found");
-			//$feedback = $("#feedback");
-			//$feedback.show();
-			//$feedback.html("Location not found");
     	}
 	});
 }
@@ -113,37 +110,23 @@ function init_events() {
 			geocodeLocation(loc);
 			return false;
         } else {
-          //$("#feedback").hide();
           return true;
         }
 	});
-
-	$('input:radio[name=filter_btn]').change(function(){
-		checkFilter($(this).val());
-	});
-
-	$('.coord').change(function(){
-		var loc = new google.maps.LatLng(parseFloat($("#mission_lat").val()), parseFloat($("#mission_lng").val()));
-		if(!isNaN(loc.lat()) && !isNaN(loc.lng())){		
-			map.setCenter(loc);
-			marker.setPosition(loc);
-			reverseGeocode(loc);
-		}	
+	
+	$('.candidate td:not(.avoid)').click(function(){
+		open_volunteer_info_window($(this).parents('.candidate'));
 	});
 	
-	$('.candidate td:not(.toggle_pause)').click(function(){
-		open_volunteer_info_window($(this).parent());
+	$('.candidate td.avoid .clickable').click(function(){
+		open_volunteer_info_window($(this).parents('.candidate'));
 	});
 
 	init_pause_checkbox();
-}
-
-function checkFilter(value) {
-		if (value == 'all') $('tr.candidate').show();
-		else {
-			$('tr.candidate').hide();
-			$('tr.candidate-confirmed').show();
-		}
+	
+	$('.listitem span.a').click(function(){
+		$(this).parent().toggleClass('col');
+	});
 }
 
 function setMapCircle(distance, avoidFit) {
@@ -186,21 +169,21 @@ function stop_refreshing()  {
 function refresh() {
 	if (!refreshing) return;
 	
-	$.getScript($("#volunteers").attr('data-refresh-url'), function(data, textStatus){
+	$.getScript($('#refresh_url').val(), function(data, textStatus){
 		setTimeout(refresh, 5000);  
 	});
 }
 
 function refresh_disable_inputs() {
 		start_refreshing();
-		$('.mission_form_input').attr('disabled','disabled');
+		$('#left_panel').addClass('grey');
 		remove_map_events();
 		make_circle_beat();
 }
 
 function stop_refresh_enable_inputs() {
 	stop_refreshing();
-	$('#mission_req_vols, #mission_reason').removeAttr('disabled');
+	$('#left_panel').removeClass('grey');
 	stop_circle_beat();
 }
 
@@ -209,7 +192,6 @@ function check_running() {
 	if(status == 'running') {
 		refresh_disable_inputs();
 	} else if(status == 'paused' || status == 'finished') {
-		$('.strict_mission_form_input').attr('disabled','disabled');
 		remove_map_events();
 	}
 }
@@ -243,11 +225,9 @@ function open_volunteer_info_window(volunteer) {
 		volunteer_marker.setPosition(location);
 		volunteer_marker.setVisible(true);
 		info_window.open(map, volunteer_marker);
-		volunteer.addClass('hilighted');
 	});
 }
 
 function on_info_window_closed(event) {
-	$('.candidate.hilighted').removeClass('hilighted');
 	volunteer_marker.setVisible(false);
 }
