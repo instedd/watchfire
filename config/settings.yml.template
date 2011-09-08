@@ -11,7 +11,7 @@ defaults: &defaults
   verboice_account: COMPLETE
   verboice_password: COMPLETE
   verboice_channel: COMPLETE
-  available_ratio: 0.5
+  available_ratio: 0.25
   basic_auth_name: COMPLETE
   basic_auth_pwd: COMPLETE
 
