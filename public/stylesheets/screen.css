@@ -1,19 +1,40 @@
-/* Welcome to Compass.
- * In this file you should write your main styles. (or centralize your imports)
- * Import this file using the following HTML or equivalent:
- * <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" /> */
-/* line 30, ../../app/stylesheets/screen.sass */
+/* line 3, ../../app/stylesheets/screen.sass */
 form {
   display: inline;
 }
 
-/* line 33, ../../app/stylesheets/screen.sass */
+/* line 6, ../../app/stylesheets/screen.sass */
 #map_canvas {
   width: 600px;
   height: 278px;
 }
 
-/* line 104, ../../app/stylesheets/screen.sass */
+/* line 10, ../../app/stylesheets/screen.sass */
+#empty_volunteers {
+  text-align: center;
+  font-style: italic;
+  color: #555555;
+  padding-top: 130px;
+}
+
+/* line 16, ../../app/stylesheets/screen.sass */
 .hidden {
   display: none;
+}
+
+/* line 19, ../../app/stylesheets/screen.sass */
+.volunteer_name {
+  font-size: 16px;
+}
+
+/* line 22, ../../app/stylesheets/screen.sass */
+.volunteer_address {
+  font-size: 14px;
+  color: #555555;
+}
+
+/* line 26, ../../app/stylesheets/screen.sass */
+.volunteer_phones {
+  font-size: 12px;
+  margin-top: 10px;
 }

@@ -1,24 +1,8 @@
-%p#notice= notice
-
-%p
-  %b Name:
-  = @volunteer.name
-%p
-  %b Lat:
-  = @volunteer.lat
-%p
-  %b Lng:
-  = @volunteer.lng
-%p
-  %b Address:
-  = @volunteer.address
-%p
-  %b Voice number:
-  = @volunteer.voice_number
-%p
-  %b Sms number:
-  = @volunteer.sms_number
-
-= link_to 'Edit', edit_volunteer_path(@volunteer)
-\|
-= link_to 'Back', volunteers_path
+.volunteer_name= @volunteer.name
+.volunteer_address= @volunteer.address
+.volunteer_phones
+	- if @volunteer.sms_number.present?
+		%span.mobile= @volunteer.sms_number
+	%br
+	- if @volunteer.voice_number.present?
+		%span.phone= @volunteer.voice_number

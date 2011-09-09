@@ -28,7 +28,7 @@ function init_map() {
 	map.setCenter(initialLocation);
 	
 	marker = new google.maps.Marker({
-		map: map,
+		map: map
 	});
 	
 	var loc = new google.maps.LatLng(parseFloat($("#mission_lat").val()), parseFloat($("#mission_lng").val()));
@@ -93,12 +93,6 @@ function checkSubmit() {
 	}
 }
 
-function init_pause_checkbox() {
-	$('.candidate input:checkbox').click(function() {
-		$(this).parent().submit();
-	});
-}
-
 function init_events() {
 	$('#mission_req_vols, #mission_reason, #mission_skill_id').change(function(){
 		checkSubmit();
@@ -114,15 +108,13 @@ function init_events() {
         }
 	});
 	
-	$('.candidate td:not(.avoid)').click(function(){
+	$('.candidate td').click(function(){
 		open_volunteer_info_window($(this).parents('.candidate'));
 	});
 	
-	$('.candidate td.avoid .clickable').click(function(){
-		open_volunteer_info_window($(this).parents('.candidate'));
+	$('.candidate .avoid').click(function(event){
+		event.stopImmediatePropagation();
 	});
-
-	init_pause_checkbox();
 	
 	$('.listitem span.a').click(function(){
 		$(this).parent().toggleClass('col');
@@ -175,10 +167,10 @@ function refresh() {
 }
 
 function refresh_disable_inputs() {
-		start_refreshing();
-		$('#left_panel').addClass('grey');
-		remove_map_events();
-		make_circle_beat();
+	start_refreshing();
+	$('#left_panel').addClass('grey');
+	remove_map_events();
+	make_circle_beat();
 }
 
 function stop_refresh_enable_inputs() {
@@ -189,10 +181,13 @@ function stop_refresh_enable_inputs() {
 
 function check_running() {
 	var status = $('#status_field').val();
-	if(status == 'running') {
+	if (status == 'running') {
 		refresh_disable_inputs();
-	} else if(status == 'paused' || status == 'finished') {
+	} else if (status == 'paused' || status == 'finished') {
 		remove_map_events();
+		if (status == 'finished') {
+			$('#left_panel').addClass('grey');
+		}
 	}
 }
 

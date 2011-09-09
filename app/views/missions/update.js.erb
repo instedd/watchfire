@@ -1,4 +1,4 @@
-<%= render :partial => 'refresh_candidates' %>
+$('#scroll').html('<%=escape_javascript(render :partial => "volunteers", :locals => { :mission => @mission } )%>');
 
 $('#mission_title').html('<%=escape_javascript(render :partial => "title", :locals => { :mission => @mission } )%>');
 
@@ -8,6 +8,10 @@ $('#mission_status').html('<%=escape_javascript(render :partial => "status", :lo
 
 $('#distance_canvas').html('<%=escape_javascript(render :partial => "distance", :locals => { :distance => @distance, :mission => @mission } )%>');
 
+$('#destroy_mission_container').html('<%=escape_javascript(render :partial => "destroy", :locals => { :mission => @mission } )%>');
+
+$('#mission_completed').html('<%=escape_javascript(render :partial => "completed", :locals => { :mission => @mission } )%>');
+
 init_events();
 check_running();
 
@@ -15,4 +19,5 @@ check_running();
 	setMapCircle(<%= @distance %>);
 <%end%>
 
+$.instedd.init_components($('#mission_completed'));
 $.instedd.init_components($('#form_container'));

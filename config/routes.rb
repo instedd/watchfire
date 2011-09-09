@@ -12,6 +12,8 @@ Watchfire::Application.routes.draw do
     member do
       post 'start'
       post 'stop'
+      post 'finish'
+      post 'open'
       get 'refresh'
     end
   end

@@ -68,6 +68,15 @@ class Mission < ActiveRecord::Base
     self.mission_jobs.destroy_all
   end
   
+  def finish
+    update_status :finished
+    self.mission_jobs.destroy_all
+  end
+  
+  def open
+    update_status :paused
+  end
+  
   def pending_candidates
     self.candidates.where(:status => :pending)
   end

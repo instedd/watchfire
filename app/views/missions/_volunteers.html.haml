@@ -1,0 +1,15 @@
+- if mission.candidates.count > 0
+	#confirmed_list.listitem
+		= render :partial => 'candidate_list', :locals => {:title => 'Confirmed', :candidates => mission.confirmed_candidates}
+	%hr
+	#pending_list.listitem
+		= render :partial => 'candidate_list', :locals => {:title => 'Pending', :candidates => mission.pending_candidates}
+	%hr
+	#unresponsive_list.listitem
+		= render :partial => 'candidate_list', :locals => {:title => 'No answer', :candidates => mission.unresponsive_candidates}
+	%hr
+	#denied_list.listitem
+		= render :partial => 'candidate_list', :locals => {:title => 'Denied', :candidates => mission.denied_candidates}
+- else
+	#empty_volunteers
+		This event has not been initialized, complete the required fields and start recruiting

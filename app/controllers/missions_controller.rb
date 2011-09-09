@@ -53,10 +53,20 @@ class MissionsController < ApplicationController
       format.js
     end
   end
+  
+  def finish
+    @mission.finish
+    render 'show'
+  end
+  
+  def open
+    @mission.open
+    render 'show'
+  end
 
 	def destroy
 		@mission.destroy
-		redirect_to root_path
+		redirect_to missions_url
 	end
 
 	private

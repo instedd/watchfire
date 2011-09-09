@@ -2,6 +2,8 @@
 $('#mission_title').html('<%=escape_javascript(render :partial => "title", :locals => { :mission => @mission } )%>');
 $('#mission_status').html('<%=escape_javascript(render :partial => "status", :locals => { :mission => @mission } )%>');
 $('#form_container').html('<%=escape_javascript(render :partial => "form", :locals => { :mission => @mission } )%>');
+$('#mission_completed').html('<%=escape_javascript(render :partial => "completed", :locals => { :mission => @mission } )%>');
 $.instedd.init_components($('#form_container'));
+$.instedd.init_components($('#mission_completed'));
 refresh_disable_inputs();
 init_events();

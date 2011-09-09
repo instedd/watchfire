@@ -4,8 +4,6 @@ $('#progress').html('<%= escape_javascript(render :partial => 'progress', :local
 
 $('#distance_canvas').html('<%=escape_javascript(render :partial => "distance", :locals => { :distance => @distance, :mission => @mission } )%>');
 
-init_pause_checkbox();
-
 <% if @distance %>
 	setMapCircle(<%= @distance %>, true);
 <% end %>

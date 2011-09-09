@@ -1,0 +1,12 @@
+- if mission.created? || mission.running?
+	%button.faccept{:disabled => true}
+		Mark as complete
+- else
+	- if mission.finished?
+		= form_tag open_mission_path(mission) do
+			%button.fplay
+				Reopen this event
+	- else
+		= form_tag finish_mission_path(mission) do
+			%button.faccept
+				Mark as complete

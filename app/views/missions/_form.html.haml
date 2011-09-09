@@ -6,27 +6,14 @@
 			%td Recruit
 			%td
 				.ux-nstep.w06
-					= f.text_field :req_vols, :size => '2', :readonly => mission.running?
+					= f.text_field :req_vols, :size => '2', :readonly => mission.running? || mission.finished?
 				.ux-dropdown.w30
 					= f.collection_select(:skill_id, Skill.actives, :id, :pluralized, {:include_blank => 'volunteers'}, :disabled => !mission.created?  )
 		%tr
 			%td for
 			%td
-				= f.text_area :reason, :placeholder => "Write your comment here", :class => "w54 ux-wajbar", :maxlength => "200", :size => "", :readonly => mission.running?
+				= f.text_area :reason, :placeholder => "Write your comment here", :class => "w54 ux-wajbar", :maxlength => "200", :size => "", :readonly => mission.running? || mission.finished?
 		%tr
 			%td near
 			%td
 				= f.text_field :address, :class => 'w54 ux-search', :placeholder => "Search", :readonly => !mission.created?
-	/ %p
-	/ 	= f.label :req_vols, 'Recruit'
-	/ 	= f.text_field :req_vols, :class => 'mission_form_input'
-	/ 	= f.collection_select(:skill_id, Skill.actives, :id, :pluralized, {:include_blank => 'volunteers'}, :class => 'mission_form_input strict_mission_form_input')
-	/ 	= f.text_field :reason, :class => 'mission_form_input'
-	/ %p
-	/ 	= f.label :address, 'near'		
-	/ 	= f.text_field :address, :class => 'mission_form_input strict_mission_form_input'
-	/ %p
-	/ 	= f.label :lat
-	/ 	= f.text_field :lat, :class => 'coord mission_form_input strict_mission_form_input'
-	/ 	= f.label :lng
-	/ 	= f.text_field :lng, :class => 'coord mission_form_input strict_mission_form_input'
