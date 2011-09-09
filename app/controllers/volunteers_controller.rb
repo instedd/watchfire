@@ -1,6 +1,8 @@
 class VolunteersController < ApplicationController
 
 	before_filter :authenticate_user!
+	
+	add_breadcrumb "Volunteers", :volunteers_path
 
   # GET /volunteers
   # GET /volunteers.xml
@@ -28,6 +30,8 @@ class VolunteersController < ApplicationController
   # GET /volunteers/new.xml
   def new
     @volunteer = Volunteer.new
+    
+    add_breadcrumb 'New', new_volunteer_path
 
     respond_to do |format|
       format.html # new.html.erb
@@ -38,6 +42,8 @@ class VolunteersController < ApplicationController
   # GET /volunteers/1/edit
   def edit
     @volunteer = Volunteer.find(params[:id])
+    
+    add_breadcrumb @volunteer.name, volunteer_path(@volunteer)
   end
 
   # POST /volunteers

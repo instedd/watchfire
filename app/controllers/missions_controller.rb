@@ -1,18 +1,21 @@
 class MissionsController < ApplicationController
   
-  add_breadcrumb "Events", :root_path
+  add_breadcrumb "Events", :missions_path
 
 	before_filter :authenticate_user!
 	before_filter :check_owner, :except => [:create, :new, :index]
 
   def show
     add_breadcrumb @mission.reason, mission_path(@mission)
+    
 		@distance = @mission.obtain_farthest
   end
 
 	def new
+	  @mission = Mission.new
+	  
 	  add_breadcrumb "New", :new_mission_path
-		@mission = Mission.new
+		
 		render 'show'
 	end
 
