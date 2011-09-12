@@ -42,7 +42,7 @@ button.power.on.disabled { background:url(../theme/images/buttons/other/power.pn
 .RightContent { width:310px; float:right }
 #scroll { height:350px; width:289px; margin:-4px 0 -5px 0; overflow:auto; overflow-x:hidden; padding-right: 10px; }
 table { width:100% }
-table td { padding:4px; vertical-align:top }
+/*table td { padding:4px; vertical-align:top }*/
 table td div { display:inline-block; vertical-align:middle }
   
 .listitem table { font-size:12px; width: 100%; border-collapse:collapse }
