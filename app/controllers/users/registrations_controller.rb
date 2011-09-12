@@ -7,5 +7,9 @@ class Users::RegistrationsController < Devise::RegistrationsController
 	def create
 		raise
 	end
+	
+	def destroy
+	  raise
+	end
 
 end

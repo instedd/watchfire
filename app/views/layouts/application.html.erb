@@ -10,6 +10,7 @@
 	<%= yield :head %>
 </head>
 <body class="smallfooter">
+	<%= flash_message %>
 	<div id="wrapper">
 		<div id="toolbar">
 			<ul id="instedd-pulldown"></ul>
@@ -42,9 +43,11 @@
 		<div id="header">
 			<div class="left"><a href="/"><img src="/theme/images/header/logos/watchfire.png"/></a></div>
 			
+			<% if user_signed_in? %>
 			<div class="BreadCrumb">
 				<%= breadcrumb %>
 			</div><!-- #BreadCrumb -->
+			<% end %>
 			
 			<div class="clear"></div><!-- #clear -->
 		</div><!-- #header -->

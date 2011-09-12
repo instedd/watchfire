@@ -15,6 +15,7 @@ hr { border:0; height:1px; color:#dddddd; background:#dddddd; position:relative;
 a { color: inherit; text-decoration:none }
 a:hover { text-decoration:none; }
 button { overflow:visible }
+img { border: 0px; }
 
 textarea:focus, input:focus, button:focus { outline: none; }
 
@@ -494,7 +495,7 @@ label.error {
 
 .box.grey, .sbox.grey { background:#d0d0d0; color:#555555 }
 
-.box + .box { margin-top: 7px; }
+.box { margin-bottom: 7px !important; }
 
 hr.shadow { background: #e5e6ec; background: -moz-linear-gradient(top, #e5e6ec 0%, #ffffff 100%); background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #e5e6ec), color-stop(100%, #ffffff));
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#e5e6ec', endColorstr='#ffffff',GradientType=0 ); height:15px; margin:3px 0 3px -10px; z-index:0; }
@@ -554,3 +555,25 @@ hr.shadow { background: #e5e6ec; background: -moz-linear-gradient(top, #e5e6ec 0
 .TwoColumn tr td:nth-child(1) { }
 .TwoColumn tr td:nth-child(2) { width:100px; text-align:right }
 
+/* -------- ux-collapsible ---------*/
+
+.ux-collapsible > span:first-child { 
+  display:block;
+}
+
+.ux-collapsible > span:first-child > a { 
+  color: $darkgray;
+  &:hover { color: $darkgray_hover; }
+}
+
+.ux-collapsible > span:first-child > .arrow {
+  background:url(../images/icons/misc/grey/arrowDown.png ) no-repeat left 5px;
+  padding:3px 0 3px 12px;
+}
+  
+.ux-collapsible.collapsed > span:first-child > .arrow {  
+  background:url(../images/icons/misc/grey/arrowRight.png) no-repeat left 5px;
+}
+
+.ux-collapsible.collapsed .ux-content { display: none; }
+.ux-collapsible.box { margin: -10px; }
