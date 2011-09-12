@@ -1,5 +1,9 @@
 // @import compass/reset
 
+@mixin info-empty
+	color: #555
+	font-style: italic
+
 form
 	display: inline
 
@@ -8,9 +12,8 @@ form
 	height: 278px
 
 #empty_volunteers
+	@include info-empty
 	text-align: center
-	font-style: italic
-	color: #555
 	padding-top: 130px
 
 .hidden
@@ -26,3 +29,12 @@ form
 .volunteer_phones
 	font-size: 12px
 	margin-top: 10px
+	
+.missions_empty
+	padding-top: 100px
+	height: 150px
+	text-align: center
+	.info
+		@include info-empty
+	.add
+		color: #1F86C8

@@ -7,27 +7,39 @@
 			%th Events
 			%th
 				.ux-dropdown.w20
-					%select#combo_status
+					%select#combo_status{:disabled => @missions.empty? ? 'disabled' : false}
 						%option{:value => '', :selected =>'selected'} Show all
 						%option{:value => 'active'} Only Active
 						%option{:value => 'finished'} Only Finished
-		- @missions.each do |mission|
-			%tr.mission.link{'data-url' => mission_path(mission), 'data-status' => mission.status}
-				%td{:class => mission.running? ? 'mactive' : 'mpaused'}
-					%span
-					= mission.reason
+		- if !@missions.empty?
+			- @missions.each do |mission|
+				%tr.mission.link{'data-url' => mission_path(mission), 'data-status' => mission.status}
+					%td{:class => mission.running? ? 'mactive' : 'mpaused'}
+						%span
+						= mission.reason
+					%td
+						- if !mission.finished?
+							.smvalues
+								.L
+									%span= mission.candidate_count(:confirmed)
+								.R
+									%span= mission.req_vols
+								%br{:clear => 'all'}
+								.M
+									%span.Fill{:style => progress_percentage(mission)}
+						%button.farrow
+			%tr.link{'data-url' => new_mission_path}
+				%td.add Create Event
 				%td
-					- if !mission.finished?
-						.smvalues
-							.L
-								%span= mission.candidate_count(:confirmed)
-							.R
-								%span= mission.req_vols
-							%br{:clear => 'all'}
-							.M
-								%span.Fill{:style => progress_percentage(mission)}
-					%button.farrow
-		%tr.link{'data-url' => new_mission_path}
-			%td.add Create Event
-			%td
+					%button.cadd
+		- else
+			%tr
+				%td
+				%td
+	- if @missions.empty?
+		.missions_empty
+			%div= image_tag 'mission_empty.png'
+			%div.info You have no events yet
+			%a.add{:href => new_mission_path}
+				Create Event 
 				%button.cadd
