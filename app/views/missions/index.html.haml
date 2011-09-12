@@ -1,13 +1,33 @@
-%h1 My missions
-
-%table
-	- @missions.each do |mission|
+- content_for :head do
+	= javascript_include_tag 'mission_index'
+%h1 Events
+.tablewrapp
+	%table.GralTable.TwoColumn.CleanTable.ItemsTable
 		%tr
-			%td= mission.status
-			%td= mission.reason
-			%td= mission.address
-			%td= mission.candidate_count 'confirmed'
-			%td= mission.req_vols
-			%td= link_to 'GO', mission_path(mission)
-
-= link_to 'New mission', new_mission_path
+			%th Events
+			%th
+				.ux-dropdown.w20
+					%select#combo_status
+						%option{:value => '', :selected =>'selected'} Show all
+						%option{:value => 'active'} Only Active
+						%option{:value => 'finished'} Only Finished
+		- @missions.each do |mission|
+			%tr.mission.link{'data-url' => mission_path(mission), 'data-status' => mission.status}
+				%td{:class => mission.running? ? 'mactive' : 'mpaused'}
+					%span
+					= mission.reason
+				%td
+					- if !mission.finished?
+						.smvalues
+							.L
+								%span= mission.candidate_count(:confirmed)
+							.R
+								%span= mission.req_vols
+							%br{:clear => 'all'}
+							.M
+								%span.Fill{:style => progress_percentage(mission)}
+					%button.farrow
+		%tr.link{'data-url' => new_mission_path}
+			%td.add Create Event
+			%td
+				%button.cadd
