@@ -245,6 +245,11 @@ function open_volunteer_info_window(volunteer) {
 	});
 }
 
-function on_info_window_closed(event) {
+function on_info_window_closed() {
+	volunteer_marker.setVisible(false);
+}
+
+function close_info_window() {
+	info_window.close();
 	volunteer_marker.setVisible(false);
 }
