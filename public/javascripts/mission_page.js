@@ -8,6 +8,9 @@ var alternance;
 var info_window;
 var volunteer_marker;
 var listener;
+var event_image;
+var event_disabled_image;
+var volunteer_image;
 
 $(function(){
 	init_map();
@@ -21,20 +24,36 @@ function init_map() {
 		mapTypeId: google.maps.MapTypeId.ROADMAP
 	};
 	
+	event_disabled_image = new google.maps.MarkerImage('/images/icons/event_disabled.png',
+		new google.maps.Size(30, 27),
+		new google.maps.Point(0,0),
+		new google.maps.Point(15, 13));
+		
+	event_image = new google.maps.MarkerImage('/images/icons/event.png',
+		new google.maps.Size(30, 27),
+		new google.maps.Point(0,0),
+		new google.maps.Point(15, 13));
+		
+	volunteer_image = new google.maps.MarkerImage('/images/icons/volunteer.png',
+		new google.maps.Size(24, 24),
+		new google.maps.Point(0,0),
+		new google.maps.Point(12, 12));
+	
 	circle = new google.maps.Circle(); 
 
 	var initialLocation = new google.maps.LatLng(37.520619, -122.342377);
 	map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
 	map.setCenter(initialLocation);
 	
-	marker = new google.maps.Marker({
-		map: map
+	mission_marker = new google.maps.Marker({
+		map: map,
+		icon: event_disabled_image
 	});
 	
 	var loc = new google.maps.LatLng(parseFloat($("#mission_lat").val()), parseFloat($("#mission_lng").val()));
 	if(!isNaN(loc.lat()) && !isNaN(loc.lng())){		
 		map.setCenter(loc);
-		marker.setPosition(loc);
+		mission_marker.setPosition(loc);
 		setMapCircle(parseFloat($('#distance_value').html()));
 	}
 
@@ -44,23 +63,24 @@ function init_map() {
 	    content: document.getElementById("info_window_content")
 	});
 	volunteer_marker = new google.maps.Marker({
-		map: map
+		map: map,
+		icon: volunteer_image
 	});
 
 	init_map_events();
 }
 
 function init_map_events() {
-	marker.setDraggable(true);
+	mission_marker.setDraggable(true);
 	listener = google.maps.event.addListener(map, 'rightclick', changeMarker); //removing right click also disables zoom, so I store it to be removed later
-	google.maps.event.addListener(marker, 'dragend', changeMarker);
+	google.maps.event.addListener(mission_marker, 'dragend', changeMarker);
 	google.maps.event.addListener(info_window, 'closeclick', on_info_window_closed)
 }
 
 function remove_map_events() {
 	google.maps.event.removeListener(listener);
-	google.maps.event.clearInstanceListeners(marker);
-	marker.setDraggable(false);
+	google.maps.event.clearInstanceListeners(mission_marker);
+	mission_marker.setDraggable(false);
 }
 	
 function changeMarker(event) {
@@ -68,7 +88,7 @@ function changeMarker(event) {
 	$("#mission_lat").val(location.lat().toFixed(4));
 	$("#mission_lng").val(location.lng().toFixed(4));
 	map.setCenter(location);
-	marker.setPosition(location);
+	mission_marker.setPosition(location);
 	reverseGeocode(location);
 }
 
@@ -79,7 +99,7 @@ function geocodeLocation(location) {
 			$("#mission_lat").val(location.lat().toFixed(4));
 			$("#mission_lng").val(location.lng().toFixed(4));
 			map.setCenter(location);
-			marker.setPosition(location);
+			mission_marker.setPosition(location);
 			checkSubmit();
 		} else {
 			alert("Location not found");
@@ -123,7 +143,7 @@ function init_events() {
 
 function setMapCircle(distance, avoidFit) {
 	circle.setOptions({
-		center: marker.getPosition(),
+		center: mission_marker.getPosition(),
 		map: map,
 		radius: distance * 1609,
 		fillOpacity: 0,
@@ -171,12 +191,14 @@ function refresh_disable_inputs() {
 	$('#left_panel').addClass('grey');
 	remove_map_events();
 	make_circle_beat();
+	mission_marker.setIcon(event_image);
 }
 
 function stop_refresh_enable_inputs() {
 	stop_refreshing();
 	$('#left_panel').removeClass('grey');
 	stop_circle_beat();
+	mission_marker.setIcon(event_disabled_image);
 }
 
 function check_running() {
