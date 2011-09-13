@@ -28,4 +28,12 @@ RSpec.configure do |config|
   config.before(:each) do  
     Timecop.return  
   end
+  
+  # Returns the string to be used for HTTP_AUTHENTICATION header
+  def http_auth(user, pass)
+    'Basic ' + Base64.encode64(user + ':' + pass)
+  end
+  
+  # Include Devise helpers
+  config.include Devise::TestHelpers, :type => :controller
 end

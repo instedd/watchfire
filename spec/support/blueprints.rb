@@ -30,12 +30,25 @@ Skill.blueprint do
   name { _name }
 end
 
+User.blueprint do
+  email { _email }
+  password { _password }
+end
+
 def _name
   Faker::Name.name
 end
 
 def _address
    Faker::Address.country
+end
+
+def _email
+  Faker::Internet.email
+end
+
+def _password
+  rand(36**8).to_s(36)
 end
 
 def _phone_number

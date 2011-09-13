@@ -121,7 +121,23 @@ describe VoiceJob do
       
       @voice_job.perform
     end
+  end
+  
+  describe "candidate has retries but voice retries has hit limit" do
+    before(:each) do
+      @candidate = Candidate.make! :status => :pending, :sms_retries => @config.max_sms_retries - 1, :voice_retries => @config.max_voice_retries
+      @voice_job = VoiceJob.new @candidate.id
+    end
     
+    it "should not call the volunteer" do
+      @verboice.expects(:call).never
+      @voice_job.perform
+    end
+    
+    it "should not enqueue new job" do
+      @voice_job.perform
+      Delayed::Job.count.should == 0
+    end
   end
   
   describe "verboice bad response" do

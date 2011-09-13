@@ -132,6 +132,23 @@ describe SmsJob do
     
   end
   
+  describe "candidate has retries but sms retries has hit limit" do
+    before(:each) do
+      @candidate = Candidate.make! :status => :pending, :sms_retries => @config.max_sms_retries, :voice_retries => @config.max_voice_retries - 1
+      @sms_job = SmsJob.new @candidate.id
+    end
+    
+    it "should not send sms" do
+      @nuntium.expects(:send_ao).never
+      @sms_job.perform
+    end
+    
+    it "should not enqueue new job" do
+      @sms_job.perform
+      Delayed::Job.count.should == 0
+    end
+  end
+  
   describe "nuntium bad response" do
     
     before(:each) do

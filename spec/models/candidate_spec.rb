@@ -97,6 +97,20 @@ describe Candidate do
       @candidate.has_retries?.should be false
     end
     
+    it "should have sms/voice retries if retries is below max" do
+      @candidate.sms_retries = @config.max_sms_retries - 1
+      @candidate.has_sms_retries?.should be true
+      @candidate.voice_retries = @config.max_voice_retries - 1
+      @candidate.has_voice_retries?.should be true
+    end
+    
+    it "should not have sms/voice retries if retries is beyond max" do
+      @candidate.sms_retries = @config.max_sms_retries + 1
+      @candidate.has_sms_retries?.should be false
+      @candidate.voice_retries = @config.max_voice_retries + 1
+      @candidate.has_voice_retries?.should be false
+    end
+    
   end
   
   describe "update status" do

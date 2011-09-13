@@ -6,9 +6,9 @@ class SmsJob < CandidateJob
     # if candidate is not pending then stop sending sms
     return if candidate.is_not_pending?
     
-    # check if candidate has run out of retries
-    unless candidate.has_retries?
-      candidate.update_status :unresponsive
+    # check if candidate has run out of sms retries
+    unless candidate.has_sms_retries?
+      candidate.update_status :unresponsive unless candidate.has_retries?
       return
     end
     

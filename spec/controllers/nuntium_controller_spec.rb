@@ -5,7 +5,9 @@ describe NuntiumController do
   describe "POST 'receive'" do
     
     before(:each) do
+      @config = Watchfire::Application.config
       @candidate = Candidate.make! :status => 'pending', :last_sms_att => 1.hour.ago
+      @request.env['HTTP_AUTHORIZATION'] = http_auth(@config.basic_auth_name, @config.basic_auth_pwd)
     end
     
     it "should be successful" do
@@ -37,6 +39,18 @@ describe NuntiumController do
       post 'receive', :from => "sms://#{unresponsive_candidate.volunteer.sms_number}", :body => "1"
       
       unresponsive_candidate.reload.is_unresponsive?.should be true
+    end
+    
+    it "should fail with no auth" do
+      @request.env['HTTP_AUTHORIZATION'] = nil
+      post 'receive'
+      response.status.should be(401)
+    end
+    
+    it "should fail with incorrect auth" do
+      @request.env['HTTP_AUTHORIZATION'] = http_auth 'foo', 'bar'
+      post 'receive'
+      response.status.should be(401)
     end
     
   end

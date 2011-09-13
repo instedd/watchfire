@@ -6,9 +6,9 @@ class VoiceJob < CandidateJob
     # if candidate is not pending then stop calling him
     return if candidate.is_not_pending?
     
-    # check if candidate has run out of retries
-    unless candidate.has_retries?
-      candidate.update_status :unresponsive
+    # check if candidate has run out of voice retries
+    unless candidate.has_voice_retries?
+      candidate.update_status :unresponsive unless candidate.has_retries?
       return
     end
     

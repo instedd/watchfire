@@ -26,6 +26,14 @@ describe VolunteersController do
   def valid_attributes
     {:name => 'John', :lat => -34.2, :lng => -58.2, :sms_number => '123', :voice_number => '456'}
   end
+  
+  before(:all) do
+    @user = User.make!
+  end
+  
+  before(:each) do
+    sign_in @user
+  end
 
   describe "GET index" do
     it "assigns all volunteers as @volunteers" do
