@@ -30,6 +30,10 @@ describe VolunteersController do
     it "routes to #destroy" do
       delete("/volunteers/1").should route_to("volunteers#destroy", :id => "1")
     end
+    
+    it "routes to #import" do
+      post("/volunteers/import").should route_to("volunteers#import")
+    end
 
   end
 end
