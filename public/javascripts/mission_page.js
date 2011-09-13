@@ -135,10 +135,6 @@ function init_events() {
 	$('.candidate .avoid').click(function(event){
 		event.stopImmediatePropagation();
 	});
-	
-	$('.listitem span.a').click(function(){
-		$(this).parent().toggleClass('col');
-	});
 }
 
 function setMapCircle(distance, avoidFit) {
