@@ -140,6 +140,29 @@ describe VoiceJob do
     end
   end
   
+  describe "candidate has run out of voice retries and doesn't have sms" do
+    before(:each) do
+      @volunteer = Volunteer.make! :sms_number => nil
+      @candidate = Candidate.make! :status => :pending, :voice_retries => @config.max_voice_retries, :volunteer => @volunteer
+      @voice_job = VoiceJob.new @candidate.id
+    end
+    
+    it "should not call the volunteer" do
+      @verboice.expects(:call).never
+      @voice_job.perform
+    end
+    
+    it "should not enqueue new job" do
+      @voice_job.perform
+      Delayed::Job.count.should == 0
+    end
+    
+    it "should set status to unresponsive" do
+      @voice_job.perform
+      @candidate.reload.is_unresponsive?.should be true
+    end
+  end
+  
   describe "verboice bad response" do
     
     before(:each) do

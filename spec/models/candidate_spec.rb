@@ -74,6 +74,7 @@ describe Candidate do
   describe "has retries" do
     before(:each) do
       @candidate = Candidate.new
+      @candidate.volunteer = Volunteer.new :sms_number => '123', :voice_number => '456'
       @config = Watchfire::Application.config
     end
     
@@ -108,6 +109,16 @@ describe Candidate do
       @candidate.sms_retries = @config.max_sms_retries + 1
       @candidate.has_sms_retries?.should be false
       @candidate.voice_retries = @config.max_voice_retries + 1
+      @candidate.has_voice_retries?.should be false
+    end
+    
+    it "should not have sms retries if volunteer doesn't have sms" do
+      @candidate.volunteer.sms_number = nil
+      @candidate.has_sms_retries?.should be false
+    end
+    
+    it "should not have voice retries if volunteer doesn't have voice" do
+      @candidate.volunteer.voice_number = nil
       @candidate.has_voice_retries?.should be false
     end
     

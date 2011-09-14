@@ -149,6 +149,29 @@ describe SmsJob do
     end
   end
   
+  describe "candidate has run out of sms retries and doesn't have voice" do
+    before(:each) do
+      @volunteer = Volunteer.make! :voice_number => nil
+      @candidate = Candidate.make! :status => :pending, :sms_retries => @config.max_sms_retries, :volunteer => @volunteer
+      @sms_job = SmsJob.new @candidate.id
+    end
+    
+    it "should not send sms" do
+      @nuntium.expects(:send_ao).never
+      @sms_job.perform
+    end
+    
+    it "should not enqueue new job" do
+      @sms_job.perform
+      Delayed::Job.count.should == 0
+    end
+    
+    it "should set status to unresponsive" do
+      @sms_job.perform
+      @candidate.reload.is_unresponsive?.should be true
+    end
+  end
+  
   describe "nuntium bad response" do
     
     before(:each) do

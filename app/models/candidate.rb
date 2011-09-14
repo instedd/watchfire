@@ -36,11 +36,11 @@ class Candidate < ActiveRecord::Base
   end
   
   def has_sms_retries?
-    self.sms_retries < config.max_sms_retries
+    has_sms? && self.sms_retries < config.max_sms_retries
   end
   
   def has_voice_retries?
-    self.voice_retries < config.max_voice_retries
+    has_voice? && self.voice_retries < config.max_voice_retries
   end
   
   def update_status status
