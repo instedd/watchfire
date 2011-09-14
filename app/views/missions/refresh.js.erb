@@ -1,13 +1,12 @@
-<%= render :partial => 'refresh_candidates' %>
-
-$('#progress').html('<%= escape_javascript(render :partial => 'progress', :locals => {:mission => @mission} )%>')
-
-$('#distance_canvas').html('<%=escape_javascript(render :partial => "distance", :locals => { :distance => @distance, :mission => @mission } )%>');
-
-<% if @distance %>
-	setMapCircle(<%= @distance %>, true);
-<% end %>
-
 <% if @mission.finished? %>
-	stop_refresh_enable_inputs();
+	window.location = '<%= mission_path(@mission) %>?';
+<% else %>
+	<%= render :partial => 'refresh_candidates' %>
+
+	$('#progress').html('<%= escape_javascript(render :partial => 'progress', :locals => {:mission => @mission} )%>')
+
+	$('#distance_canvas').html('<%=escape_javascript(render :partial => "distance", :locals => { :distance => @distance, :mission => @mission } )%>');
+	<% if @distance %>
+		setMapCircle(<%= @distance %>, true);
+	<% end %>
 <% end %>

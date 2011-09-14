@@ -131,7 +131,8 @@ class Mission < ActiveRecord::Base
   end
   
   def progress
-    value = candidate_count(:confirmed) / req_vols.to_f rescue 0
+    confirmed_candidates = candidate_count(:confirmed)
+    value = confirmed_candidates > 0 ? confirmed_candidates / req_vols.to_f : 0
     [value, 1].min
   end
   
