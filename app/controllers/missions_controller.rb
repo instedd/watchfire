@@ -7,8 +7,6 @@ class MissionsController < ApplicationController
 
   def show
     add_breadcrumb @mission.reason, mission_path(@mission)
-    
-		@distance = @mission.obtain_farthest
   end
 
 	def new
@@ -27,7 +25,6 @@ class MissionsController < ApplicationController
 		@mission = Mission.new(params[:mission])
 		@mission.user = current_user
 		@mission.check_and_save
-		@distance = @mission.obtain_farthest
 		render 'update.js'
 	end
 
@@ -38,7 +35,6 @@ class MissionsController < ApplicationController
 		else
 			@mission.save
 		end
-		@distance = @mission.obtain_farthest
 	end
 	
 	def start
@@ -50,7 +46,6 @@ class MissionsController < ApplicationController
   end
   
   def refresh
-		@distance = @mission.obtain_farthest
     respond_to do |format|
       format.html { render 'show' }
       format.js
@@ -76,6 +71,7 @@ class MissionsController < ApplicationController
 
 	def check_owner
 		@mission = Mission.find(params[:id])
+		@distance = @mission.obtain_farthest
 		redirect_to missions_path unless @mission.user == current_user
 	end
 
