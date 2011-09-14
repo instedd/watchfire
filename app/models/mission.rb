@@ -131,7 +131,7 @@ class Mission < ActiveRecord::Base
   end
   
   def progress
-    candidate_count(:confirmed) / req_vols rescue 0 
+    candidate_count(:confirmed) / req_vols.to_f rescue 0 
   end
   
   private
