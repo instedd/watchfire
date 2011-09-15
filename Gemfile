@@ -34,6 +34,7 @@ gem 'verboice'
 gem 'devise'
 gem 'devise_invitable'
 gem 'breadcrumbs_on_rails'
+gem 'kaminari'
 
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators

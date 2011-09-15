@@ -1,37 +1,30 @@
-%h1 Listing volunteers
+- content_for :head do
+	= javascript_include_tag 'volunteer_index'
+	
+%h1= "#{@volunteers_count} volunteers"
 
-%p 
-  Import
-  = form_for :import_volunteers, :url => import_volunteers_path, :html => {:multipart => true} do |f|
-    = file_field_tag :file
-    = f.submit 'Upload'
-
-%br
-
-%table
-  %tr
-    %th Name
-    %th Lat
-    %th Lng
-    %th Address
-    %th Voice number
-    %th Sms number
-    %th
-    %th
-    %th
-
-  - @volunteers.each do |volunteer|
-    %tr
-      %td= volunteer.name
-      %td= volunteer.lat
-      %td= volunteer.lng
-      %td= volunteer.address
-      %td= volunteer.voice_number
-      %td= volunteer.sms_number
-      %td= link_to 'Show', volunteer
-      %td= link_to 'Edit', edit_volunteer_path(volunteer)
-      %td= link_to 'Destroy', volunteer, :confirm => 'Are you sure?', :method => :delete
-
-%br
-
+.tablewrapp
+	%table.GralTable.ButtonTable
+		%tr
+			%th= sort_link 'Name', :name
+			%th= sort_link 'Address', :address
+			%th= sort_link 'Voice Number', :voice_number
+			%th= sort_link  'SMS Number', :sms_number
+		- @volunteers.each do |volunteer|
+			%tr.link{'data-url' => edit_volunteer_path(volunteer)}
+				%td= volunteer.name
+				%td= volunteer.address
+				%td= volunteer.voice_number
+				%td
+					= volunteer.sms_number
+					= form_tag volunteer_path(volunteer), :method => :delete, 'data-confirm' => 'Are you sure?' do
+						%button.avoid.fdelete
+					= form_tag edit_volunteer_path(volunteer), :method => :get do
+						%button.avoid.farrow
+	= paginate @volunteers
 = link_to 'New Volunteer', new_volunteer_path
+%p 
+	Import
+	= form_for :import_volunteers, :url => import_volunteers_path, :html => {:multipart => true} do |f|
+		= file_field_tag :file
+		= f.submit 'Upload'

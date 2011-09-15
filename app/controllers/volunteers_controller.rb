@@ -7,7 +7,12 @@ class VolunteersController < ApplicationController
   # GET /volunteers
   # GET /volunteers.xml
   def index
-    @volunteers = Volunteer.all
+    @volunteers_count = Volunteer.count
+    
+    @order = params[:order] || 'name'
+    @direction = params[:direction] == 'DESC' ? 'DESC' : 'ASC'
+    @page = params[:page] || 1
+    @volunteers = Volunteer.order("#{@order} #{@direction}").page @page
 
     respond_to do |format|
       format.html # index.html.erb
