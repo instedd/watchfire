@@ -1,7 +1,3 @@
-%h1 Editing volunteer
+%h1= @volunteer.name
 
 = render 'form'
-
-= link_to 'Show', @volunteer
-\|
-= link_to 'Back', volunteers_path

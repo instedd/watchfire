@@ -10,6 +10,12 @@ form {
 }
 
 /* line 14, ../../app/stylesheets/screen.sass */
+#map_canvas_volunteer {
+  width: 580px;
+  height: 278px;
+}
+
+/* line 18, ../../app/stylesheets/screen.sass */
 #empty_volunteers {
   color: #555555;
   font-style: italic;
@@ -17,41 +23,41 @@ form {
   padding-top: 130px;
 }
 
-/* line 19, ../../app/stylesheets/screen.sass */
+/* line 23, ../../app/stylesheets/screen.sass */
 .hidden {
   display: none;
 }
 
-/* line 22, ../../app/stylesheets/screen.sass */
+/* line 26, ../../app/stylesheets/screen.sass */
 .volunteer_name {
   font-size: 16px;
 }
 
-/* line 25, ../../app/stylesheets/screen.sass */
+/* line 29, ../../app/stylesheets/screen.sass */
 .volunteer_address {
   font-size: 14px;
   color: #555555;
 }
 
-/* line 29, ../../app/stylesheets/screen.sass */
+/* line 33, ../../app/stylesheets/screen.sass */
 .volunteer_phones {
   font-size: 12px;
   margin-top: 10px;
 }
 
-/* line 33, ../../app/stylesheets/screen.sass */
+/* line 37, ../../app/stylesheets/screen.sass */
 .missions_empty {
   padding-top: 80px;
   height: 200px;
   text-align: center;
 }
-/* line 37, ../../app/stylesheets/screen.sass */
+/* line 41, ../../app/stylesheets/screen.sass */
 .missions_empty .info {
   margin-top: 10px;
   color: #555555;
   font-style: italic;
 }
-/* line 40, ../../app/stylesheets/screen.sass */
+/* line 44, ../../app/stylesheets/screen.sass */
 .missions_empty .add {
   color: #1f86c8;
 }

@@ -74,7 +74,7 @@ function init_map_events() {
 	mission_marker.setDraggable(true);
 	listener = google.maps.event.addListener(map, 'rightclick', changeMarker); //removing right click also disables zoom, so I store it to be removed later
 	google.maps.event.addListener(mission_marker, 'dragend', changeMarker);
-	google.maps.event.addListener(info_window, 'closeclick', on_info_window_closed)
+	google.maps.event.addListener(info_window, 'closeclick', on_info_window_closed);
 }
 
 function remove_map_events() {

@@ -1,11 +1,16 @@
-%table
-	%tr
-		%th Time
-		- Day.all.each do |day|
-			%th= day.capitalize
-	- (0..23).each do |i|
-		%tr
-			%td= "#{i} - #{i+1}"
-			- Day.all.each do |day|
-				= f.fields_for day do |day_form|
-					%td= day_form.check_box i, @volunteer.available?(day, i) ? {:checked => 'checked'} : {} rescue {}
+.tablewrapp
+  %span.titletable
+    Availability
+  %table.Availability
+    %tr
+      %td.b
+      - Day.all.each do |day|
+        %td.b= day[0..2].capitalize
+    - (0..23).each do |i|
+      %tr
+        %td.b
+        - Day.all.each do |day|
+          = f.fields_for day do |day_form|
+            %td{:class => @volunteer.available?(day, i) ? 'gn' : 'gy'}
+              = day_form.hidden_field i, :value => @volunteer.available?(day, i) ? 1 : 0
+              = "%02d:00" % i

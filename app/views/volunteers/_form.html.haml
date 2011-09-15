@@ -1,8 +1,6 @@
 - content_for :head do
-  = javascript_include_tag "jquery-ui-1.8.16.min"
-  = javascript_include_tag "theme"
-  = stylesheet_link_tag "theme"
   = javascript_include_tag "volunteer_page"
+  = javascript_include_tag 'http://maps.googleapis.com/maps/api/js?sensor=false'
 
 = form_for @volunteer do |f|
   -if @volunteer.errors.any?
@@ -11,32 +9,41 @@
       %ul
         - @volunteer.errors.full_messages.each do |msg|
           %li= msg
-
-  .field
+  
+  %br
+  .left.w60  
     = f.label :name
-    = f.text_field :name
-  .field
-    = f.label :lat
-    = f.text_field :lat
-  .field
-    = f.label :lng
-    = f.text_field :lng
-  .field
-    = f.label :address
-    = f.text_field :address
-  .field
+    = f.text_field :name, :class => 'w60'
+    %br
+    %br
     = f.label :voice_number
-    = f.text_field :voice_number
-  .field
-    = f.label :sms_number
-    = f.text_field :sms_number
-  .field
-    = label_tag 'Roles'
-    = text_field_tag 'volunteer[skill_names]', nil, :id => 'skills'
-  = f.fields_for :shifts do |shift_form|
-    = render :partial => 'shifts_matrix', :locals => {:f => shift_form}
+    = f.text_field :voice_number, :class => 'w60'
+    %br
+    %br
+    = f.label :sms_number, 'SMS number'
+    = f.text_field :sms_number, :class => 'w60'
+    %br
+    %br
+    = f.hidden_field :lat
+    = f.hidden_field :lng
+    
+    .box.w58
+      = f.label :address
+      = f.text_field :address, :placeholder => 'Search', :class => 'w54 ux-search'
+      #map_canvas_volunteer
+    %br
+
+    = label_tag 'Skills'
+    = text_field_tag 'volunteer[skill_names]', nil, :id => 'skills', :class => 'w60'
+    %br
+    %br
+
+    = f.fields_for :shifts do |shift_form|
+      = render :partial => 'shifts_matrix', :locals => {:f => shift_form}
   .actions
     = f.submit 'Save'
+  .right
+  .clear
 
 %ul.hidden#allSkills
   - Skill.all.each do |s|

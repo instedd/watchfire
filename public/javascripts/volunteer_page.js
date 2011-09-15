@@ -1,3 +1,8 @@
+var volunteer_marker;
+var map;
+var volunteer_image;
+var geocoder;
+
 $(function(){
 	$("#skills").superblyTagField({
 		  allowNewTags: true,
@@ -5,6 +10,8 @@ $(function(){
 		  preset: getHtmls($('#volSkills li')),
 		  tags: getHtmls($('#allSkills li'))
 	});
+
+  init_map();
 });
 
 function getHtmls(obj) {
@@ -12,3 +19,84 @@ function getHtmls(obj) {
 	obj.each(function(){ret.push($(this).html());});
 	return ret;
 }
+
+function init_map(){
+
+	var myOptions = {
+		zoom: 10,
+		mapTypeId: google.maps.MapTypeId.ROADMAP
+	};
+		
+	volunteer_image = new google.maps.MarkerImage('/images/icons/volunteer.png',
+		new google.maps.Size(24, 24),
+		new google.maps.Point(0,0),
+		new google.maps.Point(12, 12));
+
+	var initialLocation = new google.maps.LatLng(37.520619, -122.342377);
+	map = new google.maps.Map(document.getElementById("map_canvas_volunteer"), myOptions);
+	map.setCenter(initialLocation);
+
+	volunteer_marker = new google.maps.Marker({
+		map: map,
+		icon: volunteer_image
+	});
+
+	var loc = new google.maps.LatLng(parseFloat($("#volunteer_lat").val()), parseFloat($("#volunteer_lng").val()));
+	if(!isNaN(loc.lat()) && !isNaN(loc.lng())){		
+		map.setCenter(loc);
+		volunteer_marker.setPosition(loc);
+	}
+
+  geocoder = new google.maps.Geocoder();
+
+	volunteer_marker.setDraggable(true);
+	google.maps.event.addListener(map, 'rightclick', changeMarker);
+	google.maps.event.addListener(volunteer_marker, 'dragend', changeMarker);
+
+	$("#volunteer_address").keypress(function(event){
+		if (event.keyCode == 13) {
+      var loc = $(this).val();
+			geocodeLocation(loc);
+			return false;
+        } else {
+          return true;
+        }
+	});
+}
+
+function changeMarker(event) {
+	var location = event.latLng;
+	$("#volunteer_lat").val(location.lat().toFixed(4));
+	$("#volunteer_lng").val(location.lng().toFixed(4));
+	map.setCenter(location);
+	volunteer_marker.setPosition(location);
+	reverseGeocode(location);
+}
+
+function geocodeLocation(location) {
+	geocoder.geocode( { 'address': location }, function(results, status) {
+		if (status == google.maps.GeocoderStatus.OK) {
+			var location = results[0].geometry.location;
+			$("#volunteer_lat").val(location.lat().toFixed(4));
+			$("#volunteer_lng").val(location.lng().toFixed(4));
+			map.setCenter(location);
+			volunteer_marker.setPosition(location);
+		} else {
+			alert("Location not found");
+    	}
+	});
+}
+
+function reverseGeocode(loc) {
+	geocoder.geocode({'latLng': loc}, function(results, status) {
+		if (status == google.maps.GeocoderStatus.OK) {
+			if (results[0]) {
+				$("#volunteer_address").val(results[0].formatted_address);
+			}
+		} else {
+			alert("Reverse Geocoding failed");
+			$("#volunteer_address").val('');
+		}
+	});
+}
+
