@@ -280,6 +280,8 @@ button.orange {
     #ff6802,#fe1600, 
     #ff6802,#fe9639,#ffddbf);
 }
+button.cancel { color:#555555 }
+button.cancel:hover { color:#555555 }
 
 /* ---------- Icon buttons --------- */
 @mixin icon_button {
@@ -388,6 +390,7 @@ button.orange {
 .w50 { @include width-class(500px); }
 .w54 { @include width-class(540px); }
 .w55 { @include width-class(550px); }
+.w58 { @include width-class(580px); }
 .w60 { @include width-class(600px); }
 
 /* ----- Error ----- */
@@ -491,13 +494,14 @@ label.error {
 
 
 /* ------------ Gral BOX ------------------- */
-.drop_shadow { box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.3); -moz-box-shadow:0px 1px 1px 1px rgba(0, 0, 0, 0.3); -webkit-box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.3); border-radius:5px; -moz-border-radius:5px; -webkit-border-radius:5px; }
+.drop_shadow { border:1px solid #d0d0d0; box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.2); -moz-box-shadow:0px 1px 1px 1px rgba(0, 0, 0, 0.3); -webkit-box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.2); border-radius:5px; -moz-border-radius:5px; -webkit-border-radius:5px; }
 .box { @extend .drop_shadow; background:#FFFFFF; padding:10px; }
 .sbox { padding:2px; border-radius:5px; -moz-border-radius:5px; -webkit-border-radius:5px }
 
 .box.grey, .sbox.grey { background:#d0d0d0; color:#555555 }
 
 .box { margin-bottom: 7px !important; }
+.box.tab { position:relative; z-index:10 }
 
 hr.shadow { background: #e5e6ec; background: -moz-linear-gradient(top, #e5e6ec 0%, #ffffff 100%); background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #e5e6ec), color-stop(100%, #ffffff));
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#e5e6ec', endColorstr='#ffffff',GradientType=0 ); height:15px; margin:3px 0 3px -10px; z-index:0; }
@@ -522,10 +526,37 @@ hr.shadow { background: #e5e6ec; background: -moz-linear-gradient(top, #e5e6ec 0
   }
 }
 
+
+/* ---------------------- Tabs --------------------------*/
+ul.tabs.top { margin:0 0 0 10px; padding:0 }
+ul.tabs.top li { color:#555555; display:inline-block; list-type:none; padding:2px 1px 0 1px; margin:0 2px 0 0; border-radius:4px 4px 0 0; -moz-border-radius:4px 4px 0 0; -webkit-border-radius:4px 4px 0 0 }
+ul.tabs.top li.active { color:#000000; padding:2px 0 0 0; border-width:1px 1px 0 1px; border-color:#d0d0d0; border-style:solid; box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.2); -moz-box-shadow:0px 1px 1px 1px rgba(0, 0, 0, 0.2); -webkit-box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.2) }
+ul.tabs.top li.active:hover { background:#ffffff }
+ul.tabs.top li:hover { -css3-background: linear-gradient(90deg,#f3f3f3,#ffffff); background: -moz-linear-gradient(top, #f3f3f3 0%, #ffffff 100%); background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f3f3f3), color-stop(100%,#ffffff)); box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.2); -moz-box-shadow:0px 1px 1px 1px rgba(0, 0, 0, 0.2); -webkit-box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.2) }
+ul.tabs.top li:active { background:#f3f3f3; color:#000000 }
+
+ul.tabs.top li a { display:block; padding:9px 10px 6px 10px; position:relative; margin-bottom:-2px; z-index:20 }
+ul.tabs.top li.active a { background:#ffffff; padding:8px 11px 6px 11px }
+
+ul.tabs.bottom  { margin:-7px 0 0 10px; padding:0; position:relative; z-index:15 }
+ul.tabs.bottom li { color:#555555; display:inline-block; list-type:none; padding:0 1px 2px 1px; margin:0 2px 0 0; border-radius:0 0 4px 4px; -moz-border-radius:0 0 4px 4px; -webkit-border-radius:0 0 4px 4px }
+ul.tabs.bottom li.active { color:#000000; padding:0 0 2px 0; border-width:0 1px 1px 1px; border-color:#d0d0d0; border-style:solid; box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.2); -moz-box-shadow:0px 1px 1px 1px rgba(0, 0, 0, 0.2); -webkit-box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.2) }
+ul.tabs.bottom li.active:hover { background:#ffffff }
+ul.tabs.bottom li:hover { -css3-background: linear-gradient(90deg,#f3f3f3,#ffffff); background: -moz-linear-gradient(top, #f3f3f3 0%, #ffffff 100%); background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f3f3f3), color-stop(100%,#ffffff)); box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.2); -moz-box-shadow:0px 1px 1px 1px rgba(0, 0, 0, 0.2); -webkit-box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.2) }
+ul.tabs.bottom li:active { background:#f3f3f3; color:#000000 }
+
+ul.tabs.bottom li a { display:block; padding:6px 10px 9px 10px; border-radius:0 0 4px 4px; -moz-border-radius:0 0 4px 4px; -webkit-border-radius:0 0 4px 4px; position:relative; margin-top:-2px; z-index:20 }
+ul.tabs.bottom li.active a { background:#ffffff; padding:6px 11px 8px 11px }
+
+
+
+
 /* ---------------------- Tables --------------------------*/
 
 /* -------- General ---------*/
 .tablewrapp { padding:2px 0; border-radius:6px; -moz-border-radius:6px; -webkit-border-radius:6px; box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.2); -moz-box-shadow:0px 1px 1px 1px rgba(0, 0, 0, 0.2); -webkit-box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, 0.2) }
+
+.titletable { color:#555555; margin:5px 0 5px 5px; display:block }
 
 .GralTable { width:100%; -moz-border-radius:6px 6px 6px 6px; -webkit-border-radius:6px 6px 6px 6px;	border-radius:6px 6px 6px 6px; border-collapse:collapse }
 
@@ -547,6 +578,16 @@ hr.shadow { background: #e5e6ec; background: -moz-linear-gradient(top, #e5e6ec 0
 .ButtonTable td button { padding:0; margin:-3px 0 0 0; float:right; display:none }
 .ButtonTable tr:hover td button { display:block }
 .ButtonTable tr td:last-child { width:160px }
+
+/* -------- Availability. Table with colors and rounded td corners ---------*/
+.Availability td { text-align:center; padding:2px; border:1px solid #ffffff; border-collapse:separate; border-radius:4px; -moz-border-radius:4px; -webkit-border-radius:4px }
+.Availability tr td:first-child { width:18px }
+.Availability td.b { background:#555555; color:#ffffff }
+.Availability td.gn { background:#bde561; color:#769925 }
+.Availability tr:first-child td.gn { background:#769925; color:#ffffff }
+.Availability tr td.gn:first-child { background:#769925; color:#ffffff }
+.Availability td.gy { background:#cccccc; color:#555555 }
+
 
 /* -------- Two column table  ---------*/
 .TwoColumn tr td:nth-child(1) { }
