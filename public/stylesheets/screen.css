@@ -61,3 +61,8 @@ form {
 .missions_empty .add {
   color: #1f86c8;
 }
+
+/* line 48, ../../app/stylesheets/screen.sass */
+.Availability td {
+  cursor: pointer;
+}

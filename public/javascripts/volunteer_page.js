@@ -12,7 +12,73 @@ $(function(){
 	});
 
   init_map();
+  
+  $('.day-hour').click(function() {
+    var elem = $(this);
+    elem.toggleClass('gn gy');
+    var input = elem.children();
+    input.val(input.val() == '1' ? '0' : '1');
+    checkHeaders();
+  });
+
+  $('.day, .hour').click(function() {
+    var elem = $(this);
+    elem.toggleClass('gn b');
+    var active = elem.hasClass('gn');
+    $('.'+elem.attr('id')).each(function() {
+      var hour_elem = $(this);
+      hour_elem.toggleClass('gn', active);
+      hour_elem.toggleClass('gy', !active);
+      hour_elem.children().val(active ? '1' : '0');
+    });
+    checkHeaders();
+  });
+
+  $('#square').click(function() {
+    var elem = $(this);
+    elem.toggleClass('gn b');
+    var active = elem.hasClass('gn');
+    $('.day, .hour, .day-hour').toggleClass('gn', active);
+    $('.day-hour').toggleClass('gy', !active);
+    $('.day, .hour').toggleClass('b', !active);
+    $('.day-hour input').val(active ? '1' : '0');
+  });
+
+  checkHeaders();
+
+  $('#cancelbtn').click(function(){
+    history.back();
+  });
+
 });
+
+function checkHeaders(){
+  var available;
+
+  for(i = 0; i < 7; i++) {
+    available = true;
+    $('.day'+i).each(function() {
+      available = $(this).children().val() != '0';
+      return available;
+    });
+    $("#day"+i).toggleClass('gn', available);
+    $("#day"+i).toggleClass('b', !available);
+  }
+
+  for(i = 0; i < 24; i++) {
+    available = true;
+    $('.hour'+i).each(function() {
+      available = $(this).children().val() != '0';
+      return available;
+    });
+    $("#hour"+i).toggleClass('gn', available);
+    $("#hour"+i).toggleClass('b', !available);
+  }
+
+  available = $(".day.gn").length == 7 && $(".hour").length == 24
+  $("#square").toggleClass('gn', available);
+  $("#square").toggleClass('b', !available);  
+}
 
 function getHtmls(obj) {
 	var ret = [];

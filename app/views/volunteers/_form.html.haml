@@ -2,27 +2,25 @@
   = javascript_include_tag "volunteer_page"
   = javascript_include_tag 'http://maps.googleapis.com/maps/api/js?sensor=false'
 
-= form_for @volunteer do |f|
-  -if @volunteer.errors.any?
-    #error_explanation
-      %h2= "#{pluralize(@volunteer.errors.count, "error")} prohibited this volunteer from being saved:"
-      %ul
-        - @volunteer.errors.full_messages.each do |msg|
-          %li= msg
+.left.w60
+  = form_for @volunteer do |f|
+    -if @volunteer.errors.any?
+      #error_explanation
+        %h2= "#{pluralize(@volunteer.errors.count, "error")} prohibited this volunteer from being saved:"
+        %ul
+          - @volunteer.errors.full_messages.each do |msg|
+            %li= msg
+    
+    %br
   
-  %br
-  .left.w60  
     = f.label :name
     = f.text_field :name, :class => 'w60'
-    %br
     %br
     = f.label :voice_number
     = f.text_field :voice_number, :class => 'w60'
     %br
-    %br
     = f.label :sms_number, 'SMS number'
     = f.text_field :sms_number, :class => 'w60'
-    %br
     %br
     = f.hidden_field :lat
     = f.hidden_field :lng
@@ -40,10 +38,18 @@
 
     = f.fields_for :shifts do |shift_form|
       = render :partial => 'shifts_matrix', :locals => {:f => shift_form}
-  .actions
-    = f.submit 'Save'
-  .right
-  .clear
+    %br
+
+    %button.white Save
+
+  %button.white.cancel#cancelbtn Cancel
+
+  = form_tag volunteer_path(@volunteer), :method => :delete, 'data-confirm' => 'Are you sure?' do
+    %button.fdelete.right Delete this volunteer
+  %br{:clear => 'all'}
+
+.right
+.clear
 
 %ul.hidden#allSkills
   - Skill.all.each do |s|
