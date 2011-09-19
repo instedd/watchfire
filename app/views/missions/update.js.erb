@@ -6,7 +6,7 @@ $('#form_container').html('<%=escape_javascript(render :partial => "form", :loca
 
 $('#mission_status').html('<%=escape_javascript(render :partial => "status", :locals => { :mission => @mission } )%>');
 
-$('#distance_canvas').html('<%=escape_javascript(render :partial => "distance", :locals => { :distance => @distance, :mission => @mission } )%>');
+$('#distance_canvas').html('<%=escape_javascript(render :partial => "distance", :locals => { :distance => @mission.farthest, :mission => @mission } )%>');
 
 $('#destroy_mission_container').html('<%=escape_javascript(render :partial => "destroy", :locals => { :mission => @mission } )%>');
 
@@ -16,8 +16,8 @@ init_events();
 check_running();
 close_info_window();
 
-<% if @distance%>
-	setMapCircle(<%= @distance %>);
+<% if @mission.farthest %>
+	setMapCircle(<%= @mission.farthest %>);
 <%end%>
 
 $.instedd.init_components($('#mission_completed'));

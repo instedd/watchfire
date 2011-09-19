@@ -22,13 +22,13 @@ class Mission < ActiveRecord::Base
 	end
 
 	def obtain_volunteers quantity, offset = 0
-	  if self.skill.nil?
-	    vols = Volunteer.geo_scope(:origin => self).order('distance asc')
-    else
-      vols = Volunteer.joins('INNER JOIN skills_volunteers sv ON sv.volunteer_id = volunteers.id')
-      .where('sv.skill_id' => self.skill_id).geo_scope(:origin => self).order('distance asc')
-    end
-    vols.select{|v| v.available_at? Time.now.utc}[offset..offset+quantity-1] || []
+	  volunteers_for_mission = Volunteer.geo_scope(:within => max_distance, :origin => self).order('distance asc')
+	  
+	  unless skill.nil?
+	    volunteers_for_mission = volunteers_for_mission.joins('INNER JOIN skills_volunteers sv ON sv.volunteer_id = volunteers.id').where('sv.skill_id' => self.skill_id)
+	  end
+	  
+    volunteers_for_mission.select{|v| v.available_at? Time.now.utc}[offset..offset+quantity-1] || []
 	end
 
 	def check_and_save
@@ -54,8 +54,8 @@ class Mission < ActiveRecord::Base
 		end
 	end
 
-	def obtain_farthest
-		self.candidates.last.volunteer.distance_from(self).round(2) rescue nil
+	def farthest
+		@farthest = @farthest || (self.candidates.last.volunteer.distance_from(self).round(2) rescue nil)
 	end
 	
 	def call_volunteers
@@ -151,6 +151,10 @@ class Mission < ActiveRecord::Base
   
   def available_ratio
     Watchfire::Application.config.available_ratio
+  end
+  
+  def max_distance
+    Watchfire::Application.config.max_distance
   end
   
 end

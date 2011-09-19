@@ -5,8 +5,8 @@
 
 	$('#progress').html('<%= escape_javascript(render :partial => 'progress', :locals => {:mission => @mission} )%>')
 
-	$('#distance_canvas').html('<%=escape_javascript(render :partial => "distance", :locals => { :distance => @distance, :mission => @mission } )%>');
-	<% if @distance %>
-		setMapCircle(<%= @distance %>, true);
+	$('#distance_canvas').html('<%=escape_javascript(render :partial => "distance", :locals => { :distance => @mission.farthest, :mission => @mission } )%>');
+	<% if @mission.farthest %>
+		setMapCircle(<%= @mission.farthest %>, true);
 	<% end %>
 <% end %>

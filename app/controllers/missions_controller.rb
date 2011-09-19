@@ -71,7 +71,6 @@ class MissionsController < ApplicationController
 
 	def check_owner
 		@mission = Mission.find(params[:id])
-		@distance = @mission.obtain_farthest
 		redirect_to missions_path unless @mission.user == current_user
 	end
 

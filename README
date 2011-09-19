@@ -10,6 +10,7 @@ A template of the settings file is provided in 'config/settings.yml.template'. R
 	max_voice_retries: maximum number of retries for voice calls
 	sms_timeout: timeout for sms messages, the system will send a new sms after this timeout (in minutes)
 	voice_timeout: timeout for voice calls, the system will call again after this timeout (in minutes)
+	max_distance: maximum distance to look for volunteers (in miles)
 	nuntium_host: host name for Nuntium (usually https://nuntium.instedd.org)
 	nuntium_account: name of your Nuntium account
 	nuntium_app: name of your Nuntium application
