@@ -265,8 +265,8 @@ function beat() {
     innerCircles[i].setOptions({
 		  radius: circle.getRadius() * (i + alternance / 100) / innerCircles.length,
     });
-    innerCircles[innerCircles.length-1].setOptions({ fillOpacity: 0.1 * (1 - (alternance / 100))});
   }
+  innerCircles[innerCircles.length-1].setOptions({ fillOpacity: 0.1 * (1 - (alternance / 100))});
 	setTimeout(beat, 50);
 }
 
