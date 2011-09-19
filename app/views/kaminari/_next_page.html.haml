@@ -7,5 +7,5 @@
 -#    remote:        data-remote
 / = link_to_unless current_page.last?, raw(t 'views.pagination.next'), url, :rel => 'next', :remote => remote
 = link_to_if_not current_page.last?, url, :rel => 'next', :remote => remote do
-	%button.next_page
+	%button.next
 		%span &#9658;
