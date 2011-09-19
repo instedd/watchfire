@@ -29,7 +29,8 @@
 %h1 Bulk volunteers creation
 %span.smalldescription Create volunteers uploading a CSV file.
 %br
-%button.fimport Download a sample CSV file
+= link_to '/samples/volunteers.csv' do
+	%button.fimport Download a sample CSV file
 %span.tgrey and fill it with the accounts data
 .box.grey
 	%button.fexport Upload it for bulk account creation:
