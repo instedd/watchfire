@@ -32,12 +32,16 @@
 = link_to '/samples/volunteers.csv' do
 	%button.fimport Download a sample CSV file
 %span.tgrey and fill it with the accounts data
-.box.grey
-	%button.fexport Upload it for bulk account creation:
-	%br
-	%br
-	= form_for :import_volunteers, :url => import_volunteers_path, :html => {:multipart => true} do |f|
-		= file_field_tag :file
-		%br
-		%br
-		%button.white Confirm
+%br
+%br
+.ux-collapsible.collapsed{'data-on-expanded' => 'box grey'}
+	%span
+		%a
+			%button.fexport Upload it for bulk account creation
+	.ux-content
+		= form_for :import_volunteers, :url => import_volunteers_path, :html => {:multipart => true} do |f|
+			%br
+			= file_field_tag :file
+			%br
+			%br
+			%button.white Confirm
