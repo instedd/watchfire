@@ -1,7 +1,11 @@
 var map;
 var mission_marker;
 var geocoder;
+
 var circle;
+var outerCircle;
+var innerCircles = new Array();
+
 var refreshing;
 var beating;
 var alternance;
@@ -39,7 +43,12 @@ function init_map() {
 		new google.maps.Point(0,0),
 		new google.maps.Point(12, 12));
 	
-	circle = new google.maps.Circle(); 
+	circle = new google.maps.Circle();
+  outerCircle = new google.maps.Circle();
+  
+  for(i = 0; i < 4; i++) {
+    innerCircles.push(new google.maps.Circle());
+  }
 
 	var initialLocation = new google.maps.LatLng(37.520619, -122.342377);
 	map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
@@ -138,15 +147,24 @@ function init_events() {
 }
 
 function setMapCircle(distance, avoidFit) {
+  outerCircle.setOptions({
+		center: mission_marker.getPosition(),
+		map: map,
+		radius: distance * 1609,
+		clickable: false,
+		strokeWeight: 4,
+		strokeColor: '#FFFFFF',
+		fillOpacity: outerCircle.fillOpacity != null ? outerCircle.fillOpacity : 0.5,
+		fillColor: '#000000'
+  });
+
 	circle.setOptions({
 		center: mission_marker.getPosition(),
 		map: map,
 		radius: distance * 1609,
-		fillOpacity: 0,
-		clickable: false,
-		fillColor: '#AAAA00',
-		strokeWeight: circle.strokeWeight != null ? circle.strokeWeight : 3,
-		strokeColor: circle.strokeColor != null ? circle.strokeColor : '#666666'
+		strokeWeight: 2,
+		strokeColor: circle.strokeColor != null ? circle.strokeColor : '#999999',
+    fillOpacity: 0.0
 	});
 	if (!avoidFit) map.fitBounds(circle.getBounds());
 }
@@ -210,21 +228,46 @@ function check_running() {
 }
 
 function make_circle_beat() {
+  circle.setOptions({strokeColor: '#FF6600'});
+  outerCircle.setOptions({fillOpacity: 0.1});
 	beating = true;
 	alternance = 0;
+
+  for(i = 0; i < innerCircles.length; i++) {
+    innerCircles[i].setOptions({
+		  center: mission_marker.getPosition(),
+		  map: map,
+		  radius: i * circle.getRadius() / innerCircles.length,
+		  clickable: false,
+		  strokeWeight: 0,
+		  fillOpacity: 0.1,
+		  fillColor: '#000000'
+    });
+  }
 	beat();
 }
 
 function stop_circle_beat()  {
 	beating = false;
-	circle.setOptions({strokeColor: '#666666', strokeWeight: 3});
+	circle.setOptions({strokeColor: '#999999'});
+  outerCircle.setOptions({fillOpacity: 0.5});
+  for(i = 0; i < innerCircles.length; i++) {
+    innerCircles[i].setOptions({
+		  fillOpacity: 0,
+    });
+  }  
 }
 
 function beat() {
 	if (!beating) return;
-	alternance = (alternance + 1) % 2;
-	circle.setOptions({strokeWeight: (2 + 2 * alternance), strokeColor: '#FF0000'});
-	setTimeout(beat, 250);
+	alternance = (alternance + 3) % 100;
+  for(i = 0; i < innerCircles.length; i++) {
+    innerCircles[i].setOptions({
+		  radius: circle.getRadius() * (i + alternance / 100) / innerCircles.length,
+    });
+    innerCircles[innerCircles.length-1].setOptions({ fillOpacity: 0.1 * (1 - (alternance / 100))});
+  }
+	setTimeout(beat, 50);
 }
 
 function open_volunteer_info_window(volunteer) {
