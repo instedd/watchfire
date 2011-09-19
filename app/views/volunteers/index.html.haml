@@ -22,9 +22,21 @@
 					= form_tag edit_volunteer_path(volunteer), :method => :get do
 						%button.avoid.farrow
 	= paginate @volunteers
+%br
 = link_to 'New Volunteer', new_volunteer_path
-%p 
-	Import
+%br
+%br
+%h1 Bulk volunteers creation
+%span.smalldescription Create volunteers uploading a CSV file.
+%br
+%button.fimport Download a sample CSV file
+%span.tgrey and fill it with the accounts data
+.box.grey
+	%button.fexport Upload it for bulk account creation:
+	%br
+	%br
 	= form_for :import_volunteers, :url => import_volunteers_path, :html => {:multipart => true} do |f|
 		= file_field_tag :file
-		= f.submit 'Upload'
+		%br
+		%br
+		%button.white Confirm
