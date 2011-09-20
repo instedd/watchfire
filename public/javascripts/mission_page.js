@@ -139,6 +139,10 @@ function init_events() {
         }
 	});
 	
+  init_candidate_events();
+}
+
+function init_candidate_events() {
 	$('.candidate td').click(function(){
 		open_volunteer_info_window($(this).parents('.candidate'));
 	});
