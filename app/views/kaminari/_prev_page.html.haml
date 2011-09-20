@@ -6,6 +6,6 @@
 -#    per_page:      number of items to fetch per page
 -#    remote:        data-remote
 / = link_to_unless current_page.first?, raw(t 'views.pagination.previous'), url, :rel => 'prev', :remote => remote
-= link_to_if_not current_page.first?, url, :rel => 'prev', :remote => remote do
-	%button.prev
-		%span &#9668;
+%span.button.prev
+	= link_to_unless current_page.first?, raw('&#9668;'), url, :rel => 'prev', :remote => remote do
+		= link_to raw('&#9668;'), '#'
