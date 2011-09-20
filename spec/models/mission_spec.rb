@@ -137,16 +137,16 @@ describe Mission do
       @s1 = Skill.make!
       @s2 = Skill.make!
       
-      @v1 = Volunteer.make :lat => 1, :lng => 1
+      @v1 = Volunteer.make :lat => 0.5, :lng => 0.5
 
       @v1.skills << @s1
       @v1.save!
       
-      @v2 = Volunteer.make :lat => 2, :lng => 2
+      @v2 = Volunteer.make :lat => 1, :lng => 1
       @v2.skills = [@s1, @s2]
       @v2.save!
       
-      @v3 = Volunteer.make! :lat => 3, :lng => 3
+      @v3 = Volunteer.make! :lat => 2, :lng => 2
     end
     
     it "should not filter by skill if skill is not selected" do
@@ -174,6 +174,13 @@ describe Mission do
       Timecop.travel(@time)
       volunteers = @mission.obtain_volunteers 3
       volunteers.should == [@v1, @v3]
+    end
+    
+    it "should filter by max distance" do
+      @mission.expects(:max_distance).returns(200)
+      v4 = Volunteer.make! :lat => 3, :lng => 3
+      volunteers = @mission.obtain_volunteers 4
+      volunteers.should == [@v1, @v2, @v3]
     end
     
   end
