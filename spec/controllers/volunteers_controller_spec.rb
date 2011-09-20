@@ -82,7 +82,7 @@ describe VolunteersController do
 
       it "redirects to the created volunteer" do
         post :create, :volunteer => valid_attributes
-        response.should redirect_to(Volunteer.last)
+        response.should redirect_to(volunteers_url)
       end
     end
 
@@ -124,7 +124,7 @@ describe VolunteersController do
       it "redirects to the volunteer" do
         volunteer = Volunteer.create! valid_attributes
         put :update, :id => volunteer.id, :volunteer => valid_attributes
-        response.should redirect_to(volunteer)
+        response.should redirect_to(volunteers_url)
       end
     end
 

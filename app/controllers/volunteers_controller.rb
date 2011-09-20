@@ -58,7 +58,7 @@ class VolunteersController < ApplicationController
 
     respond_to do |format|
       if @volunteer.save
-        format.html { redirect_to(@volunteer, :notice => 'Volunteer was successfully created.') }
+        format.html { redirect_to(volunteers_url, :notice => 'Volunteer was successfully created.') }
         format.xml  { render :xml => @volunteer, :status => :created, :location => @volunteer }
       else
         format.html { render :action => "new" }

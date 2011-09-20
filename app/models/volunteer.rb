@@ -8,12 +8,13 @@ class Volunteer < ActiveRecord::Base
 	
 	serialize :shifts
 
-  validates_presence_of :name, :lat, :lng
+  validates_presence_of :name
   
-  validates_numericality_of :lat, :less_than_or_equal_to => 90, :greater_than_or_equal_to => -90
-  validates_numericality_of :lng, :less_than_or_equal_to => 180, :greater_than_or_equal_to => -180
+  validates_numericality_of :lat, :less_than_or_equal_to => 90, :greater_than_or_equal_to => -90, :if => Proc.new{|x| x.lat.present?}
+  validates_numericality_of :lng, :less_than_or_equal_to => 180, :greater_than_or_equal_to => -180, :if => Proc.new{|x| x.lng.present?}
   
   validate :has_phone_or_sms
+  validate :has_location
 
 	def skill_names=(names)
 		self.skills = names.split(',').map{|n| Skill.find_or_create_by_name(n)}
@@ -38,6 +39,12 @@ class Volunteer < ActiveRecord::Base
   def has_phone_or_sms
     if voice_number.blank? && sms_number.blank?
       errors[:base] << 'A volunteer has to have a voice number or an sms number'
+    end
+  end
+  
+  def has_location
+    if lat.blank? || lng.blank?
+      errors[:address] << "can't be blank"
     end
   end
 

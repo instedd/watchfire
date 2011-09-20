@@ -4,13 +4,8 @@
 
 .left.w60
   = form_for @volunteer do |f|
-    -if @volunteer.errors.any?
-      #error_explanation
-        %h2= "#{pluralize(@volunteer.errors.count, "error")} prohibited this volunteer from being saved:"
-        %ul
-          - @volunteer.errors.full_messages.each do |msg|
-            %li= msg
-    
+    = errors_for @volunteer
+
     %br
   
     = f.label :name
@@ -43,9 +38,10 @@
     %button.white Save
 
   %button.white.cancel#cancelbtn Cancel
-
-  = form_tag volunteer_path(@volunteer), :method => :delete, 'data-confirm' => 'Are you sure?' do
-    %button.fdelete.right Delete this volunteer
+  
+  - unless @volunteer.new_record?
+    = form_tag volunteer_path(@volunteer), :method => :delete, 'data-confirm' => 'Are you sure?' do
+      %button.fdelete.right Delete this volunteer
   %br{:clear => 'all'}
 
 .right
