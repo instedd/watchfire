@@ -15,8 +15,10 @@ var listener;
 var event_image;
 var event_disabled_image;
 var volunteer_image;
+var circleHasMap;
 
 $(function(){
+  circleHasMap = false;
 	init_map();
 	init_events();
 	check_running();
@@ -147,25 +149,47 @@ function init_events() {
 }
 
 function setMapCircle(distance, avoidFit) {
-  outerCircle.setOptions({
-		center: mission_marker.getPosition(),
-		map: map,
-		radius: distance * 1609,
-		clickable: false,
-		strokeWeight: 4,
-		strokeColor: '#FFFFFF',
-		fillOpacity: outerCircle.fillOpacity != null ? outerCircle.fillOpacity : 0.5,
-		fillColor: '#000000'
-  });
+  if (circleHasMap) {
+    outerCircle.setOptions({
+		  center: mission_marker.getPosition(),
+		  radius: distance * 1609,
+		  clickable: false,
+		  strokeWeight: 4,
+		  strokeColor: '#FFFFFF',
+		  fillOpacity: outerCircle.fillOpacity != null ? outerCircle.fillOpacity : 0.5,
+		  fillColor: '#000000'
+    });
 
-	circle.setOptions({
-		center: mission_marker.getPosition(),
-		map: map,
-		radius: distance * 1609,
-		strokeWeight: 2,
-		strokeColor: circle.strokeColor != null ? circle.strokeColor : '#999999',
-    fillOpacity: 0.0
-	});
+	  circle.setOptions({
+		  center: mission_marker.getPosition(),
+		  radius: distance * 1609,
+		  strokeWeight: 2,
+		  strokeColor: circle.strokeColor != null ? circle.strokeColor : '#999999',
+      fillOpacity: 0.0
+	  });
+  } else {
+    outerCircle.setOptions({
+		  center: mission_marker.getPosition(),
+		  map: map,
+		  radius: distance * 1609,
+		  clickable: false,
+		  strokeWeight: 4,
+		  strokeColor: '#FFFFFF',
+		  fillOpacity: outerCircle.fillOpacity != null ? outerCircle.fillOpacity : 0.5,
+		  fillColor: '#000000'
+    });
+
+	  circle.setOptions({
+		  center: mission_marker.getPosition(),
+		  map: map,
+		  radius: distance * 1609,
+		  strokeWeight: 2,
+		  strokeColor: circle.strokeColor != null ? circle.strokeColor : '#999999',
+      fillOpacity: 0.0
+	  });
+    
+    circleHasMap = true;
+  }
 	if (!avoidFit) map.fitBounds(circle.getBounds());
 }
 
