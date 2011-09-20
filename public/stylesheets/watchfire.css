@@ -12,29 +12,29 @@ h1 { font-size:18px; font-weight:normal; color:#555555 }
 .avatar span { display:block; position:absolute; margin:0px auto; width:65px; height:65px; z-index:1; box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.2)inset; -moz-box-shadow:0px 0px 2px 1px rgba(0, 0, 0, 0.2)inset; -webkit-box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.2)inset; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px }
 .avatar img { border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px }
 
-.location { background:#555555 url(../theme/images/icons/small/white/location.png) no-repeat; color:#FFFFFF; padding:2px 3px 2px 16px; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px }
+.location { background:#555555 url(http://theme.instedd.org/theme/images/icons/small/white/location.png) no-repeat; color:#FFFFFF; padding:2px 3px 2px 16px; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px }
 #achannels { color:#555555 }
 
-.mobile { background: url(../theme/images/icons/small/black/mobile.png) no-repeat left; padding-left:20px }
-.message { background: url(../theme/images/icons/small/black/message.png) no-repeat left; padding-left:20px }
-.twitter { background: url(../theme/images/icons/small/black/twitter.png) no-repeat left; padding-left:20px }
-.phone { background: url(../theme/images/icons/small/black/phone.png) no-repeat left; padding-left:20px }
+.mobile { background: url(http://theme.instedd.org/theme/images/icons/small/black/mobile.png) no-repeat left; padding-left:20px }
+.message { background: url(http://theme.instedd.org/theme/images/icons/small/black/message.png) no-repeat left; padding-left:20px }
+.twitter { background: url(http://theme.instedd.org/theme/images/icons/small/black/twitter.png) no-repeat left; padding-left:20px }
+.phone { background: url(http://theme.instedd.org/theme/images/icons/small/black/phone.png) no-repeat left; padding-left:20px }
 
-.gmobile { background: url(../theme/images/icons/small/grey/mobile.png) no-repeat left; padding-left:20px }
-.gmessage { background: url(../theme/images/icons/small/grey/message.png) no-repeat left; padding-left:20px }
-.gtwitter { background: url(../theme/images/icons/small/grey/twitter.png) no-repeat left; padding-left:20px }
-.gphone { background: url(../theme/images/icons/small/grey/phone.png) no-repeat left; padding-left:20px }
+.gmobile { background: url(http://theme.instedd.org/theme/images/icons/small/grey/mobile.png) no-repeat left; padding-left:20px }
+.gmessage { background: url(http://theme.instedd.org/theme/images/icons/small/grey/message.png) no-repeat left; padding-left:20px }
+.gtwitter { background: url(http://theme.instedd.org/theme/images/icons/small/grey/twitter.png) no-repeat left; padding-left:20px }
+.gphone { background: url(http://theme.instedd.org/theme/images/icons/small/grey/phone.png) no-repeat left; padding-left:20px }
 
 
 /* ------------ Power button ------------------- */
-button.power { background:url(../theme/images/buttons/other/power.png) no-repeat left top; width:50px; height:20px; border:none; display:inline-block; vertical-align:middle; cursor:pointer }
-button.power:hover { background:url(../theme/images/buttons/other/power.png) no-repeat left -30px }
-button.power:active { background:url(../theme/images/buttons/other/power.png) no-repeat left -60px }
-button.power.disabled { background:url(../theme/images/buttons/other/power.png) no-repeat left bottom }
-button.power.on { background:url(../theme/images/buttons/other/power.png) no-repeat right top; width:50px; height:20px; cursor:pointer }
-button.power.on:hover { background:url(../theme/images/buttons/other/power.png) no-repeat right -30px }
-button.power.on:active { background:url(../theme/images/buttons/other/power.png) no-repeat right -60px }
-button.power.on.disabled { background:url(../theme/images/buttons/other/power.png) no-repeat right bottom }
+button.power { background:url(http://theme.instedd.org/theme/images/buttons/other/power.png) no-repeat left top; width:50px; height:20px; border:none; display:inline-block; vertical-align:middle; cursor:pointer }
+button.power:hover { background:url(http://theme.instedd.org/theme/images/buttons/other/power.png) no-repeat left -30px }
+button.power:active { background:url(http://theme.instedd.org/theme/images/buttons/other/power.png) no-repeat left -60px }
+button.power.disabled { background:url(http://theme.instedd.org/theme/images/buttons/other/power.png) no-repeat left bottom }
+button.power.on { background:url(http://theme.instedd.org/theme/images/buttons/other/power.png) no-repeat right top; width:50px; height:20px; cursor:pointer }
+button.power.on:hover { background:url(http://theme.instedd.org/theme/images/buttons/other/power.png) no-repeat right -30px }
+button.power.on:active { background:url(http://theme.instedd.org/theme/images/buttons/other/power.png) no-repeat right -60px }
+button.power.on.disabled { background:url(http://theme.instedd.org/theme/images/buttons/other/power.png) no-repeat right bottom }
 
 
 /* ------------ Watchfire ------------------- */
