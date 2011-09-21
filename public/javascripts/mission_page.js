@@ -16,11 +16,13 @@ var event_image;
 var event_disabled_image;
 var volunteer_image;
 var circleHasMap;
+var required_old;
 
 $(function(){
   circleHasMap = false;
 	init_map();
 	init_events();
+  required_old = $('#mission_req_vols').val();
 	check_running();
 });
 
@@ -119,9 +121,18 @@ function geocodeLocation(location) {
 }
 
 function checkSubmit() {
-	if(parseInt($('#mission_req_vols').val()) > 0 && $("#mission_lat").val().length > 0 && $("#mission_lng").val().length > 0) {
+  var positive = isPositiveInt();
+	if(positive && $("#mission_lat").val().length > 0 && $("#mission_lng").val().length > 0) {
+    required_old = $('#mission_req_vols').val();
 		$('#mission_form').submit();
-	}
+	} else if(!positive){
+    $('#mission_req_vols').val(required_old);
+  }
+}
+
+function isPositiveInt() {
+  var value = $('#mission_req_vols').val(); 
+  return value.match(/^[1-9]\d*$/);
 }
 
 function init_events() {
