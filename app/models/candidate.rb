@@ -51,12 +51,6 @@ class Candidate < ActiveRecord::Base
   
   private
 
-  def not_same_volunteer_same_mission
-    if Candidate.where("mission_id = ? AND volunteer_id = ?", self.mission_id, self.volunteer_id).count > 0
-      errors[:base] << 'The volunteer is already in the candidate list for the mission'
-    end
-  end
-
 	def init
 		self.voice_retries ||= 0
 		self.sms_retries ||= 0
