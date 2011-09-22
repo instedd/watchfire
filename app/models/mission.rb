@@ -118,7 +118,7 @@ class Mission < ActiveRecord::Base
     self.candidates.create! :volunteer => volunteer
   end
 
-	def need_check_candidates
+	def check_for_volunteers?
 		self.req_vols != self.req_vols_was || self.lat != self.lat_was || self.lng != self.lng_was || self.skill_id != self.skill_id_was
 	end
 	

@@ -30,7 +30,7 @@ class MissionsController < ApplicationController
 
 	def update
 		@mission.attributes = params[:mission]
-		if @mission.need_check_candidates
+		if @mission.check_for_volunteers?
 			@mission.check_and_save
 		else
 			@mission.save

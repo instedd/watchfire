@@ -89,6 +89,33 @@ describe Mission do
     mission.candidates.first.volunteer.should == volunteer
   end
   
+  describe "check for volunteers" do
+    before(:each) do
+      @mission = Mission.make! :skill => Skill.make!
+    end
+    
+    it "should tell true if lat has changed" do
+      @mission.lat = @mission.lat + 1
+      @mission.check_for_volunteers?.should be_true
+    end
+    
+    it "should tell true if lng has changed" do
+      @mission.lng = @mission.lng + 1
+      @mission.check_for_volunteers?.should be_true
+    end
+    
+    it "should tell true if required volunteers has changed" do
+      @mission.req_vols = @mission.req_vols + 1
+      @mission.check_for_volunteers?.should be_true
+    end
+    
+    it "should tell true if skill has changed" do
+      @mission.skill = Skill.make!
+      @mission.check_for_volunteers?.should be_true
+    end
+    
+  end
+  
   describe "get more volunteers" do
     before(:each) do
       @mission = Mission.new
