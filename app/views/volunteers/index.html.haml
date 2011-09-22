@@ -6,10 +6,10 @@
 .tablewrapp
 	%table.GralTable.ButtonTable
 		%tr
-			%th= sort_link 'Name', :name
-			%th= sort_link 'Address', :address
-			%th= sort_link 'Voice Number', :voice_number
-			%th= sort_link  'SMS Number', :sms_number
+			= sort_header 'Name', :name
+			= sort_header 'Address', :address
+			= sort_header 'Voice Number', :voice_number
+			= sort_header  'SMS Number', :sms_number
 		- @volunteers.each do |volunteer|
 			%tr.link{'data-url' => edit_volunteer_path(volunteer)}
 				%td= volunteer.name
