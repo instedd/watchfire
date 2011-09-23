@@ -1,4 +1,5 @@
 class Mission < ActiveRecord::Base
+  include ActionView::Helpers::TextHelper
 
   enum_attr :status, %w(^created running paused finished)
 
@@ -11,7 +12,7 @@ class Mission < ActiveRecord::Base
 	belongs_to :skill
 	belongs_to :user
 
-  validates_presence_of :req_vols, :lat, :lng
+  validates_presence_of :req_vols, :lat, :lng, :name
 
   validates_numericality_of :req_vols, :only_integer => true, :greater_than => 0
   validates_numericality_of :lat, :less_than_or_equal_to => 90, :greater_than_or_equal_to => -90
@@ -136,6 +137,12 @@ class Mission < ActiveRecord::Base
     confirmed_candidates = candidate_count(:confirmed)
     value = confirmed_candidates > 0 ? confirmed_candidates / req_vols.to_f : 0
     [value, 1].min
+  end
+  
+  def title
+    skill_name = skill.present? ? skill.name : 'Volunteer'
+    message = reason.present? ? " (#{reason})" : ""
+    "#{name}: #{pluralize(req_vols, skill_name)}#{message}"
   end
   
   private

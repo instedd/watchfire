@@ -22,7 +22,7 @@ ActiveRecord::Schema.define(:version => 20110923155245) do
     t.datetime "last_sms_att"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "call_id"
+    t.string  "call_id"
     t.boolean  "paused",         :default => false, :null => false
   end
 

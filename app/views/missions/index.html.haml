@@ -16,7 +16,7 @@
 				%tr.mission.link{'data-url' => mission_path(mission), 'data-status' => mission.status}
 					%td{:class => mission.running? ? 'mactive' : 'mpaused'}
 						%span
-						= mission.reason
+						= mission.title
 					%td
 						- if !mission.finished?
 							.smvalues

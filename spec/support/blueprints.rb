@@ -15,6 +15,7 @@ Candidate.blueprint do
 end
 
 Mission.blueprint do
+  name { _name }
   req_vols { rand(6) + 5 }
   lat { _lat }
   lng { _lng }

@@ -118,7 +118,7 @@ describe Mission do
   
   describe "get more volunteers" do
     before(:each) do
-      @mission = Mission.new
+      @mission = Mission.new :name => 'name'
       @mission.stubs(:available_ratio).returns(0.5)
     end
     
@@ -214,6 +214,41 @@ describe Mission do
   it "should begin with 1 volunteer to recruit" do
     mission = Mission.new
     mission.req_vols.should eq(1)
+  end
+  
+  describe "title" do
+    before(:each) do
+      @mission = Mission.new :name => "name", :req_vols => 3, :skill => Skill.new(:name => "skill"), :reason => "reason"
+    end
+    
+    it "should tell title with all fields" do
+      @mission.title.should eq("name: 3 skills (reason)")
+    end
+    
+    it "should tell title with singular value" do
+      @mission.req_vols = 1
+      @mission.title.should eq("name: 1 skill (reason)")
+    end
+    
+    it "should tell title without reason" do
+      @mission.reason = nil
+      @mission.title.should eq("name: 3 skills")
+      @mission.reason = ''
+      @mission.title.should eq("name: 3 skills")
+    end
+    
+    it "should tell title without skill" do
+      @mission.skill = nil
+      @mission.title.should eq("name: 3 Volunteers (reason)")
+    end
+  end
+  
+  it "should be invalid without name" do
+    @mission = Mission.make!
+    @mission.name = nil
+    @mission.valid?.should be_false
+    @mission.name = ''
+    @mission.valid?.should be_false
   end
   
 end
