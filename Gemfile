@@ -47,4 +47,7 @@ group :development, :test do
 	gem 'mocha'
 	gem 'timecop'
 	gem 'cover_me', '>= 1.0.0.rc6'
+	gem 'rb-fsevent', :require => false if RUBY_PLATFORM =~ /darwin/i
+	gem 'growl_notify', :require => false if RUBY_PLATFORM =~ /darwin/i
+	gem 'guard-rspec'
 end
