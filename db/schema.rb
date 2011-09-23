@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110901160428) do
+ActiveRecord::Schema.define(:version => 20110923155245) do
 
   create_table "candidates", :force => true do |t|
     t.integer  "mission_id"
@@ -22,7 +22,7 @@ ActiveRecord::Schema.define(:version => 20110901160428) do
     t.datetime "last_sms_att"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string  "call_id"
+    t.integer  "call_id"
     t.boolean  "paused",         :default => false, :null => false
   end
 
@@ -59,6 +59,7 @@ ActiveRecord::Schema.define(:version => 20110901160428) do
     t.datetime "updated_at"
     t.integer  "skill_id"
     t.integer  "user_id"
+    t.string   "name"
   end
 
   create_table "skills", :force => true do |t|

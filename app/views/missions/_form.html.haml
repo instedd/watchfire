@@ -14,6 +14,10 @@
 			%td
 				= f.text_area :reason, :placeholder => "Write your comment here", :class => "w54 ux-wajbar", :maxlength => "200", :size => "", :readonly => mission.running? || mission.finished?
 		%tr
+			%td Name
+			%td
+				= f.text_field :name, :class => "w54"
+		%tr
 			%td near
 			%td
 				= f.text_field :address, :class => 'w54 ux-search', :placeholder => "Search", :readonly => !mission.created?

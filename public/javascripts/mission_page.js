@@ -136,7 +136,7 @@ function isPositiveInt() {
 }
 
 function init_events() {
-	$('#mission_req_vols, #mission_reason, #mission_skill_id').change(function(){
+	$('#mission_req_vols, #mission_reason, #mission_skill_id, #mission_name').change(function(){
 		checkSubmit();
 	});
 
