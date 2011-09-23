@@ -8,13 +8,13 @@ class NuntiumController < BasicAuthController
       
       # parse fields
       number_match = from.match /sms:\/\/(\d+)/
-      response_match = body.match /(1|2)/
+      response_match = body.match /^(yes|no)$/
     
       raise 'Error parsing number' unless number_match
       raise 'Error parsing response' unless response_match
     
       number = number_match[1]
-      response = response_match[1].to_i
+      confirmation = response_match[1] == 'yes'
       
       # find matching candidate for the given number
       candidate = Candidate.find_last_for_sms_number number
@@ -25,9 +25,9 @@ class NuntiumController < BasicAuthController
       end
     
       # update status based on response
-      if response == 1
+      if confirmation
         candidate.update_status :confirmed
-      elsif response == 2
+      else
         candidate.update_status :denied
       end
       

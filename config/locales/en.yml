@@ -6,5 +6,5 @@ en:
   location: "near %{location}"
   an_emergency: "an emergency"
   voice_confirmation: "Press 1 if you are available or 2 if you are not."
-  sms_confirmation: "Respond with '1' if you are available or '2' if you are not."
+  sms_confirmation: "Respond with 'yes' if you are available or 'no' if you are not."
   voice_successful: "Your answer has been recorded. Thank you"

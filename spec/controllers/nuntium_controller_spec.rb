@@ -11,20 +11,20 @@ describe NuntiumController do
     end
     
     it "should be successful" do
-      post 'receive', :from => "sms://#{@candidate.volunteer.sms_number}", :body => "1"
+      post 'receive', :from => "sms://#{@candidate.volunteer.sms_number}", :body => "yes"
       response.should be_success
     end
     
     it "should confirm candidate" do
       Candidate.expects(:find_last_for_sms_number).with(@candidate.volunteer.sms_number).returns(@candidate)
       @candidate.expects(:update_status).with(:confirmed)
-      post 'receive', :from => "sms://#{@candidate.volunteer.sms_number}", :body => "1"
+      post 'receive', :from => "sms://#{@candidate.volunteer.sms_number}", :body => "yes"
     end
     
     it "should deny candidate" do
       Candidate.expects(:find_last_for_sms_number).with(@candidate.volunteer.sms_number).returns(@candidate)
       @candidate.expects(:update_status).with(:denied)
-      post 'receive', :from => "sms://#{@candidate.volunteer.sms_number}", :body => "2"
+      post 'receive', :from => "sms://#{@candidate.volunteer.sms_number}", :body => "no"
     end
     
     it "should not modify status if message isn't correct" do
@@ -36,7 +36,7 @@ describe NuntiumController do
     it "should not update status if candidate is unresponsive" do
       unresponsive_candidate = Candidate.make! :status => 'unresponsive', :last_sms_att => 1.hour.ago
 
-      post 'receive', :from => "sms://#{unresponsive_candidate.volunteer.sms_number}", :body => "1"
+      post 'receive', :from => "sms://#{unresponsive_candidate.volunteer.sms_number}", :body => "yes"
       
       unresponsive_candidate.reload.is_unresponsive?.should be true
     end
