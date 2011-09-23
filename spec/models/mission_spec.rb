@@ -209,7 +209,11 @@ describe Mission do
       volunteers = @mission.obtain_volunteers 4
       volunteers.should == [@v1, @v2, @v3]
     end
-    
+  end
+  
+  it "should begin with 1 volunteer to recruit" do
+    mission = Mission.new
+    mission.req_vols.should eq(1)
   end
   
 end
