@@ -145,6 +145,12 @@ class Mission < ActiveRecord::Base
     "#{name}: #{pluralize(req_vols, skill_name)}#{message}"
   end
   
+  def new_duplicate
+    new_mission = self.clone
+    new_mission.status = :created
+    new_mission
+  end
+  
   private
   
   def base_message

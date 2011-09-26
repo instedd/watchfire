@@ -50,6 +50,10 @@ describe MissionsController do
     it "routes to #refresh" do
       get("/missions/1/refresh").should route_to("missions#refresh", :id => "1")
     end
+    
+    it "routes to #clone" do
+      post("/missions/1/clone").should route_to("missions#clone", :id => "1")
+    end
 
   end
 end

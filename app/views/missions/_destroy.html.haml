@@ -1,3 +1,5 @@
 - unless mission.new_record?
 	= form_tag mission_path(@mission), :method => :delete do
 		%button.fdelete{'data-confirm' => 'Are you sure?'} Delete this mission
+	= form_tag clone_mission_path(@mission) do
+		%button.fadd Recruit another role

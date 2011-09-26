@@ -158,5 +158,19 @@ describe MissionsController do
       response.should redirect_to(missions_url)
     end
   end
+  
+  describe "clone" do
+    it "should create a mission duplicate" do
+      new_mission = mock('new_mission')
+      Mission.any_instance.expects(:new_duplicate).returns(new_mission)
+      post :clone, :id => @mission.id.to_s
+      assigns(:mission).should eq(new_mission)
+    end
+    
+    it "renders show" do
+      post :clone, :id => @mission.id.to_s
+      response.should render_template('show')
+    end
+  end
 
 end

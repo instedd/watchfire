@@ -66,6 +66,11 @@ class MissionsController < ApplicationController
 		@mission.destroy
 		redirect_to missions_url
 	end
+	
+	def clone
+	  @mission = @mission.new_duplicate
+	  render 'show'
+  end
 
 	private
 
