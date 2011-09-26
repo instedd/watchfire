@@ -6,7 +6,7 @@
 			%td Recruit
 			%td
 				.ux-nstep.w06
-					= f.text_field :req_vols, :size => '2', :readonly => mission.running? || mission.finished?
+					= f.text_field :req_vols, :size => '2', :readonly => mission.running? || mission.finished?, 'data-min' => '1'
 				.ux-dropdown.w30
 					= f.collection_select(:skill_id, Skill.actives, :id, :pluralized, {:include_blank => 'volunteers'}, :disabled => !mission.created?  )
 		%tr
