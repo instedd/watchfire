@@ -7,4 +7,6 @@ en:
   an_emergency: "an emergency"
   voice_confirmation: "Press 1 if you are available or 2 if you are not."
   sms_confirmation: "Respond with 'yes' if you are available or 'no' if you are not."
+  sms_bad_format: "Sorry, you sent '%{text}' but we were expecting 'yes' or 'no'"
   voice_successful: "Your answer has been recorded. Thank you"
+  sms_successful: "Your answer has been received. Thank you"
