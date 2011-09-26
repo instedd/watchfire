@@ -8,4 +8,13 @@ module ApplicationHelper
     raw render_breadcrumbs :builder => BreadcrumbBuilder
   end
   
+  def watchfire_version
+    begin
+      @@watchfire_version = File.read('VERSION').strip unless defined? @@watchfire_version
+    rescue Errno::ENOENT
+      @@watchfire_version = 'Development'
+    end
+    @@watchfire_version
+  end
+  
 end

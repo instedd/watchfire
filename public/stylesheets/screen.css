@@ -66,3 +66,9 @@ form {
 .Availability td {
   cursor: pointer;
 }
+
+/* line 51, ../../app/stylesheets/screen.sass */
+#version {
+  display: inline;
+  margin-left: 50px;
+}
