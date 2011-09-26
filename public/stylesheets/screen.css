@@ -68,6 +68,16 @@ form {
 }
 
 /* line 51, ../../app/stylesheets/screen.sass */
+#pending_list td, span {
+  cursor: pointer;
+}
+
+/* line 54, ../../app/stylesheets/screen.sass */
+tr.link {
+  cursor: pointer;
+}
+
+/* line 57, ../../app/stylesheets/screen.sass */
 #version {
   display: inline;
   margin-left: 50px;
