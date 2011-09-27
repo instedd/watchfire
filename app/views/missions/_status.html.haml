@@ -9,7 +9,7 @@
 			%button.orange Start recruiting
 - elsif mission.running?
 	= form_tag stop_mission_path(mission), :remote => true do
-		%button.orange Stop recruiting
+		%button.orange Pause recruiting
 - elsif mission.paused?
 	= form_tag start_mission_path(mission), :remote => true do
 		%button.orange Start recruiting
