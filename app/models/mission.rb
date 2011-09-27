@@ -97,7 +97,7 @@ class Mission < ActiveRecord::Base
   end
   
   def candidates_to_call
-		self.candidates.where(:status => :pending, :paused => false)
+		self.candidates.where(:status => :pending, :active => true)
 	end
   
   def check_for_more_volunteers

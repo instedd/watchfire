@@ -1,0 +1,12 @@
+%p We will call and text the recruitees below with the following message:
+%p
+	%em Red Cross need your assistance for
+	- if mission.reason.present?
+		= mission.reason
+	- else
+		%em Single house apartment fire with pets and old people 
+	%em near
+	- if mission.address.present?
+		= mission.address
+	- else
+		%em 1710 Trousdale Dr.

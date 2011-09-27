@@ -11,5 +11,4 @@
 	#denied_list.listitem.ux-collapsible
 		= render :partial => 'candidate_list', :locals => {:title => 'Denied', :candidates => mission.denied_candidates}
 - else
-	#empty_volunteers
-		This event has not been initialized, complete the required fields and start recruiting
+	%p.empty-event This event has not been initialized, complete all the fields and start recruiting

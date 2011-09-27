@@ -6,11 +6,10 @@
 		%tr
 			%th Events
 			%th
-				.ux-dropdown.w20
-					%select#combo_status{:disabled => @missions.empty? ? 'disabled' : false}
-						%option{:value => '', :selected =>'selected'} Show all
-						%option{:value => 'active'} Only Active
-						%option{:value => 'finished'} Only Finished
+				%select#combo_status.ux-dropdown.w20{:disabled => @missions.empty? ? 'disabled' : false}
+					%option{:value => '', :selected =>'selected'} Show all
+					%option{:value => 'active'} Only Active
+					%option{:value => 'finished'} Only Finished
 		- if !@missions.empty?
 			- @missions.each do |mission|
 				%tr.mission.link{'data-url' => mission_path(mission), 'data-status' => mission.status}
@@ -38,7 +37,7 @@
 				%td
 	- if @missions.empty?
 		.missions_empty
-			%div= image_tag '/theme/images/icons/large/fire.png'
+			%div= image_tag 'http://theme.instedd.org/theme/images/icons/large/fire.png'
 			%div.info You have no events yet
 			%a.add{:href => new_mission_path}
 				Create Event 

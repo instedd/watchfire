@@ -8,20 +8,26 @@
 	#left_panel.box.w60
 		#form_container
 			= render :partial => 'form', :locals => { :mission => @mission }
-		= render :partial => 'distance', :locals => { :distance => @mission.farthest, :mission => @mission }
 		#map_canvas
 		.hidden
 			#info_window_content
-	%br
-		#destroy_mission_container
-			= render :partial => 'destroy', :locals => {:mission => @mission}
+		#mission_distance
+			= render :partial => 'distance', :locals => { :distance => @mission.farthest, :mission => @mission }
 .right
 	.box.w30
 		#mission_status.sbox.grey.StateDisplay
 			= render :partial => 'status', :locals => {:mission => @mission}
-		#mission_completed
-			= render :partial => 'completed', :locals => {:mission => @mission}
+		#mission_message.event-desc
+			= render :partial => 'message', :locals => {:mission => @mission}
 		%hr.shadow
 		#scroll
 			= render :partial => 'volunteers', :locals => {:mission => @mission}
 .clear
+%br
+%hr
+%br
+#mission_actions
+	= render :partial => 'actions', :locals => {:mission => @mission}
+%br
+%br
+%br

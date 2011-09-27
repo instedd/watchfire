@@ -1,3 +1,4 @@
+= hidden_field_tag :status, @mission.status, :id => 'status_field'
 #progress.values
 	= render :partial => 'progress', :locals => {:mission => mission}
 - if mission.created?
@@ -6,5 +7,12 @@
 	- else
 		= form_tag start_mission_path(mission), :remote => true do
 			%button.orange Start recruiting
+- elsif mission.running?
+	= form_tag stop_mission_path(mission), :remote => true do
+		%button.orange Stop recruiting
+- elsif mission.paused?
+	= form_tag start_mission_path(mission), :remote => true do
+		%button.orange Start recruiting
 - else
-	%button.white{:type => 'button'} Download as CSV
+	= form_tag open_mission_path(mission), :remote => true do
+		%button.orange Start recruiting

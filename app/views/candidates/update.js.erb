@@ -1,3 +1,13 @@
-var container = $('#candidate_paused_form_<%= @candidate.id %>');
-container.html('<%= escape_javascript(render :partial => 'shared/candidate_paused_form', :locals => {:candidate => @candidate} )%>');
-container.parents('tr.candidate').toggleClass('blocked');
+var form_container = $('#candidate_paused_form_<%= @candidate.id %>');
+form_container.html('<%= escape_javascript(render :partial => 'shared/candidate_paused_form', :locals => {:candidate => @candidate} )%>');
+var container = form_container.parents('tr.candidate');
+container.toggleClass('blocked');
+$('.mobile,.gmobile', container).each(function(){
+	var new_class = '<%= @candidate.active ? "mobile" : "gmobile"%>';
+	$(this).attr('class', new_class);
+});
+$('.phone,.gphone', container).each(function(){
+	var new_class = '<%= @candidate.active ? "phone" : "gphone"%>';
+	$(this).attr('class', new_class);
+});
+init_candidate_events();

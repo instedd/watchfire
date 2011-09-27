@@ -19,11 +19,12 @@ var circleHasMap;
 var required_old;
 
 $(function(){
-  circleHasMap = false;
+	circleHasMap = false;
 	init_map();
 	init_events();
-  required_old = $('#mission_req_vols').val();
+	required_old = $('#mission_req_vols').val();
 	check_running();
+	hide_or_show_candidate_lists();
 });
 
 function init_map() {
@@ -48,11 +49,11 @@ function init_map() {
 		new google.maps.Point(12, 12));
 	
 	circle = new google.maps.Circle();
-  outerCircle = new google.maps.Circle();
+	outerCircle = new google.maps.Circle();
   
-  for(i = 0; i < 4; i++) {
-    innerCircles.push(new google.maps.Circle());
-  }
+	for(i = 0; i < 4; i++) {
+		innerCircles.push(new google.maps.Circle());
+	}
 
 	var initialLocation = new google.maps.LatLng(37.520619, -122.342377);
 	map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
@@ -150,7 +151,7 @@ function init_events() {
         }
 	});
 	
-  init_candidate_events();
+	init_candidate_events();
 }
 
 function init_candidate_events() {
@@ -160,6 +161,10 @@ function init_candidate_events() {
 	
 	$('.candidate .avoid').click(function(event){
 		event.stopImmediatePropagation();
+	});
+	
+	$('.candidate input:checkbox').click(function() {
+		$(this).parent().submit();
 	});
 }
 
@@ -330,4 +335,13 @@ function on_info_window_closed() {
 function close_info_window() {
 	info_window.close();
 	volunteer_marker.setVisible(false);
+}
+
+function hide_or_show_candidate_lists() {
+	$('.listitem').each(function(){
+		var container = $(this);
+		var hide = $('.count', container).html() != '0';
+		container.toggle(hide);
+		container.next('hr').toggle(hide);
+	});
 }
