@@ -143,12 +143,17 @@ function init_events() {
 
 	$("#mission_address").keypress(function(event){
 		if (event.keyCode == 13) {
-      var loc = $(this).val();
+      		var loc = $(this).val();
 			geocodeLocation(loc);
 			return false;
         } else {
           return true;
         }
+	});
+	
+	$('#search_address').click(function(){
+		var loc = $("#mission_address").val();
+		geocodeLocation(loc);
 	});
 	
 	init_candidate_events();
