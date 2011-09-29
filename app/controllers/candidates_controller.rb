@@ -5,5 +5,6 @@ class CandidatesController < ApplicationController
 		@candidate.update_attributes(params[:candidate])
 		@mission = @candidate.mission
 	end
+	
 end
 
