@@ -278,7 +278,7 @@ function check_running() {
 
 function make_circle_beat() {
   circle.setOptions({strokeColor: '#FF6600'});
-  outerCircle.setOptions({fillOpacity: 0.1});
+  outerCircle.setOptions({fillOpacity: 0.3});
 	beating = true;
 	alternance = 0;
 
@@ -289,7 +289,7 @@ function make_circle_beat() {
 		  radius: i * circle.getRadius() / innerCircles.length,
 		  clickable: false,
 		  strokeWeight: 0,
-		  fillOpacity: 0.1,
+		  fillOpacity: 0.3,
 		  fillColor: '#000000'
     });
   }
@@ -315,7 +315,7 @@ function beat() {
 		  radius: circle.getRadius() * (i + alternance / 100) / innerCircles.length,
     });
   }
-  innerCircles[innerCircles.length-1].setOptions({ fillOpacity: 0.1 * (1 - (alternance / 100))});
+  innerCircles[innerCircles.length-1].setOptions({ fillOpacity: 0.3 * (1 - (alternance / 100))});
 	setTimeout(beat, 50);
 }
 
