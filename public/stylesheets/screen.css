@@ -74,3 +74,8 @@ tr.link {
   display: inline;
   margin-left: 50px;
 }
+
+/* line 57, ../../app/stylesheets/screen.sass */
+#mission_form textarea {
+  width: 594px !important;
+}
