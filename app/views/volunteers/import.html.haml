@@ -1,0 +1,26 @@
+= form_tag confirm_import_volunteers_path do
+	.tablewrapp
+		%table.GralTable.ButtonTable
+			%tr
+				%th Name
+				%th Address
+				%th Voice Number
+				%th SMS Number
+			- @volunteers.each_with_index do |volunteer, i|
+				= fields_for "volunteers[#{i}]", volunteer do |f|
+					= f.hidden_field :name
+					= f.hidden_field :address
+					= f.hidden_field :lat
+					= f.hidden_field :lng
+					= f.hidden_field :address
+					= f.hidden_field :sms_number
+					= f.hidden_field :voice_number
+					= f.hidden_field :skill_names
+					%tr
+						%td= volunteer.name
+						%td= volunteer.address
+						%td= volunteer.voice_number
+						%td= volunteer.sms_number
+	%br
+	%button.white Confirm
+	= link_to 'Cancel', volunteers_path

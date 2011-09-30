@@ -9,9 +9,12 @@ class VolunteerImporter
   end
     
   def import content, options = {}
+    volunteers = []
     CSV.parse(content) do |row|
-      parse_row row, options[:default_location]
+      volunteer = parse_row row, options[:default_location]
+      volunteers << volunteer unless volunteer.nil?
     end
+    volunteers
   end
   
   private
@@ -34,9 +37,10 @@ class VolunteerImporter
       volunteer.lat = geocoded_location.lat
       volunteer.lng = geocoded_location.lng
       volunteer.skills = roles.map{|n| Skill.find_or_create_by_name(n)}
-      volunteer.save!  
+      volunteer
     rescue Exception => e
       p e
+      nil
     end
   end
   

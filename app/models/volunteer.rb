@@ -9,6 +9,7 @@ class Volunteer < ActiveRecord::Base
 	serialize :shifts
 
   validates_presence_of :name
+  validates_uniqueness_of :name
   
   validates_numericality_of :lat, :less_than_or_equal_to => 90, :greater_than_or_equal_to => -90, :if => Proc.new{|x| x.lat.present?}
   validates_numericality_of :lng, :less_than_or_equal_to => 180, :greater_than_or_equal_to => -180, :if => Proc.new{|x| x.lng.present?}
@@ -19,6 +20,10 @@ class Volunteer < ActiveRecord::Base
 	def skill_names=(names)
 		self.skills = names.split(',').map{|n| Skill.find_or_create_by_name(n)}
 	end
+	
+	def skill_names
+	  self.skills.map(&:name).join(',')
+  end
 	
 	def available? day, hour
 	  begin

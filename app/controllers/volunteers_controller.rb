@@ -97,7 +97,13 @@ class VolunteersController < ApplicationController
   
   # POST /volunteers/import
   def import
-    VolunteerImporter.new.import params[:file].read
-    redirect_to :action => "index"
+    @volunteers = VolunteerImporter.new.import params[:file].read
+  end
+  
+  # POST /volunteers/confirm_import
+  def confirm_import
+    @volunteers = params[:volunteers].values.map{|p| Volunteer.new p}
+    @volunteers.each{|v| v.save}
+    redirect_to volunteers_path
   end
 end

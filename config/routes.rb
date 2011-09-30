@@ -22,6 +22,7 @@ Watchfire::Application.routes.draw do
   resources :volunteers do
     collection do
       post 'import'
+      post 'confirm_import'
     end
   end
   
