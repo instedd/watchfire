@@ -3,12 +3,12 @@
 h1, h2, h3 { padding:0; margin:0 0 6px 0 }
 h1 { font-size:18px; font-weight:normal; color:#555555 }
 
-label { color:#555555; display:block }
+label { color:#555555 }
 
 .disabled .TaskBox div.M { background:#d0d0d0 }
 .disabled .TaskBox div.R { color:#d0d0d0 }
 
-.box.plain { padding:6px; margin:4px 0; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px; -webkit-box-shadow:none;-moz-box-shadow:none; box-shadow:none }
+.box.plain { padding:6px; margin:4px 0 0 0; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px; -webkit-box-shadow:none;-moz-box-shadow:none; box-shadow:none }
 .box.green { background:#eeffc9; color:#799823 }
 
 /* ------------ User Menu ------------------- */
@@ -60,8 +60,8 @@ table td div { display:inline-block; vertical-align:middle }
 .listitem table { font-size:12px; width: 100%; border-collapse:collapse }
 .listitem table td { padding:8px 5px; vertical-align:top; letter-spacing:-0.01em; border-top: 1px solid #eeeeee; }
 .listitem table tr:hover td { background:#d0d0d0 }
-.listitem table tr td:first-child { border-radius:3px 0 0 3px; -moz-border-radius:3px 0 0 3px; -webkit-border-radius:3px 0 0 3px; width:50% }
-.listitem table tr td:last-child { border-radius:0 3px 3px 0; -moz-border-radius:0 3px 3px 0; -webkit-border-radius:0 3px 3px 0; text-align:right }
+.listitem table tr td:first-child { border-radius:3px 0 0 3px; -moz-border-radius:3px 0 0 3px; -webkit-border-radius:3px 0 0 3px; width:56% }
+.listitem table tr td:last-child { border-radius:0 3px 3px 0; -moz-border-radius:0 3px 3px 0; -webkit-border-radius:0 3px 3px 0; text-align:left }
 .listitem table td button { margin:0 auto }
 .listitem table tr.blocked td span{ color:#999999; text-decoration:line-through }
  
@@ -69,6 +69,13 @@ table td div { display:inline-block; vertical-align:middle }
 .tgrey { color:#555555 } 
 
 .StateDisplay button { width:47% }
+
+.w42 { width:400px !important}
+
+.map { border:1px solid #dddddd }
+
+.bottom-actions { margin-top:10px } 
+.bottom-actions button { margin-right:10px } 
  
 /* --------  Events Table ------------ */ 
 

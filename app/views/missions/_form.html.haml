@@ -2,10 +2,12 @@
 	= f.hidden_field :lat
 	= f.hidden_field :lng
 	= f.label :name, "Event name"
+	%br
 	= f.text_field :name, :class => "ux-text w58", :size => "2", :placeholder => "Enter the name of this event, e.g. 'Fire on Rangeland' ", :readonly => mission.running? || mission.finished?
 	%br
 	%br
 	= f.label :req_vols, "Recruitees"
+	%br
 	%span.ux-nstep.w06
 		= f.text_field :req_vols, :size => "2", :readonly => mission.running? || mission.finished?, "data-min" => "1"
 	%span
@@ -13,11 +15,13 @@
 	%br
 	%br
 	= f.label :reason, "Description"
+	%br
 	= f.text_area :reason, :class => "w54 ux-wajbar", :maxlength => "200", :size => "", :readonly => mission.running? || mission.finished?, :placeholder => "Enter the description, e.g 'Single house apartment fire with pets and old people' "
 	%br
 	= f.label :address
+	%br
 	%span.small-text Enter an address to find recruits nearby or you can right-click in the map to indicate a location
-	= f.text_field :address, :class => "w30 ux-text", :readonly => !mission.created?, :placeholder => "Enter the address, e.g '1710 Trousdale Dr' "
+	= f.text_field :address, :class => "w42 ux-text", :readonly => !mission.created?, :placeholder => "Enter the address, e.g '1710 Trousdale Dr' "
 	%button#search_address.fsearch{:disabled => !mission.created?, :class => !mission.created? ? "disabled" : "" } Find recruitees nearby
 	%br
 	%br

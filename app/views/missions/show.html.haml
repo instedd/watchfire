@@ -8,7 +8,7 @@
 	#left_panel.box.w60
 		#form_container
 			= render :partial => 'form', :locals => { :mission => @mission }
-		#map_canvas
+		#map_canvas.map
 		.hidden
 			#info_window_content
 		#mission_distance
@@ -25,9 +25,5 @@
 .clear
 %br
 %hr
-%br
-#mission_actions
+#mission_actions.bottom-actions
 	= render :partial => 'actions', :locals => {:mission => @mission}
-%br
-%br
-%br

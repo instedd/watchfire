@@ -21,6 +21,6 @@
 						%td= volunteer.address
 						%td= volunteer.voice_number
 						%td= volunteer.sms_number
-	%br
-	%button.white Confirm
-	= link_to 'Cancel', volunteers_path
+	.bottom-actions
+		%button.white Confirm
+		= link_to 'Cancel', volunteers_path, :class => "tgrey"

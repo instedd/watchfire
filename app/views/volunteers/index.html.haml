@@ -4,7 +4,7 @@
 %h1= "#{@volunteers_count} volunteers"
 
 .tablewrapp
-	%table.GralTable.ButtonTable
+	%table.GralTable.ButtonTable.w-pagination
 		%tr
 			= sort_header 'Name', :name
 			= sort_header 'Address', :address
