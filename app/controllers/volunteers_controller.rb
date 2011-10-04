@@ -97,13 +97,16 @@ class VolunteersController < ApplicationController
   
   # POST /volunteers/import
   def import
-    @volunteers = VolunteerImporter.new.import params[:file].read
+    @view_model = ImportViewModel.from_model(VolunteerImporter.new.import(params[:file].read))
   end
   
   # POST /volunteers/confirm_import
   def confirm_import
-    @volunteers = params[:volunteers].values.map{|p| Volunteer.new p}
-    @volunteers.each{|v| v.save}
-    redirect_to volunteers_path
+    @view_model = ImportViewModel.new(params[:import_view_model])
+    if @view_model.save
+      redirect_to volunteers_path
+    else
+      render 'import'
+    end
   end
 end

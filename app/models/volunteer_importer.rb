@@ -23,7 +23,7 @@ class VolunteerImporter
   def parse_row row, default_location
     begin
       name = row[0]
-      roles = row[1].split('/').map(&:strip)
+      roles = row[1].split('/').map(&:strip) rescue []
       voice_phone = row[2]
       sms_phone = row[3]
       location = row[4]
@@ -39,7 +39,6 @@ class VolunteerImporter
       volunteer.skills = roles.map{|n| Skill.find_or_create_by_name(n)}
       volunteer
     rescue Exception => e
-      p e
       nil
     end
   end

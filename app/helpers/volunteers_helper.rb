@@ -10,6 +10,10 @@ module VolunteersHelper
     end
   end
   
+  def disabled_check_box
+    check_box_tag "", "", false, :disabled => "disabled"
+  end
+  
   private
   
   def invert order

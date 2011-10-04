@@ -1,4 +1,17 @@
-= form_tag confirm_import_volunteers_path do
+- content_for :head do
+	= javascript_include_tag 'volunteers_import'
+	
+%h1.left
+	= pluralize @view_model.size, 'Volunteer'
+	- if @view_model.has_conflicts?
+		= ", #{pluralize @view_model.conflicts, 'Conflict'}"
+- if @view_model.has_conflicts?
+	%select#combo_status.ux-dropdown.w20.right
+		%option{:value => '', :selected =>'selected'} Show all
+		%option{:value => 'conflict'} Only Conflicts
+		%option{:value => 'valid'} Only Valids
+.clear
+= form_for @view_model, :url => confirm_import_volunteers_path do |f|
 	.tablewrapp
 		%table.GralTable.ButtonTable
 			%tr
@@ -6,21 +19,28 @@
 				%th Address
 				%th Voice Number
 				%th SMS Number
-			- @volunteers.each_with_index do |volunteer, i|
-				= fields_for "volunteers[#{i}]", volunteer do |f|
-					= f.hidden_field :name
-					= f.hidden_field :address
-					= f.hidden_field :lat
-					= f.hidden_field :lng
-					= f.hidden_field :address
-					= f.hidden_field :sms_number
-					= f.hidden_field :voice_number
-					= f.hidden_field :skill_names
-					%tr
-						%td= volunteer.name
-						%td= volunteer.address
-						%td= volunteer.voice_number
-						%td= volunteer.sms_number
+			= f.fields_for :volunteers, @view_model.volunteers do |c|
+				- volunteer = c.object
+				- if volunteer.valid?
+					= c.hidden_field :name
+					= c.hidden_field :address
+					= c.hidden_field :lat
+					= c.hidden_field :lng
+					= c.hidden_field :voice_number
+					= c.hidden_field :sms_number
+					= c.hidden_field :skill_names
+					- unless volunteer.new_record?
+						= c.hidden_field :id
+				%tr.volunteer{:class => volunteer.valid? ? "valid" : "conflict"}
+					%td
+						- if volunteer.valid?
+							= c.check_box :selected
+						- else
+							= disabled_check_box
+						= volunteer.name
+					%td= volunteer.address
+					%td= volunteer.voice_number
+					%td= volunteer.sms_number
 	.bottom-actions
-		%button.white Confirm
+		%button.white Import
 		= link_to 'Cancel', volunteers_path, :class => "tgrey"
