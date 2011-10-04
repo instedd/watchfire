@@ -1,9 +1,7 @@
-.box.plain{:class => mission.running? ? "green" : "grey"}
-	- if mission.farthest
+- if mission.farthest
+	.box.plain{:class => mission.running? ? "green" : "grey"}
 		%span#distance_label
 			= mission.status_running? ? 'Calling volunteers up to' : 'Will call volunteers up to'
 		%span#distance_value
 			= mission.farthest
 		mi
-	- else
-		Any random quote of the day
