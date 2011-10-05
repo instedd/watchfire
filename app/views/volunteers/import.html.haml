@@ -1,16 +1,10 @@
 - content_for :head do
 	= javascript_include_tag 'volunteers_import'
-	
-%h1.left
+
+%h1
 	= pluralize @view_model.size, 'Volunteer'
 	- if @view_model.has_conflicts?
-		= ", #{pluralize @view_model.conflicts, 'Conflict'}"
-- if @view_model.has_conflicts?
-	%select#combo_status.ux-dropdown.w20.right
-		%option{:value => '', :selected =>'selected'} Show all
-		%option{:value => 'conflict'} Only Conflicts
-		%option{:value => 'valid'} Only Valids
-.clear
+		%span.err-message= ", #{pluralize @view_model.conflicts, 'Conflict'}"
 = form_for @view_model, :url => confirm_import_volunteers_path do |f|
 	.tablewrapp
 		%table.GralTable.ButtonTable
@@ -31,12 +25,13 @@
 					= c.hidden_field :skill_names
 					- unless volunteer.new_record?
 						= c.hidden_field :id
-				%tr.volunteer{:class => volunteer.valid? ? "valid" : "conflict"}
+				%tr.volunteer{:class => volunteer.valid? ? "" : "err-message"}
 					%td
 						- if volunteer.valid?
 							= c.check_box :selected
 						- else
-							= disabled_check_box
+							%span.err-message.error_trigger
+							.error_content= import_errors_for volunteer
 						= volunteer.name
 					%td= volunteer.address
 					%td= volunteer.voice_number

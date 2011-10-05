@@ -1,6 +1,20 @@
 $(function(){
 	init_events();
 	show_by_status($('#combo_status').val());
+	
+	$('.error_trigger').each(function(){
+		var trigger = $(this);
+		trigger.bubble({
+			position : 'top',
+			themeName: 'bubble',
+			themePath: 'http://theme.instedd.org/theme/images/',
+			innerHtmlStyle: {
+				color:'#000000',
+				'background-color': 'white'
+			},
+			content: trigger.siblings('.error_content')
+		});
+	});
 });
 
 function init_events() {	

@@ -10,8 +10,14 @@ module VolunteersHelper
     end
   end
   
-  def disabled_check_box
-    check_box_tag "", "", false, :disabled => "disabled"
+  def import_errors_for(object)
+    if object.errors.any?
+      content_tag :div, :class => "import_error_description error_description" do
+        content_tag :ul do
+          raw object.errors.full_messages.map { |msg| content_tag(:li, msg) }.join
+        end
+      end
+    end
   end
   
   private

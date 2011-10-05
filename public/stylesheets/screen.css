@@ -79,3 +79,13 @@ tr.link {
 #mission_form textarea {
   width: 594px !important;
 }
+
+/* line 61, ../../app/stylesheets/screen.sass */
+.import_error_description {
+  background: none;
+  text-align: left;
+}
+/* line 64, ../../app/stylesheets/screen.sass */
+.import_error_description > * {
+  margin-left: 0px;
+}
