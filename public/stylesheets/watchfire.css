@@ -76,6 +76,7 @@ table td div { display:inline-block; vertical-align:middle }
 
 .bottom-actions { margin-top:10px } 
 .bottom-actions button { margin-right:10px } 
+.bottom-actions.registration { margin-top:20px }
  
 /* --------  Events Table ------------ */ 
 
