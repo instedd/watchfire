@@ -39,7 +39,7 @@ form {
 
 /* line 32, ../../app/stylesheets/screen.sass */
 .missions_empty {
-  padding-top: 80px;
+  padding-top: 55px;
   height: 200px;
   text-align: center;
 }
@@ -75,17 +75,17 @@ tr.link {
   margin-left: 50px;
 }
 
-/* line 57, ../../app/stylesheets/screen.sass */
+/* line 58, ../../app/stylesheets/screen.sass */
 #mission_form textarea {
   width: 594px !important;
 }
 
-/* line 61, ../../app/stylesheets/screen.sass */
+/* line 62, ../../app/stylesheets/screen.sass */
 .import_error_description {
   background: none;
   text-align: left;
 }
-/* line 64, ../../app/stylesheets/screen.sass */
+/* line 65, ../../app/stylesheets/screen.sass */
 .import_error_description > * {
   margin-left: 0px;
 }
