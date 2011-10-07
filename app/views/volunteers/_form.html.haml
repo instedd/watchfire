@@ -38,7 +38,7 @@
       %button.white Save
       = link_to 'Cancel', volunteers_path, :class => "tgrey"
       - unless @volunteer.new_record?
-        = form_tag volunteer_path(@volunteer), :method => :delete, 'data-confirm' => 'Are you sure?' do
+        = link_to @volunteer, :confirm => "Are you sure?", :method => :delete do
           %button.fdelete.right Delete this volunteer
         %br{:clear => 'all'}
 .right
