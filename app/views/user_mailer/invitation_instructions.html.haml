@@ -1,0 +1,11 @@
+= h1 do
+	You are almost done!
+= h2 do
+	To verify your account and complete the registration process please click in the link below or copy paste the URL into your browser
+%br
+= link accept_invitation_url(@resource, :invitation_token => @resource.invitation_token) do
+	= orange_button do
+		Confirm my account
+%br
+= small_orange_link accept_invitation_url(@resource, :invitation_token => @resource.invitation_token) do
+	= accept_invitation_url(@resource, :invitation_token => @resource.invitation_token)

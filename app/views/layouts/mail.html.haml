@@ -1,0 +1,12 @@
+= body do
+	= header do
+		%img{:src => "http://theme.instedd.org/theme/images/header/logos/watchfire.png"}
+		%img{:src => "http://theme.instedd.org/theme/images/header/shadow_small.png"}
+	= content do
+		= yield
+	= footer do
+		= hr
+		%p
+			Do you have questions or need help? Contact us at
+			= link "mailto:watchfire.support@instedd.org" do
+				watchfire.support@instedd.org
