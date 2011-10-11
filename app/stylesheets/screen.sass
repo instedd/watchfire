@@ -15,16 +15,11 @@ form
 	width: 580px
 	height: 278px
 
-#empty_volunteers
-	@include info-empty
-	text-align: center
-	padding-top: 130px
-
 .hidden
 	display: none
 
 .volunteer_name
-	font-size: 16px
+	font-size: 18px
 
 .volunteer_address
 	font-size: 14px
@@ -35,7 +30,7 @@ form
 	margin-top: 10px
 	
 .missions_empty
-	padding-top: 80px
+	padding-top: 55px
 	height: 200px
 	text-align: center
 	.info
@@ -48,6 +43,24 @@ form
 .Availability td
 	cursor: pointer
 
+#pending_list
+	td,span
+		cursor: pointer
+
+tr.link
+	cursor: pointer
+
 #version
 	display: inline
 	margin-left: 50px
+
+// Fix to wajbar in mission form
+#mission_form textarea
+	width: 594px !important
+
+// Overrides for error_description class to be used in the import volunteers errors
+.import_error_description
+	background: none
+	text-align: left
+	> *
+		margin-left: 0px

@@ -1,5 +1,5 @@
 Watchfire::Application.routes.draw do
-  devise_for :users, :controllers => { :registrations => "users/registrations" }
+  devise_for :users, :controllers => { :registrations => "users/registrations", :invitations => "users/invitations" }
 
   # Verboice callbacks
   post "verboice/plan" => "verboice#plan", :defaults => { :format => 'xml' }
@@ -15,12 +15,15 @@ Watchfire::Application.routes.draw do
       post 'finish'
       post 'open'
       get 'refresh'
+      post 'clone'
+			get 'export'
     end
   end
   
   resources :volunteers do
     collection do
       post 'import'
+      post 'confirm_import'
     end
   end
   

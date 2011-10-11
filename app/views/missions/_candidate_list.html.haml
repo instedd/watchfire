@@ -1,4 +1,6 @@
 %span
-	%a.arrow= "#{candidates.count} #{title}"
+	%a.arrow
+		%span.count=  candidates.count
+		= title
 %table.ux-content
 	= render :partial => 'candidate', :collection => candidates

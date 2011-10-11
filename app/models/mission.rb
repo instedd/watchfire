@@ -97,7 +97,7 @@ class Mission < ActiveRecord::Base
   end
   
   def candidates_to_call
-		self.candidates.where(:status => :pending, :paused => false)
+		self.candidates.where(:status => :pending, :active => true)
 	end
   
   def check_for_more_volunteers
@@ -143,6 +143,12 @@ class Mission < ActiveRecord::Base
     skill_name = skill.present? ? skill.name : 'Volunteer'
     message = reason.present? ? " (#{reason})" : ""
     "#{name}: #{pluralize(req_vols, skill_name)}#{message}"
+  end
+  
+  def new_duplicate
+    new_mission = self.clone
+    new_mission.status = :created
+    new_mission
   end
   
   private

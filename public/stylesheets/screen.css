@@ -16,59 +16,76 @@ form {
 }
 
 /* line 18, ../../app/stylesheets/screen.sass */
-#empty_volunteers {
-  color: #555555;
-  font-style: italic;
-  text-align: center;
-  padding-top: 130px;
-}
-
-/* line 23, ../../app/stylesheets/screen.sass */
 .hidden {
   display: none;
 }
 
-/* line 26, ../../app/stylesheets/screen.sass */
+/* line 21, ../../app/stylesheets/screen.sass */
 .volunteer_name {
-  font-size: 16px;
+  font-size: 18px;
 }
 
-/* line 29, ../../app/stylesheets/screen.sass */
+/* line 24, ../../app/stylesheets/screen.sass */
 .volunteer_address {
   font-size: 14px;
   color: #555555;
 }
 
-/* line 33, ../../app/stylesheets/screen.sass */
+/* line 28, ../../app/stylesheets/screen.sass */
 .volunteer_phones {
   font-size: 12px;
   margin-top: 10px;
 }
 
-/* line 37, ../../app/stylesheets/screen.sass */
+/* line 32, ../../app/stylesheets/screen.sass */
 .missions_empty {
-  padding-top: 80px;
+  padding-top: 55px;
   height: 200px;
   text-align: center;
 }
-/* line 41, ../../app/stylesheets/screen.sass */
+/* line 36, ../../app/stylesheets/screen.sass */
 .missions_empty .info {
   margin-top: 10px;
   color: #555555;
   font-style: italic;
 }
-/* line 44, ../../app/stylesheets/screen.sass */
+/* line 39, ../../app/stylesheets/screen.sass */
 .missions_empty .add {
   color: #1f86c8;
 }
 
-/* line 48, ../../app/stylesheets/screen.sass */
+/* line 43, ../../app/stylesheets/screen.sass */
 .Availability td {
   cursor: pointer;
 }
 
-/* line 51, ../../app/stylesheets/screen.sass */
+/* line 47, ../../app/stylesheets/screen.sass */
+#pending_list td, #pending_list span {
+  cursor: pointer;
+}
+
+/* line 50, ../../app/stylesheets/screen.sass */
+tr.link {
+  cursor: pointer;
+}
+
+/* line 53, ../../app/stylesheets/screen.sass */
 #version {
   display: inline;
   margin-left: 50px;
+}
+
+/* line 58, ../../app/stylesheets/screen.sass */
+#mission_form textarea {
+  width: 594px !important;
+}
+
+/* line 62, ../../app/stylesheets/screen.sass */
+.import_error_description {
+  background: none;
+  text-align: left;
+}
+/* line 65, ../../app/stylesheets/screen.sass */
+.import_error_description > * {
+  margin-left: 0px;
 }

@@ -9,9 +9,12 @@ class VolunteerImporter
   end
     
   def import content, options = {}
+    volunteers = []
     CSV.parse(content) do |row|
-      parse_row row, options[:default_location]
+      volunteer = parse_row row, options[:default_location]
+      volunteers << volunteer unless volunteer.nil?
     end
+    volunteers
   end
   
   private
@@ -20,7 +23,7 @@ class VolunteerImporter
   def parse_row row, default_location
     begin
       name = row[0]
-      roles = row[1].split('/').map(&:strip)
+      roles = row[1].split('/').map(&:strip) rescue []
       voice_phone = row[2]
       sms_phone = row[3]
       location = row[4]
@@ -34,9 +37,9 @@ class VolunteerImporter
       volunteer.lat = geocoded_location.lat
       volunteer.lng = geocoded_location.lng
       volunteer.skills = roles.map{|n| Skill.find_or_create_by_name(n)}
-      volunteer.save!  
+      volunteer
     rescue Exception => e
-      p e
+      nil
     end
   end
   

@@ -66,6 +66,16 @@ class MissionsController < ApplicationController
 		@mission.destroy
 		redirect_to missions_url
 	end
+	
+	def clone
+	  @mission = @mission.new_duplicate
+	  render 'show'
+  end
+
+	def export
+		csv = VolunteerExporter.export @mission
+		send_data csv, :type => 'text/csv', :filename => "#{@mission.name}_results.csv"
+	end
 
 	private
 

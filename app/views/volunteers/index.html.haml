@@ -4,7 +4,7 @@
 %h1= "#{@volunteers_count} volunteers"
 
 .tablewrapp
-	%table.GralTable.ButtonTable
+	%table.GralTable.ButtonTable.w-pagination
 		%tr
 			= sort_header 'Name', :name
 			= sort_header 'Address', :address
@@ -32,14 +32,16 @@
 %span.tgrey and fill it with the accounts data
 %br
 %br
-.ux-collapsible.collapsed{'data-on-expanded' => 'box grey'}
+.ux-collapsible.collapsed{'data-on-expanded' => 'box grey w40'}
 	%span
 		%a
 			%button.fexport Upload it for bulk account creation
 	.ux-content
 		= form_for :import_volunteers, :url => import_volunteers_path, :html => {:multipart => true} do |f|
-			%br
+			%hr
 			= file_field_tag :file
-			%br
-			%br
-			%button.white Confirm
+			%hr
+			.botttom-actions.right
+				%a.tgrey.ux-collapse-trigger{:href => "#"} Cancel 
+				%button.grey Next
+			%br.clear

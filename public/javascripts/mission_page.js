@@ -19,11 +19,12 @@ var circleHasMap;
 var required_old;
 
 $(function(){
-  circleHasMap = false;
+	circleHasMap = false;
 	init_map();
 	init_events();
-  required_old = $('#mission_req_vols').val();
+	required_old = $('#mission_req_vols').val();
 	check_running();
+	hide_or_show_candidate_lists();
 });
 
 function init_map() {
@@ -48,11 +49,11 @@ function init_map() {
 		new google.maps.Point(12, 12));
 	
 	circle = new google.maps.Circle();
-  outerCircle = new google.maps.Circle();
+	outerCircle = new google.maps.Circle();
   
-  for(i = 0; i < 4; i++) {
-    innerCircles.push(new google.maps.Circle());
-  }
+	for(i = 0; i < 4; i++) {
+		innerCircles.push(new google.maps.Circle());
+	}
 
 	var initialLocation = new google.maps.LatLng(37.520619, -122.342377);
 	map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
@@ -142,7 +143,7 @@ function init_events() {
 
 	$("#mission_address").keypress(function(event){
 		if (event.keyCode == 13) {
-      var loc = $(this).val();
+      		var loc = $(this).val();
 			geocodeLocation(loc);
 			return false;
         } else {
@@ -150,7 +151,12 @@ function init_events() {
         }
 	});
 	
-  init_candidate_events();
+	$('#search_address').click(function(){
+		var loc = $("#mission_address").val();
+		geocodeLocation(loc);
+	});
+	
+	init_candidate_events();
 }
 
 function init_candidate_events() {
@@ -160,6 +166,10 @@ function init_candidate_events() {
 	
 	$('.candidate .avoid').click(function(event){
 		event.stopImmediatePropagation();
+	});
+	
+	$('.candidate input:checkbox').click(function() {
+		$(this).parent().submit();
 	});
 }
 
@@ -268,7 +278,7 @@ function check_running() {
 
 function make_circle_beat() {
   circle.setOptions({strokeColor: '#FF6600'});
-  outerCircle.setOptions({fillOpacity: 0.1});
+  outerCircle.setOptions({fillOpacity: 0.3});
 	beating = true;
 	alternance = 0;
 
@@ -279,7 +289,7 @@ function make_circle_beat() {
 		  radius: i * circle.getRadius() / innerCircles.length,
 		  clickable: false,
 		  strokeWeight: 0,
-		  fillOpacity: 0.1,
+		  fillOpacity: 0.3,
 		  fillColor: '#000000'
     });
   }
@@ -305,7 +315,7 @@ function beat() {
 		  radius: circle.getRadius() * (i + alternance / 100) / innerCircles.length,
     });
   }
-  innerCircles[innerCircles.length-1].setOptions({ fillOpacity: 0.1 * (1 - (alternance / 100))});
+  innerCircles[innerCircles.length-1].setOptions({ fillOpacity: 0.3 * (1 - (alternance / 100))});
 	setTimeout(beat, 50);
 }
 
@@ -330,4 +340,13 @@ function on_info_window_closed() {
 function close_info_window() {
 	info_window.close();
 	volunteer_marker.setVisible(false);
+}
+
+function hide_or_show_candidate_lists() {
+	$('.listitem').each(function(){
+		var container = $(this);
+		var hide = $('.count', container).html() != '0';
+		container.toggle(hide);
+		container.next('hr').toggle(hide);
+	});
 }

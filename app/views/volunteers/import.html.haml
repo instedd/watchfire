@@ -1,0 +1,41 @@
+- content_for :head do
+	= javascript_include_tag 'volunteers_import'
+
+%h1
+	= pluralize @view_model.size, 'Volunteer'
+	- if @view_model.has_conflicts?
+		%span.err-message= ", #{pluralize @view_model.conflicts, 'Conflict'}"
+= form_for @view_model, :url => confirm_import_volunteers_path do |f|
+	.tablewrapp
+		%table.GralTable.ButtonTable
+			%tr
+				%th Name
+				%th Address
+				%th Voice Number
+				%th SMS Number
+			= f.fields_for :volunteers, @view_model.volunteers do |c|
+				- volunteer = c.object
+				- if volunteer.valid?
+					= c.hidden_field :name
+					= c.hidden_field :address
+					= c.hidden_field :lat
+					= c.hidden_field :lng
+					= c.hidden_field :voice_number
+					= c.hidden_field :sms_number
+					= c.hidden_field :skill_names
+					- unless volunteer.new_record?
+						= c.hidden_field :id
+				%tr.volunteer{:class => volunteer.valid? ? "" : "err-message"}
+					%td
+						- if volunteer.valid?
+							= c.check_box :selected
+						- else
+							%span.err-message.error_trigger
+							.error_content= import_errors_for volunteer
+						= volunteer.name
+					%td= volunteer.address
+					%td= volunteer.voice_number
+					%td= volunteer.sms_number
+	.bottom-actions
+		%button.white Import
+		= link_to 'Cancel', volunteers_path, :class => "tgrey"

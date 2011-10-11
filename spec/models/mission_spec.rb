@@ -244,11 +244,37 @@ describe Mission do
   end
   
   it "should be invalid without name" do
-    @mission = Mission.make!
-    @mission.name = nil
-    @mission.valid?.should be_false
-    @mission.name = ''
-    @mission.valid?.should be_false
+    mission = Mission.make!
+    mission.name = nil
+    mission.valid?.should be_false
+    mission.name = ''
+    mission.valid?.should be_false
+  end
+  
+  describe "mission duplicate for new skill recruitment" do
+    before(:each) do
+      @mission = Mission.make! :skill => Skill.make!
+      @new_mission = @mission.new_duplicate
+    end
+    
+    it "creates an unsaved mission" do
+      @new_mission.new_record?.should be_true
+    end
+    
+    it "copies values" do
+      @new_mission.name.should eq(@mission.name)
+      @new_mission.req_vols.should eq(@mission.req_vols)
+      @new_mission.reason.should eq(@mission.reason)
+      @new_mission.lat.should eq(@mission.lat)
+      @new_mission.lng.should eq(@mission.lng)
+      @new_mission.address.should eq(@mission.address)
+      @new_mission.skill.should eq(@mission.skill)
+    end
+    
+    it "should have created status" do
+      @new_mission.created?.should be_true
+    end
+    
   end
   
 end

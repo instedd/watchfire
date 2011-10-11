@@ -7,6 +7,7 @@ $(function(){
 	$("#skills").superblyTagField({
 		  allowNewTags: true,
 		  showTagsNumber: 10,
+		  addItemOnBlur:true,
 		  preset: getHtmls($('#volSkills li')),
 		  tags: getHtmls($('#allSkills li'))
 	});

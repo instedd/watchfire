@@ -53,6 +53,18 @@ describe NuntiumController do
       response.status.should be(401)
     end
     
+    it "should return not undestood reply when bad message" do
+      post 'receive', :from => "sms://#{@candidate.volunteer.sms_number}", :body => "foo"
+      response.body.should eq(I18n.t :sms_bad_format, :text => "foo")
+      response.content_type.should eq("text/plain")
+    end
+    
+    it "should return successful reply when good message" do
+      post 'receive', :from => "sms://#{@candidate.volunteer.sms_number}", :body => "yes"
+      response.body.should eq(I18n.t :sms_successful)
+      response.content_type.should eq("text/plain")
+    end
+    
   end
 
 end

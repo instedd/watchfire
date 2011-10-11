@@ -11,7 +11,11 @@ class NuntiumController < BasicAuthController
       response_match = body.match /^(yes|no)$/
     
       raise 'Error parsing number' unless number_match
-      raise 'Error parsing response' unless response_match
+      
+      unless response_match
+        message = I18n.t :sms_bad_format, :text => body
+        raise 'Error parsing response' 
+      end
     
       number = number_match[1]
       confirmation = response_match[1] == 'yes'
@@ -31,11 +35,12 @@ class NuntiumController < BasicAuthController
         candidate.update_status :denied
       end
       
+      message = I18n.t :sms_successful
     rescue => e
       logger.error e
     end
     
-    render :nothing => true
+    render :text => message, :content_type => "text/plain"
   end
   
 end

@@ -34,6 +34,10 @@ describe VolunteersController do
     it "routes to #import" do
       post("/volunteers/import").should route_to("volunteers#import")
     end
+    
+    it "routes to #confirm_import" do
+      post("/volunteers/confirm_import").should route_to("volunteers#confirm_import")
+    end
 
   end
 end

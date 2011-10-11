@@ -33,17 +33,14 @@
 
     = f.fields_for :shifts do |shift_form|
       = render :partial => 'shifts_matrix', :locals => {:f => shift_form}
-    %br
-
-    %button.white Save
-
-  %button.white.cancel#cancelbtn Cancel
-  
-  - unless @volunteer.new_record?
-    = form_tag volunteer_path(@volunteer), :method => :delete, 'data-confirm' => 'Are you sure?' do
-      %button.fdelete.right Delete this volunteer
-  %br{:clear => 'all'}
-
+		
+    .bottom-actions
+      %button.white Save
+      = link_to 'Cancel', volunteers_path, :class => "tgrey"
+      - unless @volunteer.new_record?
+        = link_to @volunteer, :confirm => "Are you sure?", :method => :delete do
+          %button.fdelete.right Delete this volunteer
+        %br{:clear => 'all'}
 .right
 .clear
 

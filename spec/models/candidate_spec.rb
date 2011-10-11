@@ -20,6 +20,10 @@ describe Candidate do
       @candidate.last_sms_att.should be nil
       @candidate.last_voice_att.should be nil
     end
+    
+    it "should be active" do
+      @candidate.active.should be_true
+    end
   end
   
   describe "candidate sms and voice number" do
