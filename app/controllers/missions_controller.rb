@@ -72,6 +72,11 @@ class MissionsController < ApplicationController
 	  render 'show'
   end
 
+	def export
+		csv = VolunteerExporter.export @mission
+		send_data csv, :type => 'text/csv', :filename => "#{@mission.name}_results.csv"
+	end
+
 	private
 
 	def check_owner

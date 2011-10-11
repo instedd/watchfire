@@ -172,5 +172,15 @@ describe MissionsController do
       response.should render_template('show')
     end
   end
+	
+	describe "export" do
+		it "should export results" do
+			Mission.expects(:find).with(@mission.id.to_s).returns(@mission)
+			VolunteerExporter.expects(:export).with(@mission).returns("csv data")
+			get :export, :id => @mission.id.to_s
+			assigns(:mission).should eq(@mission)
+			response.body.should eq("csv data")
+		end
+	end
 
 end

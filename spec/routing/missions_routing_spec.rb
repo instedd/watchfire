@@ -55,5 +55,9 @@ describe MissionsController do
       post("/missions/1/clone").should route_to("missions#clone", :id => "1")
     end
 
+		it "routes to #export" do
+      get("/missions/1/export").should route_to("missions#export", :id => "1")
+    end
+
   end
 end
