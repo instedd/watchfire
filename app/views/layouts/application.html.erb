@@ -27,7 +27,6 @@
 				<li>
 		          	<div id="User"><%= current_user.email %><br><br>
 		          		<div class="container">
-							<p><%= link_to 'Invite new user', new_user_invitation_path %></p>
 							<p><%= link_to 'Log Out', destroy_user_session_path, :method => 'delete' %></p>
 						</div>
 					</div><!-- #User --> 
@@ -80,7 +79,10 @@
 						<div class="right">
 							<%= link_to 'Events', missions_path %>
 							<%= link_to 'Volunteers', volunteers_path %>
-							<a href="#">Help</a>
+							<a href="#" id="invite_bubble_trigger">Invite new users</a>
+							<div id="invite_bubble_content">
+								<%= render :partial => "shared/invite_bubble_form" %>
+							</div>
 							<div id="version">Version: <%= watchfire_version %></div>
 						</div>
 						<div class="clear">

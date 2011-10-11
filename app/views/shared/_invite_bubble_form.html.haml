@@ -1,0 +1,16 @@
+#invitation_bubble
+  .left.gusers
+  .left
+    %h1
+      Invite new users
+      %br
+      to Watchfire
+  .right
+    %button#invite_bubble_close.pclose
+  %br{:clear => "all"}
+  %p
+    You can invite new users by entering the email
+  = form_for "user", :url => invitation_path("user") do |f|
+    = f.email_field :email, :placeholder => "Email", :class => "w30"
+    = hidden_field_tag :next, request.path
+    %button.farrow{:type => "submit"}
