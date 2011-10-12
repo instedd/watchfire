@@ -8,15 +8,15 @@
 		%tr
 			= sort_header 'Name', :name
 			= sort_header 'Address', :address
-			= sort_header 'Voice Number', :voice_number
-			= sort_header  'SMS Number', :sms_number
+			%th Voice Numbers
+			%th SMS Numbers
 		- @volunteers.each do |volunteer|
 			%tr.link{'data-url' => edit_volunteer_path(volunteer)}
 				%td= volunteer.name
 				%td= volunteer.address
-				%td= volunteer.voice_number
+				%td= volunteer.voice_numbers
 				%td
-					= volunteer.sms_number
+					= volunteer.sms_numbers
 					= form_tag volunteer_path(volunteer), :method => :delete, 'data-confirm' => 'Are you sure?' do
 						%button.avoid.fdelete
 					= form_tag edit_volunteer_path(volunteer), :method => :get do

@@ -34,20 +34,16 @@ describe Candidate do
     end
     
     it "should tell if volunteer has sms number" do
-      @volunteer.sms_number = nil
+      @volunteer.sms_channels = []
       @candidate.has_sms?.should be false
-      @volunteer.sms_number = ''
-      @candidate.has_sms?.should be false
-      @volunteer.sms_number = '123'
+      @volunteer.sms_channels << SmsChannel.make
       @candidate.has_sms?.should be true
     end
     
     it "should tell if volunteer has voice number" do
-      @volunteer.voice_number = nil
+      @volunteer.voice_channels = []
       @candidate.has_voice?.should be false
-      @volunteer.voice_number = ''
-      @candidate.has_voice?.should be false
-      @volunteer.voice_number = '123'
+      @volunteer.voice_channels << VoiceChannel.make
       @candidate.has_voice?.should be true
     end
   end
@@ -78,7 +74,7 @@ describe Candidate do
   describe "has retries" do
     before(:each) do
       @candidate = Candidate.new
-      @candidate.volunteer = Volunteer.new :sms_number => '123', :voice_number => '456'
+      @candidate.volunteer = Volunteer.new :sms_channels => [SmsChannel.make], :voice_channels => [VoiceChannel.make]
       @config = Watchfire::Application.config
     end
     
@@ -117,12 +113,12 @@ describe Candidate do
     end
     
     it "should not have sms retries if volunteer doesn't have sms" do
-      @candidate.volunteer.sms_number = nil
+      @candidate.volunteer.sms_channels = []
       @candidate.has_sms_retries?.should be false
     end
     
     it "should not have voice retries if volunteer doesn't have voice" do
-      @candidate.volunteer.voice_number = nil
+      @candidate.volunteer.voice_channels = []
       @candidate.has_voice_retries?.should be false
     end
     

@@ -24,7 +24,7 @@ describe VolunteersController do
   # Volunteer. As you add validations to Volunteer, be sure to
   # update the return value of this method accordingly.
   def valid_attributes
-    {:name => 'John', :lat => -34.2, :lng => -58.2, :sms_number => '123', :voice_number => '456'}
+    {:name => 'John', :lat => -34.2, :lng => -58.2, :sms_numbers => '123', :voice_numbers => '456'}
   end
   
   before(:all) do

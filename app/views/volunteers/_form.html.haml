@@ -1,53 +1,61 @@
 - content_for :head do
-  = javascript_include_tag "volunteer_page"
-  = javascript_include_tag 'http://maps.googleapis.com/maps/api/js?sensor=false'
+	= javascript_include_tag "volunteer_page"
+	= javascript_include_tag 'http://maps.googleapis.com/maps/api/js?sensor=false'
 
 .left.w60
-  = form_for @volunteer do |f|
-    = errors_for @volunteer
+	= form_for @volunteer do |f|
+		= errors_for @volunteer
 
-    %br
+		%br
   
-    = f.label :name
-    = f.text_field :name, :class => 'w60'
-    %br
-    = f.label :voice_number
-    = f.text_field :voice_number, :class => 'w60'
-    %br
-    = f.label :sms_number, 'SMS number'
-    = f.text_field :sms_number, :class => 'w60'
-    %br
-    = f.hidden_field :lat
-    = f.hidden_field :lng
+		= f.label :name
+		= f.text_field :name, :class => 'w60'
+		%br
+		= label_tag 'Voice numbers'
+		= text_field_tag 'volunteer[voice_numbers]', nil, :id => 'voice_numbers', :class => 'w60'
+		%br
+		= f.label :sms_number, 'SMS numbers'
+		= text_field_tag 'volunteer[sms_numbers]', nil, :id => 'sms_numbers', :class => 'w60'
+		%br
+		= f.hidden_field :lat
+		= f.hidden_field :lng
     
-    .box.w58
-      = f.label :address
-      = f.text_field :address, :placeholder => 'Search', :class => 'w54 ux-search'
-      #map_canvas_volunteer
-    %br
+		.box.w58
+			= f.label :address
+			= f.text_field :address, :placeholder => 'Search', :class => 'w54 ux-search'
+			#map_canvas_volunteer
+		%br
 
-    = label_tag 'Skills'
-    = text_field_tag 'volunteer[skill_names]', nil, :id => 'skills', :class => 'w60'
-    %br
-    %br
+		= label_tag 'Skills'
+		= text_field_tag 'volunteer[skill_names]', nil, :id => 'skills', :class => 'w60'
+		%br
+		%br
 
-    = f.fields_for :shifts do |shift_form|
-      = render :partial => 'shifts_matrix', :locals => {:f => shift_form}
+		= f.fields_for :shifts do |shift_form|
+			= render :partial => 'shifts_matrix', :locals => {:f => shift_form}
 		
-    .bottom-actions
-      %button.white Save
-      = link_to 'Cancel', volunteers_path, :class => "tgrey"
-      - unless @volunteer.new_record?
-        = link_to @volunteer, :confirm => "Are you sure?", :method => :delete do
-          %button.fdelete.right Delete this volunteer
-        %br{:clear => 'all'}
+		.bottom-actions
+			%button.white Save
+			= link_to 'Cancel', volunteers_path, :class => "tgrey"
+			- unless @volunteer.new_record?
+				= link_to @volunteer, :confirm => "Are you sure?", :method => :delete do
+					%button.fdelete.right Delete this volunteer
+				%br{:clear => 'all'}
 .right
 .clear
 
 %ul.hidden#allSkills
-  - Skill.all.each do |s|
-    %li= s.name
+	- Skill.all.each do |s|
+		%li= s.name
 
 %ul.hidden#volSkills
-  - @volunteer.skills.each do |s|
-    %li= s.name
+	- @volunteer.skills.each do |s|
+		%li= s.name
+
+%ul.hidden#volunteer_voice_numbers
+	- @volunteer.voice_channels.each do |voice_channel|
+		%li= voice_channel.address
+		
+%ul.hidden#volunteer_sms_numbers
+	- @volunteer.sms_channels.each do |sms_channel|
+		%li= sms_channel.address

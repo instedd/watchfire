@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110927182455) do
+ActiveRecord::Schema.define(:version => 20111011193638) do
 
   create_table "candidates", :force => true do |t|
     t.integer  "mission_id"
@@ -24,6 +24,14 @@ ActiveRecord::Schema.define(:version => 20110927182455) do
     t.datetime "updated_at"
     t.string  "call_id"
     t.boolean  "active",         :default => true, :null => false
+  end
+
+  create_table "channels", :force => true do |t|
+    t.integer  "volunteer_id"
+    t.string   "type"
+    t.string   "address"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "delayed_jobs", :force => true do |t|
@@ -103,8 +111,6 @@ ActiveRecord::Schema.define(:version => 20110927182455) do
     t.float    "lat"
     t.float    "lng"
     t.string   "address"
-    t.string   "voice_number"
-    t.string   "sms_number"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text     "shifts"

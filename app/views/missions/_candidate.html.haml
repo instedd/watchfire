@@ -5,9 +5,9 @@
 				= render :partial => 'shared/candidate_paused_form', :locals => {:candidate => candidate}
 		%span= candidate.volunteer.name
 	%td
-		- if candidate.has_sms?
-			%span{:class => candidate.active ? "mobile" : "gmobile"}= candidate.volunteer.sms_number
-		- if candidate.has_sms? && candidate.has_voice?
+		- candidate.volunteer.sms_channels.each do |sms_channel|
+			%span{:class => candidate.active ? "mobile" : "gmobile"}= sms_channel.address
 			%br
-		- if candidate.has_voice?
-			%span{:class => candidate.active ? "phone" : "gphone"}= candidate.volunteer.voice_number
+		- candidate.volunteer.voice_channels.each do |voice_channel|
+			%span{:class => candidate.active ? "phone" : "gphone"}= voice_channel.address
+			%br

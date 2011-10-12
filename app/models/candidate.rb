@@ -19,11 +19,11 @@ class Candidate < ActiveRecord::Base
   end
   
   def has_sms?
-    !self.volunteer.sms_number.nil? && !self.volunteer.sms_number.blank?
+		volunteer.sms_channels.size > 0
   end
   
   def has_voice?
-    !self.volunteer.voice_number.nil? && !self.volunteer.voice_number.blank?
+		volunteer.voice_channels.size > 0
   end
   
   def call

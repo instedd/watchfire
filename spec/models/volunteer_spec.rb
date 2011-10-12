@@ -4,10 +4,10 @@ describe Volunteer do
   
   before(:each) do
     @volunteer = Volunteer.new
+		@valid_attributes = {:name => "name", :lat => 10, :lng => 20, :address => "address", :sms_channels => [SmsChannel.make]}
   end
   
   describe "availability" do
-    
     it "should be available by default" do
       Day.all.each do |day|
         (0..23).each do |hour|
@@ -43,5 +43,22 @@ describe Volunteer do
       @volunteer.shifts[day.to_s][hour.to_s] = "0"
     end
   end
+
+	describe "valid" do
+		it "should be valid with valid attributes" do
+			@volunteer.attributes = @valid_attributes
+			@volunteer.valid?.should be_true
+		end
+		
+		it "should be invalid with no channels" do
+			@volunteer.attributes = @valid_attributes.except(:sms_channels)
+			@volunteer.valid?.should be_false
+		end
+		
+		it "should be invalid without name" do
+			@volunteer.attributes = @valid_attributes.except(:name)
+			@volunteer.valid?.should be_false
+		end
+	end
   
 end
