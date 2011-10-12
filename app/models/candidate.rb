@@ -4,6 +4,8 @@ class Candidate < ActiveRecord::Base
 
   belongs_to :mission
   belongs_to :volunteer
+	
+	has_many :calls
 
   validates_presence_of :mission_id, :volunteer_id, :voice_retries, :sms_retries
 
