@@ -17,7 +17,7 @@ class Candidate < ActiveRecord::Base
 	after_initialize :init
 	
 	def self.find_last_for_sms_number number
-    Candidate.joins(:volunteer).where(:volunteers => {:sms_number => number}).order('last_sms_att DESC').readonly(false).first
+    Candidate.joins(:volunteer => [:sms_channels]).where(:volunteers => {:channels =>{:address => number}}).order('last_sms_att DESC').readonly(false).first
   end
   
   def has_sms?
