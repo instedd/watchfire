@@ -132,6 +132,10 @@ class Mission < ActiveRecord::Base
   def voice_message
 		I18n.t :voice_message, :reason => reason_for_message, :location => address
   end
+
+	def voice_message_sentences
+		voice_message.split('.').map(&:strip)
+	end
   
   def progress
     confirmed_candidates = candidate_count(:confirmed)

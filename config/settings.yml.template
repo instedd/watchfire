@@ -15,6 +15,7 @@ defaults: &defaults
   available_ratio: 0.25
   basic_auth_name: COMPLETE
   basic_auth_pwd: COMPLETE
+  ispeech_api_key: COMPLETE
 
 development:
   <<: *defaults

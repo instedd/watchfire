@@ -292,6 +292,11 @@ describe Mission do
 				@mission.send(kind).should eq(I18n.t kind, :reason => "an emergency", :location => "San Mateo")
 			end
 		end
+		
+		it "should tell voice message sentences" do
+			@mission.expects(:voice_message).returns("First sentence. Second sentence . Third")
+			@mission.voice_message_sentences.should eq(["First sentence", "Second sentence", "Third"])
+		end
 	end
   
 end
