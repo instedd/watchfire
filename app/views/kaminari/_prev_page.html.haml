@@ -7,5 +7,5 @@
 -#    remote:        data-remote
 / = link_to_unless current_page.first?, raw(t 'views.pagination.previous'), url, :rel => 'prev', :remote => remote
 %span.button.prev
-	= link_to_unless current_page.first?, raw('&#9668;'), url, :rel => 'prev', :remote => remote do
-		= link_to raw('&#9668;'), '#'
+	= link_to_unless current_page.first?, raw(tag(:span)), url, :rel => 'prev', :remote => remote do
+		= link_to raw(tag(:span)), '#'
