@@ -1,6 +1,5 @@
 class SmsJob < CandidateJob
   def perform
-    config = Watchfire::Application.config
     candidate = Candidate.find(candidate_id)
     
     # if candidate is not pending then stop sending sms
@@ -13,22 +12,22 @@ class SmsJob < CandidateJob
     end
     
     # Send SMS
-    api = Nuntium.new config.nuntium_host, config.nuntium_account, config.nuntium_app, config.nuntium_app_passwd
-    
-    message = {
-      :from => "sms://0",
-      :to => "sms://#{candidate.volunteer.sms_number}",
-      :body => candidate.mission.sms_message
-    }
-    
-    response = api.send_ao message
-    
-    # if the request is successful, increase retries and set last sms attempt timestamp
-    if response.code == 200
-      candidate.sms_retries = candidate.sms_retries + 1
+    nuntium = Nuntium.from_config
+		begin
+			message = {
+	      :from => "sms://watchfire",
+	      :to => candidate.volunteer.sms_number.with_protocol,
+	      :body => candidate.mission.sms_message
+	    }
+	    nuntium.send_ao message
+		rescue Nuntium::Exception => e
+			
+		ensure
+			# Increase retries and set last sms attempt timestamp
+			candidate.sms_retries = candidate.sms_retries + 1
       candidate.last_sms_att = Time.now.utc
       candidate.save :validate => false
-    end
+		end
     
     # Enqueue new job with time = sms timeout
     Delayed::Job.enqueue SmsJob.new(candidate_id), :run_at => config.sms_timeout.minutes.from_now

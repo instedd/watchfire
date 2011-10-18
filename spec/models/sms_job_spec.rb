@@ -5,8 +5,7 @@ describe SmsJob do
   before(:each) do
     @config =  Watchfire::Application.config
     @nuntium = mock()
-    Nuntium.stubs(:new).returns(@nuntium)
-    @response = mock()
+    Nuntium.stubs(:from_config).returns(@nuntium)
   end
   
   after(:each) do
@@ -19,16 +18,14 @@ describe SmsJob do
       @sms_job = SmsJob.new @candidate.id
     end
     
-    it "should send sms to volunteer" do
-      @response.stubs(:code).returns(200)    
-      @nuntium.expects(:send_ao).returns(@response)
+    it "should send sms to volunteer" do  
+      @nuntium.expects(:send_ao)
       
       @sms_job.perform
     end
     
     it "should increase retries if response is ok" do
-      @nuntium.stubs(:send_ao).returns(@response)
-      @response.expects(:code).returns(200)
+      @nuntium.stubs(:send_ao)
       Timecop.freeze
       
       @sms_job.perform
@@ -39,8 +36,7 @@ describe SmsJob do
     end
     
     it "should enqueue next job" do
-      @nuntium.stubs(:send_ao).returns(@response)
-      @response.stubs(:code).returns(200)
+      @nuntium.stubs(:send_ao)
       
       @sms_job.perform
       
@@ -56,8 +52,7 @@ describe SmsJob do
     it "should send sms to the candidate sms phone number" do
       @nuntium.expects(:send_ao).with do |message|
         message[:to] == "sms://#{@candidate.volunteer.sms_number}"
-      end.returns(@response)
-      @response.stubs(:code).returns(200)
+      end
       
       @sms_job.perform
     end
@@ -65,8 +60,7 @@ describe SmsJob do
     it "should send sms with appropiate text" do
       @nuntium.expects(:send_ao).with do |message|
         message[:body] == @candidate.mission.sms_message
-      end.returns(@response)
-      @response.stubs(:code).returns(200)
+      end
       
       @sms_job.perform
     end
@@ -172,28 +166,29 @@ describe SmsJob do
     end
   end
   
-  describe "nuntium bad response" do
+  describe "nuntium error" do
     
     before(:each) do
       @candidate = Candidate.make! :status => :pending, :sms_retries => 1
       @sms_job = SmsJob.new @candidate.id
       
-      @nuntium.stubs(:send_ao).returns(@response)
-      @response.stubs(:code).returns(400)
+      @nuntium.expects(:send_ao).raises(Nuntium::Exception, "Nuntium Error")
     end
     
-    it "should not increase retries" do
+    it "should increase retries" do
       @sms_job.perform
       
       new_candidate = Candidate.find @candidate.id
-      new_candidate.sms_retries.should == @candidate.sms_retries
+      new_candidate.sms_retries.should == @candidate.sms_retries + 1
     end
     
-    it "should not set last sms attempt" do
-      @sms_job.perform
+    it "should set last sms attempt" do
+			Timecop.freeze
+      
+			@sms_job.perform
       
       new_candidate = Candidate.find @candidate.id
-      new_candidate.last_sms_att.should == @candidate.last_sms_att
+      new_candidate.last_sms_att.should == Time.now.utc
     end
     
   end
