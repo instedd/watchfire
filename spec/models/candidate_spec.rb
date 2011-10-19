@@ -125,11 +125,9 @@ describe Candidate do
       @candidate.volunteer.voice_number = nil
       @candidate.has_voice_retries?.should be false
     end
-    
   end
   
   describe "update status" do
-    
     before(:each) do
       @candidate = Candidate.new
       @mission = Mission.new
@@ -150,7 +148,37 @@ describe Candidate do
       @mission.expects(:check_for_more_volunteers)
       @candidate.update_status :pending
     end
+  end
+  
+  describe "find by call session id" do
+    before(:each) do
+      @candidate = Candidate.make!
+      @call_1 = Call.make! :candidate => @candidate
+      @call_2 = Call.make! :candidate => @candidate
+    end
     
+    it "should find candidate by any of its calls" do
+      Candidate.find_by_call_session_id(@call_1.session_id).should eq(@candidate)
+      Candidate.find_by_call_session_id(@call_2.session_id).should eq(@candidate)
+    end
+    
+    it "should return nil if doesn't exist" do
+      Candidate.find_by_call_session_id("foo").should be_nil
+    end
+  end
+  
+  it "should destroy dependent calls" do
+    candidate = Candidate.make!
+    call_1 = Call.make! :candidate => candidate
+    call_2 = Call.make! :candidate => candidate
+    call_3 = Call.make!
+    
+    Call.all.size.should eq(3)
+    
+    candidate.destroy
+    
+    Call.all.size.should eq(1)
+    Call.first.should eq(call_3)
   end
   
 end

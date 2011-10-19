@@ -51,12 +51,14 @@ describe VoiceJob do
       assert_equal @candidate.id, job.candidate_id
     end
     
-    it "should save call id" do
+    it "should create Call with session id" do
       @verboice.stubs(:call).returns(@response)
       
       @voice_job.perform
       
-      @candidate.reload.call_id.should == '123'
+      call = Call.last
+      call.candidate.should eq(@candidate)
+      call.session_id.should eq('123')
     end
     
   end

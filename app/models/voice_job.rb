@@ -25,8 +25,9 @@ class VoiceJob < CandidateJob
       JobLogger.debug "VoiceJob: Calling Candidate #{candidate_id} through Verboice, number is #{candidate.volunteer.voice_number}"
       response = verboice.call candidate.volunteer.voice_number
       
-      JobLogger.debug "VoiceJob: Setting call_id of Candidate #{candidate_id} to #{response['call_id']}"
-      candidate.call_id = response['call_id']
+      session_id = response['call_id']
+      JobLogger.debug "VoiceJob: Adding Call with session_id #{session_id} to Candidate #{candidate_id}"
+      candidate.calls.create! :session_id => session_id
     rescue Exception => e
       JobLogger.error "VoiceJob: Error calling Candidate #{candidate_id}, exception: #{e}"
     ensure

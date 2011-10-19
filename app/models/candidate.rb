@@ -4,6 +4,8 @@ class Candidate < ActiveRecord::Base
 
   belongs_to :mission
   belongs_to :volunteer
+	
+  has_many :calls, :dependent => :destroy
 
   validates_presence_of :mission_id, :volunteer_id, :voice_retries, :sms_retries
 
@@ -16,6 +18,10 @@ class Candidate < ActiveRecord::Base
 	
 	def self.find_last_for_sms_number number
     Candidate.joins(:volunteer).where(:volunteers => {:sms_number => number}).order('last_sms_att DESC').readonly(false).first
+  end
+  
+  def self.find_by_call_session_id id
+    Call.find_by_session_id(id).candidate rescue nil
   end
   
   def has_sms?
