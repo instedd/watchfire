@@ -35,7 +35,7 @@ class NuntiumController < BasicAuthController
         candidate.update_status :denied
       end
       
-      message = I18n.t :sms_successful
+      message = candidate.response_message
     rescue => e
       logger.error e
     end

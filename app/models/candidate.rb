@@ -55,6 +55,10 @@ class Candidate < ActiveRecord::Base
     mission.check_for_more_volunteers
   end
   
+  def response_message
+    I18n.t(confirmed? ? :response_confirmed : :response_denied)
+  end
+  
   private
 
 	def init

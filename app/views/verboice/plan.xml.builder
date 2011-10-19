@@ -10,6 +10,7 @@ xml.Response do
 				xml.Gather(gather_options(:timeout => 0)) do
 					xml.Play ispeech(sentence)
 				end
+				xml.Pause(:length => 1)
 			end
 			xml.Gather(gather_options) do
 				xml.Play ispeech(last_sentence)

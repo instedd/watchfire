@@ -1,9 +1,9 @@
 xml.instruct!
 xml.Response do
 	if ispeech_available?
-		xml.Play ispeech(I18n.t(:voice_successful))
+		xml.Play ispeech(@candidate.response_message)
 	else
-		xml.Say I18n.t(:voice_successful)
+		xml.Say @candidate.response_message
 	end
   xml.Hangup
 end
