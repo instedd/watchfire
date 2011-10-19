@@ -14,5 +14,5 @@
 	= form_tag start_mission_path(mission), :remote => true do
 		%button.white Resume recruiting
 - else
-	= form_tag open_mission_path(mission), :remote => true do
+	= form_tag open_mission_path(mission), :remote => false do
 		%button.orange Open event

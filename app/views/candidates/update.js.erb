@@ -10,4 +10,6 @@ $('.phone,.gphone', container).each(function(){
 	var new_class = '<%= @candidate.active ? "phone" : "gphone"%>';
 	$(this).attr('class', new_class);
 });
-init_candidate_events();
+$('#edit_candidate_<%= @candidate.id %> input:checkbox').click(function() {
+	$(this).parent().submit();
+});

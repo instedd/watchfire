@@ -1,13 +1,10 @@
 class VerboiceController < ApplicationController
+  before_filter :load_candidate
 
   def plan
-    @candidate = Candidate.find_by_call_id params[:CallSid]
   end
   
-  def callback
-    # find candidate based on call id
-    @candidate = Candidate.find_by_call_id params[:CallSid]
-    
+  def callback    
     # look for user response based on digits
     match = params[:Digits].match /(1|2)/
     
@@ -25,6 +22,12 @@ class VerboiceController < ApplicationController
     else
       @candidate.update_status :denied
     end
+  end
+  
+  private
+  
+  def load_candidate
+    @candidate = Candidate.find_by_call_session_id params[:CallSid]
   end
 
 end
