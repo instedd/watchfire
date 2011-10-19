@@ -44,6 +44,11 @@ SmsChannel.blueprint do
 	address { _phone_number }
 end
 
+Call.blueprint do
+  session_id { _guid }
+  candidate { Candidate.make! }
+end
+
 def _name
   Faker::Name.name
 end
@@ -71,4 +76,8 @@ end
 
 def _lng
   rand * 360 - 180
+end
+
+def _guid
+  (1..10).map{ ('a'..'z').to_a.rand }.join
 end

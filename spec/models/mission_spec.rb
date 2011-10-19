@@ -276,5 +276,27 @@ describe Mission do
     end
     
   end
+
+	describe "messages" do
+		before :each do
+			@mission = Mission.new :address => "San Mateo"
+		end
+		
+		[:sms_message, :voice_message].each do |kind|
+			it "should tell #{kind.to_s} with reason" do
+				@mission.reason = "a reason"
+				@mission.send(kind).should eq(I18n.t kind, :reason => "a reason", :location => "San Mateo")
+			end
+			
+			it "should tell #{kind.to_s} without reason" do
+				@mission.send(kind).should eq(I18n.t kind, :reason => "an emergency", :location => "San Mateo")
+			end
+		end
+		
+		it "should tell voice message sentences" do
+			@mission.expects(:voice_message).returns("First sentence. Second sentence . Third")
+			@mission.voice_message_sentences.should eq(["First sentence", "Second sentence", "Third"])
+		end
+	end
   
 end

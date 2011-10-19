@@ -118,7 +118,8 @@ class Mission < ActiveRecord::Base
   end
   
   def add_volunteer volunteer
-    self.candidates.create! :volunteer => volunteer
+		candidate = self.candidates.create! :volunteer => volunteer
+		candidate.call
   end
 
 	def check_for_volunteers?
@@ -126,12 +127,16 @@ class Mission < ActiveRecord::Base
 	end
 	
 	def sms_message
-	  "#{base_message} #{I18n.t :sms_confirmation}"
+		I18n.t :sms_message, :reason => reason_for_message, :location => address
   end
   
   def voice_message
-    base_message
+		I18n.t :voice_message, :reason => reason_for_message, :location => address
   end
+
+	def voice_message_sentences
+		voice_message.split('.').map(&:strip)
+	end
   
   def progress
     confirmed_candidates = candidate_count(:confirmed)
@@ -152,12 +157,10 @@ class Mission < ActiveRecord::Base
   end
   
   private
-  
-  def base_message
-    reason = self.reason.present? ? self.reason : I18n.t(:an_emergency)
-    location = self.address.present? ? I18n.t(:location, :location => self.address) : ""
-    I18n.t :emergency_message, :reason => reason, :location => location
-  end
+
+	def reason_for_message	
+		self.reason.present? ? self.reason : I18n.t(:an_emergency)
+	end
   
   def update_status status
     self.status = status

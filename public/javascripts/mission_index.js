@@ -19,7 +19,7 @@ function show_by_status(status) {
 	$('.mission').removeClass('hidden');
 	
 	if (status == 'active') {	
-		$('.mission[data-status=finished]').addClass('hidden');
+		$('.mission[data-status!=running]').addClass('hidden');
 	} else if (status == 'finished') {
 		$('.mission[data-status!=finished]').addClass('hidden');
 	}

@@ -2,11 +2,10 @@
 # See http://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 en:
-  emergency_message: "Red Cross needs your assistance because of %{reason} %{location}."
+  voice_message: "Hello, this is the Red Cross. Press pound at anytime during this call to repeat information. There is %{reason} located at %{location}. If you are able to respond press 1. If you are not able to respond press 2. If you need to talk to the coordinator call 123 456 7890 to speak with John. Thank you for volunteering your time. Press pound to repeat this message."
+  sms_message: "Hello, this is the Red Cross. There is %{reason} located at %{location}. If you are able to respond send 'yes'. If you are not able to respond send 'no'. If you need to talk to the coordinator call (123) 456-7890 to speak with John. Thank you for volunteering your time."
   location: "near %{location}"
   an_emergency: "an emergency"
-  voice_confirmation: "Press 1 if you are available or 2 if you are not."
-  sms_confirmation: "Respond with 'yes' if you are available or 'no' if you are not."
   sms_bad_format: "Sorry, you sent '%{text}' but we were expecting 'yes' or 'no'"
   voice_successful: "Your answer has been recorded. Thank you"
   sms_successful: "Your answer has been received. Thank you"

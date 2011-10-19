@@ -23,8 +23,9 @@ describe VerboiceController do
   describe "POST 'callback'" do
     
     before(:each) do
-      @candidate = Candidate.make! :call_id => '123', :status => :pending
-      @parameters = {:CallSid => '123', :Digits => '1', :format => 'xml'}
+      @candidate = Candidate.make! :status => :pending
+      @call = Call.make! :candidate => @candidate
+      @parameters = {:CallSid => @call.session_id, :Digits => '1', :format => 'xml'}
     end
     
     it "should be successful" do
@@ -34,7 +35,7 @@ describe VerboiceController do
     
     it "should set candidate status to confirmed if user pressed 1" do
       @parameters[:Digits] = '1'
-      Candidate.expects(:find_by_call_id).with('123').returns(@candidate)
+      Candidate.expects(:find_by_call_session_id).with(@call.session_id).returns(@candidate)
       @candidate.expects(:update_status).with(:confirmed)
       
       post 'callback', @parameters
@@ -44,7 +45,7 @@ describe VerboiceController do
     
     it "should set candidate status to denied if user pressed 2" do
       @parameters[:Digits] = '2'
-      Candidate.expects(:find_by_call_id).with('123').returns(@candidate)
+      Candidate.expects(:find_by_call_session_id).with(@call.session_id).returns(@candidate)
       @candidate.expects(:update_status).with(:denied)
       
       post 'callback', @parameters

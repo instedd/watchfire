@@ -65,6 +65,18 @@ describe NuntiumController do
       response.body.should eq(I18n.t :sms_successful)
       response.content_type.should eq("text/plain")
     end
+
+		it "should confirm candidate with capitalized text" do
+			Candidate.expects(:find_last_for_sms_number).with(@number).returns(@candidate)
+      @candidate.expects(:update_status).with(:confirmed)
+      post 'receive', :from => @number.with_protocol, :body => "Yes"
+		end
+		
+		it "should deny candidate with capitalized text" do
+      Candidate.expects(:find_last_for_sms_number).with(@number).returns(@candidate)
+      @candidate.expects(:update_status).with(:denied)
+      post 'receive', :from => @number.with_protocol, :body => "No"
+    end
     
   end
 

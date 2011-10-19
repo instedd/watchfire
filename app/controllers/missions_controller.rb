@@ -6,7 +6,7 @@ class MissionsController < ApplicationController
 	before_filter :check_owner, :except => [:create, :new, :index]
 
   def show
-    add_breadcrumb @mission.reason, mission_path(@mission)
+    add_breadcrumb @mission.name, mission_path(@mission)
   end
 
 	def new

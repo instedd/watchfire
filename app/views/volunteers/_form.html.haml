@@ -11,15 +11,18 @@
 		= f.label :name
 		= f.text_field :name, :class => 'w60'
 		%br
+		%br
 		= label_tag 'Voice numbers'
 		= text_field_tag 'volunteer[voice_numbers]', nil, :id => 'voice_numbers', :class => 'w60'
+		%br
 		%br
 		= f.label :sms_number, 'SMS numbers'
 		= text_field_tag 'volunteer[sms_numbers]', nil, :id => 'sms_numbers', :class => 'w60'
 		%br
+		%br
 		= f.hidden_field :lat
 		= f.hidden_field :lng
-    
+
 		.box.w58
 			= f.label :address
 			= f.text_field :address, :placeholder => 'Search', :class => 'w54 ux-search'
