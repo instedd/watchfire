@@ -181,4 +181,12 @@ describe Candidate do
     Call.first.should eq(call_3)
   end
   
+  it "should tell voice response based on status" do
+    candidate = Candidate.new
+    candidate.status = :confirmed
+    candidate.response_message.should eq(I18n.t(:response_confirmed))
+    candidate.status = :denied
+    candidate.response_message.should eq(I18n.t(:response_denied))
+  end
+  
 end

@@ -59,9 +59,15 @@ describe NuntiumController do
       response.content_type.should eq("text/plain")
     end
     
-    it "should return successful reply when good message" do
+    it "should return confirmed message reply when user confirms" do
       post 'receive', :from => "sms://#{@candidate.volunteer.sms_number}", :body => "yes"
-      response.body.should eq(I18n.t :sms_successful)
+      response.body.should eq(I18n.t :response_confirmed)
+      response.content_type.should eq("text/plain")
+    end
+    
+    it "should return denied message reply when user denies" do
+      post 'receive', :from => "sms://#{@candidate.volunteer.sms_number}", :body => "no"
+      response.body.should eq(I18n.t :response_denied)
       response.content_type.should eq("text/plain")
     end
 
