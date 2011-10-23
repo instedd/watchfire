@@ -157,6 +157,19 @@ function init_events() {
 	});
 	
 	init_candidate_events();
+	
+    // Events for the message form
+	$('#mission_use_custom_text').click(function(e){
+	    $(this).parents("form").submit();
+	});
+	$('#message_form_link').click(function(e){
+	    $(this).parents("form").submit();
+	    return false;
+	});
+	$('#mission_custom_text').keypress(function(e){
+	    $('#message_form_link').removeClass('hidden');
+	    $('#saved_label').addClass('hidden');
+	});
 }
 
 function init_candidate_events() {

@@ -1,12 +1,27 @@
-%p We will call and text the recruitees below with the following message:
-%p.tgrey
-	%em Hello, this is the Red Cross. There is
-	- if mission.reason.present?
-		= mission.reason
-	- else
-		%em a single house fire
-	%em located at
-	- if mission.address.present?
-		= mission.address
-	- else
-		%em 1710 Trousdale, Burlingame.
+= form_for mission, :remote => true do |f|
+  %p
+    = f.check_box :use_custom_text, :disabled => mission.running? || mission.finished?
+    = f.label :use_custom_text, 'Use Custom Text'
+  %p We will call and text the recruitees below with the following message:
+  - if mission.use_custom_text
+    = f.text_area :custom_text, :rows => 3, :cols => 47, :disabled => mission.running? || mission.finished?
+    %p.tgrey
+      %em.left= I18n.t :voice_message_options
+      %a#message_form_link.hidden.right{:href => "#"} Save
+      - if mission.custom_text_changed?
+        %span#saved_label.right Saved
+      .clear
+  - else
+    %p.tgrey
+      %em Hello, this is the Red Cross. There is
+      - if mission.reason.present?
+        = mission.reason
+      - else
+        %em a single house fire
+      %em located at
+      - if mission.address.present?
+        = mission.address
+      - else
+        %em 1710 Trousdale, Burlingame.
+      %em . Can you respond?
+      %em= I18n.t :voice_message_options

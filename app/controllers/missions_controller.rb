@@ -76,6 +76,10 @@ class MissionsController < ApplicationController
 		csv = VolunteerExporter.export @mission
 		send_data csv, :type => 'text/csv', :filename => "#{@mission.name}_results.csv"
 	end
+	
+	def update_message
+	  @mission.update_attributes params[:mission]
+  end
 
 	private
 
