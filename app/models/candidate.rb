@@ -59,6 +59,10 @@ class Candidate < ActiveRecord::Base
     I18n.t(confirmed? ? :response_confirmed : :response_denied)
   end
   
+  def last_call
+    self.calls.order('created_at DESC').first
+  end
+  
   private
 
 	def init
