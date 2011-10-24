@@ -8,7 +8,7 @@ class NuntiumController < BasicAuthController
       
       # parse fields
       number_match = from.match /sms:\/\/(\d+)/
-      response_match = body.downcase.match /^(yes|no)$/
+      response_match = body.downcase.match /(yes|no)/
     
       raise 'Error parsing number' unless number_match
       

@@ -83,6 +83,22 @@ describe NuntiumController do
       post 'receive', :from => "sms://#{@candidate.volunteer.sms_number}", :body => "No"
     end
     
+    ["Yes I Can!", "I think I will be available, yes"].each do |answer|
+      it "should allow more flexible responses for confirmation" do
+        Candidate.expects(:find_last_for_sms_number).with(@candidate.volunteer.sms_number).returns(@candidate)
+        @candidate.expects(:update_status).with(:confirmed)
+        post 'receive', :from => "sms://#{@candidate.volunteer.sms_number}", :body => answer
+      end
+    end
+    
+    ["No I can't!", "Sorry no I won't be available"].each do |answer|
+      it "should allow more flexible responses for denial" do
+        Candidate.expects(:find_last_for_sms_number).with(@candidate.volunteer.sms_number).returns(@candidate)
+        @candidate.expects(:update_status).with(:denied)
+        post 'receive', :from => "sms://#{@candidate.volunteer.sms_number}", :body => answer
+      end
+    end
+    
   end
 
 end
