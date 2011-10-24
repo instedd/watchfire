@@ -2,6 +2,7 @@
 $('#mission_distance').html('<%=escape_javascript(render :partial => "distance", :locals => { :mission => @mission } )%>');
 $('#mission_status').html('<%=escape_javascript(render :partial => "status", :locals => { :mission => @mission } )%>');
 $('#form_container').html('<%=escape_javascript(render :partial => "form", :locals => { :mission => @mission } )%>');
+$('#mission_message').html('<%=escape_javascript(render :partial => "message", :locals => { :mission => @mission } )%>');
 $.instedd.init_components($('#form_container'));
 stop_refresh_enable_inputs();
 init_events();

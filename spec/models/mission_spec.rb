@@ -285,12 +285,18 @@ describe Mission do
 		[:sms_message, :voice_message].each do |kind|
 			it "should tell #{kind.to_s} with reason" do
 				@mission.reason = "a reason"
-				@mission.send(kind).should eq(I18n.t kind, :reason => "a reason", :location => "San Mateo")
+				@mission.send(kind).should eq(I18n.t(:template_message, :reason => "a reason", :location => "San Mateo") + I18n.t("#{kind.to_s}_options"))
 			end
 			
 			it "should tell #{kind.to_s} without reason" do
-				@mission.send(kind).should eq(I18n.t kind, :reason => "an emergency", :location => "San Mateo")
+			  @mission.send(kind).should eq(I18n.t(:template_message, :reason => "an emergency", :location => "San Mateo") + I18n.t("#{kind.to_s}_options"))
 			end
+			
+			it "should use custom text if use custom text is enabled" do
+  		  @mission.use_custom_text = true
+  		  @mission.custom_text = "a custom text"
+		    @mission.send(kind).should eq("a custom text." + I18n.t("#{kind.to_s}_options"))
+  	  end
 		end
 		
 		it "should tell voice message sentences" do

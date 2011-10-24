@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111012200943) do
+ActiveRecord::Schema.define(:version => 20111022225008) do
 
   create_table "calls", :force => true do |t|
     t.string   "session_id"
@@ -66,6 +66,8 @@ ActiveRecord::Schema.define(:version => 20111012200943) do
     t.integer  "skill_id"
     t.integer  "user_id"
     t.string   "name"
+    t.boolean  "use_custom_text", :default => false, :null => false
+    t.text     "custom_text"
   end
 
   create_table "skills", :force => true do |t|

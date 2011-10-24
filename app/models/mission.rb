@@ -127,11 +127,11 @@ class Mission < ActiveRecord::Base
 	end
 	
 	def sms_message
-		I18n.t :sms_message, :reason => reason_for_message, :location => address
+		template_or_custom_text + I18n.t(:sms_message_options)
   end
   
   def voice_message
-		I18n.t :voice_message, :reason => reason_for_message, :location => address
+		template_or_custom_text + I18n.t(:voice_message_options)
   end
 
 	def voice_message_sentences
@@ -156,10 +156,26 @@ class Mission < ActiveRecord::Base
     new_mission
   end
   
+  def custom_text_changed?
+    self.previous_changes.keys.include? :custom_text.to_s
+  end
+  
+  def template_text
+    I18n.t :template_message, :reason => reason_for_message, :location => address
+  end
+  
   private
 
 	def reason_for_message	
 		self.reason.present? ? self.reason : I18n.t(:an_emergency)
+	end
+	
+	def template_or_custom_text
+	  if use_custom_text
+	    custom_text[-1] == "." ? custom_text : "#{custom_text}."
+    else
+      template_text
+    end
 	end
   
   def update_status status

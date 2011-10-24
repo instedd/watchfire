@@ -162,7 +162,6 @@ describe VoiceJob do
   end
   
   describe "verboice bad response" do
-    
     before(:each) do
       @candidate = Candidate.make! :status => :pending, :voice_retries => 1
       @voice_job = VoiceJob.new @candidate.id
@@ -184,7 +183,33 @@ describe VoiceJob do
       new_candidate = Candidate.find @candidate.id
       new_candidate.last_voice_att.should == Time.now.utc
     end
+  end
+  
+  describe "last call" do
+    before(:each) do
+      @candidate = Candidate.make! :status => :pending
+      @last_call = Call.make! :candidate => @candidate
+      @voice_job = VoiceJob.new @candidate.id
+      @verboice.expects(:call_state).with(@last_call.session_id).returns(@response)
+    end
     
+    ["active", "queued"].each do |state|
+      it "should not call candidate if last call is #{state}" do
+        @response.expects(:[]).with("state").returns(state)
+        @verboice.expects(:call).never
+      
+        @voice_job.perform
+      end
+    end
+    
+    ["completed", "failed"].each do |state|
+      it "should call candidate if last call is #{state}" do
+        @response.expects(:[]).with("state").returns(state)
+        @verboice.expects(:call)
+      
+        @voice_job.perform
+      end
+    end
   end
   
 end
