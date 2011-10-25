@@ -13,7 +13,11 @@ class VolunteersController < ApplicationController
     @order = params[:order] || 'name'
     @direction = params[:direction] == 'DESC' ? 'DESC' : 'ASC'
     @page = params[:page] || 1
-    @volunteers = Volunteer.order("#{@order} #{@direction}").page @page
+    @q = params[:q]
+    
+    @volunteers = Volunteer.order("#{@order} #{@direction}")
+    @volunteers = @volunteers.where("name like ? OR address like ?", "%#{@q}%", "%#{@q}%") unless @q.blank?
+    @volunteers = @volunteers.page @page
 
     respond_to do |format|
       format.html # index.html.erb
