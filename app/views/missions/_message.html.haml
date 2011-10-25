@@ -1,7 +1,8 @@
 = form_for mission, :remote => true do |f|
   %p
-    = f.check_box :use_custom_text, :disabled => mission.running? || mission.finished?
-    = f.label :use_custom_text, 'Use Custom Text'
+    - unless mission.new_record?
+      = f.check_box :use_custom_text, :disabled => mission.running? || mission.finished?
+      = f.label :use_custom_text, 'Use Custom Text'
   %p We will call and text the recruitees below with the following message:
   - if mission.use_custom_text
     = f.text_area :custom_text, :rows => 3, :cols => 47, :disabled => mission.running? || mission.finished?
