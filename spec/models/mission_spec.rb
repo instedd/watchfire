@@ -303,6 +303,11 @@ describe Mission do
 			@mission.expects(:voice_message).returns("First sentence. Second sentence . Third")
 			@mission.voice_message_sentences.should eq(["First sentence", "Second sentence", "Third"])
 		end
+		
+		it "should reject empty sentences in voice message" do
+		  @mission.expects(:voice_message).returns("First sentence. . Third.\r\n")
+		  @mission.voice_message_sentences.should eq(["First sentence", "Third"])
+	  end
 	end
   
 end

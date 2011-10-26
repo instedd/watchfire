@@ -89,3 +89,9 @@ tr.link {
 .import_error_description > * {
   margin-left: 0px;
 }
+
+/* line 69, ../../app/stylesheets/screen.sass */
+#volunteers_search {
+  position: relative;
+  top: -5px;
+}

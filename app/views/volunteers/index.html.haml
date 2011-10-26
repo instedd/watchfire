@@ -1,47 +1,54 @@
 - content_for :head do
-	= javascript_include_tag 'volunteer_index'
-	
-%h1= "#{@volunteers_count} volunteers"
+  = javascript_include_tag 'volunteer_index'
+
+.left
+  %h1= "#{@volunteers_count} volunteers"
+  
+.right
+  = form_tag volunteers_path, :method => :get do
+    = text_field_tag :q, @q, :placeholder => "Search", :class => "w30 ux-search", :id => "volunteers_search"
+
+.clear
 
 .tablewrapp
-	%table.GralTable.ButtonTable.w-pagination
-		%tr
-			= sort_header 'Name', :name
-			= sort_header 'Address', :address
-			= sort_header 'Voice Number', :voice_number
-			= sort_header  'SMS Number', :sms_number
-		- @volunteers.each do |volunteer|
-			%tr.link{'data-url' => edit_volunteer_path(volunteer)}
-				%td= volunteer.name
-				%td= volunteer.address
-				%td= volunteer.voice_number
-				%td
-					= volunteer.sms_number
-					= form_tag volunteer_path(volunteer), :method => :delete, 'data-confirm' => 'Are you sure?' do
-						%button.avoid.fdelete
-					= form_tag edit_volunteer_path(volunteer), :method => :get do
-						%button.avoid.farrow
-	= paginate @volunteers
+  %table.GralTable.ButtonTable.w-pagination
+    %tr
+      = sort_header 'Name', :name
+      = sort_header 'Address', :address
+      = sort_header 'Voice Number', :voice_number
+      = sort_header  'SMS Number', :sms_number
+    - @volunteers.each do |volunteer|
+      %tr.link{'data-url' => edit_volunteer_path(volunteer)}
+        %td= volunteer.name
+        %td= volunteer.address
+        %td= volunteer.voice_number
+        %td
+          = volunteer.sms_number
+          = form_tag volunteer_path(volunteer), :method => :delete, 'data-confirm' => 'Are you sure?' do
+            %button.avoid.fdelete
+          = form_tag edit_volunteer_path(volunteer), :method => :get do
+            %button.avoid.farrow
+  = paginate @volunteers
 %br
 %br
 %h1 Bulk volunteers creation
 %span.smalldescription Create volunteers uploading a CSV file.
 %br
 = link_to '/samples/volunteers.csv' do
-	%button.fimport Download a sample CSV file
+  %button.fimport Download a sample CSV file
 %span.tgrey and fill it with the accounts data
 %br
 %br
 .ux-collapsible.collapsed{'data-on-expanded' => 'box grey w40'}
-	%span
-		%a
-			%button.fexport Upload it for bulk account creation
-	.ux-content
-		= form_for :import_volunteers, :url => import_volunteers_path, :html => {:multipart => true} do |f|
-			%hr
-			= file_field_tag :file
-			%hr
-			.botttom-actions.right
-				%a.tgrey.ux-collapse-trigger{:href => "#"} Cancel 
-				%button.grey Next
-			%br.clear
+  %span
+    %a
+      %button.fexport Upload it for bulk account creation
+  .ux-content
+    = form_for :import_volunteers, :url => import_volunteers_path, :html => {:multipart => true} do |f|
+      %hr
+      = file_field_tag :file
+      %hr
+      .botttom-actions.right
+        %a.tgrey.ux-collapse-trigger{:href => "#"} Cancel 
+        %button.grey Next
+      %br.clear

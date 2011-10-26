@@ -1,6 +1,7 @@
 class VolunteersController < ApplicationController
 
 	before_filter :authenticate_user!
+	before_filter :store_referer, :only => [:new, :edit, :destroy]
 	
 	add_breadcrumb "Volunteers", :volunteers_path
 
@@ -12,7 +13,11 @@ class VolunteersController < ApplicationController
     @order = params[:order] || 'name'
     @direction = params[:direction] == 'DESC' ? 'DESC' : 'ASC'
     @page = params[:page] || 1
-    @volunteers = Volunteer.order("#{@order} #{@direction}").page @page
+    @q = params[:q]
+    
+    @volunteers = Volunteer.order("#{@order} #{@direction}")
+    @volunteers = @volunteers.where("name like ? OR address like ?", "%#{@q}%", "%#{@q}%") unless @q.blank?
+    @volunteers = @volunteers.page @page
 
     respond_to do |format|
       format.html # index.html.erb
@@ -58,7 +63,7 @@ class VolunteersController < ApplicationController
 
     respond_to do |format|
       if @volunteer.save
-        format.html { redirect_to(volunteers_url, :notice => 'Volunteer was successfully created.') }
+        format.html { redirect_to(back, :notice => 'Volunteer was successfully created.') }
         format.xml  { render :xml => @volunteer, :status => :created, :location => @volunteer }
       else
         format.html { render :action => "new" }
@@ -74,7 +79,7 @@ class VolunteersController < ApplicationController
 
     respond_to do |format|
       if @volunteer.update_attributes(params[:volunteer])
-        format.html { redirect_to(volunteers_url, :notice => 'Volunteer was successfully updated.') }
+        format.html { redirect_to(back, :notice => 'Volunteer was successfully updated.') }
         format.xml  { head :ok }
       else
         format.html { render :action => "edit" }
@@ -90,7 +95,7 @@ class VolunteersController < ApplicationController
     @volunteer.destroy
 
     respond_to do |format|
-      format.html { redirect_to(volunteers_url) }
+      format.html { redirect_to(back) }
       format.xml  { head :ok }
     end
   end
@@ -109,4 +114,15 @@ class VolunteersController < ApplicationController
       render 'import'
     end
   end
+  
+  private
+  
+  def store_referer
+    session[:return_to] = request.referer
+  end
+  
+  def back
+    session[:return_to] || volunteers_path
+  end
+  
 end

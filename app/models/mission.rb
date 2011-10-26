@@ -135,7 +135,7 @@ class Mission < ActiveRecord::Base
   end
 
 	def voice_message_sentences
-		voice_message.split('.').map(&:strip)
+		voice_message.split('.').map(&:strip).reject{|s| s.blank?}
 	end
   
   def progress

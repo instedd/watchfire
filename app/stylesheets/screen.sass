@@ -1,66 +1,71 @@
 // @import compass/reset
 
 @mixin info-empty
-	color: #555
-	font-style: italic
+    color: #555
+    font-style: italic
 
 form
-	display: inline
+    display: inline
 
 #map_canvas
-	width: 600px
-	height: 278px
+    width: 600px
+    height: 278px
 
 #map_canvas_volunteer
-	width: 580px
-	height: 278px
+    width: 580px
+    height: 278px
 
 .hidden
-	display: none
+    display: none
 
 .volunteer_name
-	font-size: 18px
+    font-size: 18px
 
 .volunteer_address
-	font-size: 14px
-	color: #555
+    font-size: 14px
+    color: #555
 
 .volunteer_phones
-	font-size: 12px
-	margin-top: 10px
-	
+    font-size: 12px
+    margin-top: 10px
+    
 .missions_empty
-	padding-top: 55px
-	height: 200px
-	text-align: center
-	.info
-		margin-top: 10px
-		@include info-empty
-	.add
-		color: #1F86C8
-	.icon
+    padding-top: 55px
+    height: 200px
+    text-align: center
+    .info
+        margin-top: 10px
+        @include info-empty
+    .add
+        color: #1F86C8
+    .icon
 
 .Availability td
-	cursor: pointer
+    cursor: pointer
 
 #pending_list
-	td,span
-		cursor: pointer
+    td,span
+        cursor: pointer
 
 tr.link
-	cursor: pointer
+    cursor: pointer
 
 #version
-	display: inline
-	margin-left: 50px
+    display: inline
+    margin-left: 50px
 
 // Fix to wajbar in mission form
 #mission_form textarea
-	width: 594px !important
+    width: 594px !important
 
 // Overrides for error_description class to be used in the import volunteers errors
 .import_error_description
-	background: none
-	text-align: left
-	> *
-		margin-left: 0px
+    background: none
+    text-align: left
+    > *
+        margin-left: 0px
+
+// Fix positioning of search box in volunteers index
+#volunteers_search
+    position: relative
+    top: -5px
