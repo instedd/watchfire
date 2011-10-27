@@ -95,3 +95,12 @@ tr.link {
   position: relative;
   top: -5px;
 }
+
+/* line 75, ../../app/stylesheets/screen.sass */
+#check_candidates a {
+  color: #ff6600;
+}
+/* line 77, ../../app/stylesheets/screen.sass */
+#check_candidates a:hover {
+  color: #ff8533;
+}

@@ -63,6 +63,20 @@ class Candidate < ActiveRecord::Base
     self.calls.order('created_at DESC').first
   end
   
+  def enable!
+    self.active = true
+    self.save!
+  end
+  
+  def disable!
+    self.active = false
+    self.save!
+  end
+  
+  def <=>(other)
+    self.volunteer.name <=> other.volunteer.name
+  end
+  
   private
 
 	def init

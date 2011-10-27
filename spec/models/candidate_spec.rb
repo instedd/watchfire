@@ -189,4 +189,16 @@ describe Candidate do
     candidate.response_message.should eq(I18n.t(:response_denied))
   end
   
+  it "should enable candidate" do
+    candidate = Candidate.make!
+    candidate.enable!
+    candidate.active.should be_true
+  end
+  
+  it "should disable candidate" do
+    candidate = Candidate.make!
+    candidate.disable!
+    candidate.active.should be_false
+  end
+  
 end

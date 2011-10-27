@@ -17,6 +17,8 @@ Watchfire::Application.routes.draw do
       get 'refresh'
       post 'clone'
 			get 'export'
+			post 'check_all'
+			post 'uncheck_all'
     end
   end
   

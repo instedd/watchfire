@@ -58,6 +58,13 @@ describe MissionsController do
 		it "routes to #export" do
       get("/missions/1/export").should route_to("missions#export", :id => "1")
     end
-
+    
+    it "routes to #check_all" do
+      post("/missions/1/check_all").should route_to("missions#check_all", :id => "1")
+    end
+    
+    it "routes to #uncheck_all" do
+      post("/missions/1/uncheck_all").should route_to("missions#uncheck_all", :id => "1")
+    end
   end
 end
