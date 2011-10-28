@@ -1,0 +1,6 @@
+- unless mission.running? || mission.finished?
+  = form_tag check_all_mission_path(mission), :remote => true do
+    %a.link_to_form{:href => "#"} Enable All
+  |
+  = form_tag uncheck_all_mission_path(mission), :remote => true do
+    %a.link_to_form{:href => "#"} Pause All

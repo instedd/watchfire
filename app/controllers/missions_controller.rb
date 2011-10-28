@@ -80,6 +80,16 @@ class MissionsController < ApplicationController
 	def update_message
 	  @mission.update_attributes params[:mission]
   end
+  
+  def check_all
+    @mission.enable_all_pending
+    render 'update_pending'
+  end
+  
+  def uncheck_all
+    @mission.disable_all_pending
+    render 'update_pending'
+  end
 
 	private
 

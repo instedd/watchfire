@@ -93,5 +93,25 @@ tr.link {
 /* line 69, ../../app/stylesheets/screen.sass */
 #volunteers_search {
   position: relative;
-  top: -5px;
+  top: 5px;
+}
+
+/* line 75, ../../app/stylesheets/screen.sass */
+#check_candidates a {
+  color: #ff6600;
+}
+/* line 77, ../../app/stylesheets/screen.sass */
+#check_candidates a:hover {
+  color: #ff8533;
+}
+
+/* line 81, ../../app/stylesheets/screen.sass */
+.gphone, .gmobile {
+  color: #999999;
+}
+
+/* line 85, ../../app/stylesheets/screen.sass */
+span.time {
+  display: inline-block;
+  margin-top: 5px;
 }

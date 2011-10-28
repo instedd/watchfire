@@ -129,24 +129,47 @@ describe Candidate do
   
   describe "update status" do
     before(:each) do
-      @candidate = Candidate.new
-      @mission = Mission.new
-      @candidate.mission = @mission
+      @candidate = Candidate.make!
+      @candidate.mission.expects(:check_for_more_volunteers)
+      Timecop.freeze
     end
     
-    %w(confirmed pending denied unresponsive).each do |status|
-      it "should update status to #{status}" do
-        @candidate.expects(:save!)
-        @mission.stubs(:check_for_more_volunteers)
-        @candidate.update_status status
-        @candidate.send("is_#{status}?").should be true
-      end
+    it "should handle 'yes' response from sms" do
+      @candidate.answered_from_sms! "yes"
+      
+      @candidate.confirmed?.should be_true
+      @candidate.answered_from.should eq(@candidate.volunteer.sms_number)
+      @candidate.answered_at.should eq(Time.now.utc)
     end
     
-    it "should check for more volunteers in mission" do
-      @candidate.stubs(:save!)
-      @mission.expects(:check_for_more_volunteers)
-      @candidate.update_status :pending
+    it "should handle 'no' response from sms" do
+      @candidate.answered_from_sms! "no"
+      
+      @candidate.denied?.should be_true
+      @candidate.answered_from.should eq(@candidate.volunteer.sms_number)
+      @candidate.answered_at.should eq(Time.now.utc)
+    end
+    
+    it "should handle '1' response from voice" do
+      @candidate.answered_from_voice! "1"
+      
+      @candidate.confirmed?.should be_true
+      @candidate.answered_from.should eq(@candidate.volunteer.voice_number)
+      @candidate.answered_at.should eq(Time.now.utc)
+    end
+    
+    it "should handle '2' response from voice" do
+      @candidate.answered_from_voice! "2"
+      
+      @candidate.denied?.should be_true
+      @candidate.answered_from.should eq(@candidate.volunteer.voice_number)
+      @candidate.answered_at.should eq(Time.now.utc)
+    end
+    
+    it "should handle no answer" do
+      @candidate.no_answer!
+      
+      @candidate.unresponsive?.should be_true
     end
   end
   
@@ -187,6 +210,18 @@ describe Candidate do
     candidate.response_message.should eq(I18n.t(:response_confirmed))
     candidate.status = :denied
     candidate.response_message.should eq(I18n.t(:response_denied))
+  end
+  
+  it "should enable candidate" do
+    candidate = Candidate.make!
+    candidate.enable!
+    candidate.active.should be_true
+  end
+  
+  it "should disable candidate" do
+    candidate = Candidate.make!
+    candidate.disable!
+    candidate.active.should be_false
   end
   
 end

@@ -13,7 +13,7 @@ class VoiceJob < CandidateJob
     unless candidate.has_voice_retries?
       unless candidate.has_retries?
         JobLogger.debug "VoiceJob: Candidate #{candidate_id} has ran out of retries, setting status to unresponsive"
-        candidate.update_status :unresponsive
+        candidate.no_answer!
       end
       JobLogger.debug "VoiceJob: Candidate #{candidate_id} has ran out of voice retries, quitting job"
       return

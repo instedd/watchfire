@@ -6,34 +6,32 @@ class NuntiumController < BasicAuthController
       from = params[:from]
       body = params[:body]
       
-      # parse fields
+      # Parse fields
       number_match = from.match /sms:\/\/(\d+)/
       response_match = body.downcase.match /(yes|no)/
-    
+      
+      # Check for valid number
       raise 'Error parsing number' unless number_match
       
+      # Check if response is ok
       unless response_match
         message = I18n.t :sms_bad_format, :text => body
         raise 'Error parsing response' 
       end
-    
-      number = number_match[1]
-      confirmation = response_match[1] == 'yes'
       
-      # find matching candidate for the given number
+      number = number_match[1]
+      response = response_match[1]
+      
+      # Find matching candidate for the given number
       candidate = Candidate.find_last_for_sms_number number
       
-      # check if candidate is unresponsive
+      # check if candidate is already unresponsive
       if candidate.is_unresponsive?
         raise 'Error candidate is unresponsive'
       end
     
       # update status based on response
-      if confirmation
-        candidate.update_status :confirmed
-      else
-        candidate.update_status :denied
-      end
+      candidate.answered_from_sms! response
       
       message = candidate.response_message
     rescue => e

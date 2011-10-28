@@ -49,12 +49,6 @@ class Candidate < ActiveRecord::Base
     has_voice? && self.voice_retries < config.max_voice_retries
   end
   
-  def update_status status
-    self.status = status
-    self.save!
-    mission.check_for_more_volunteers
-  end
-  
   def response_message
     I18n.t(confirmed? ? :response_confirmed : :response_denied)
   end
@@ -63,7 +57,48 @@ class Candidate < ActiveRecord::Base
     self.calls.order('created_at DESC').first
   end
   
+  def enable!
+    self.active = true
+    self.save!
+  end
+  
+  def disable!
+    self.active = false
+    self.save!
+  end
+  
+  def <=>(other)
+    self.volunteer.name <=> other.volunteer.name
+  end
+  
+  def answered_from_sms!(response)
+    new_status = response == "yes" ? :confirmed : :denied
+    update_status new_status, volunteer.sms_number
+  end
+  
+  def answered_from_voice!(response)
+    new_status = response == "1" ? :confirmed : :denied
+    update_status new_status, volunteer.voice_number
+  end
+  
+  def no_answer!
+    self.status = :unresponsive
+    save_and_check!
+  end
+  
   private
+  
+  def update_status(new_status, from)
+    self.status = new_status
+    self.answered_from = from
+    self.answered_at = Time.now.utc
+    save_and_check!
+  end
+  
+  def save_and_check!
+    self.save!
+    mission.check_for_more_volunteers
+  end
 
 	def init
 		self.voice_retries ||= 0

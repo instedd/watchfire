@@ -13,7 +13,7 @@ class SmsJob < CandidateJob
 		unless candidate.has_sms_retries?
 			unless candidate.has_retries?
 				JobLogger.debug "SmsJob: Candidate #{candidate_id} has ran out of retries, setting status to unresponsive"
-				candidate.update_status :unresponsive
+				candidate.no_answer!
 			end
 			JobLogger.debug "SmsJob: Candidate #{candidate_id} has ran out of sms retries, quitting job"
 			return

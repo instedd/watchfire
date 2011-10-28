@@ -170,6 +170,12 @@ function init_events() {
 	    $('#message_form_link').removeClass('hidden');
 	    $('#saved_label').addClass('hidden');
 	});
+	
+	// Use links to submit forms
+	$(".link_to_form").click(function(e){
+	    $(this).parent("form").submit();
+	    return false;
+	});
 }
 
 function init_candidate_events() {
@@ -184,6 +190,8 @@ function init_candidate_events() {
 	$('.candidate input:checkbox').click(function() {
 		$(this).parent().submit();
 	});
+	
+	$("span.time").timeago();
 }
 
 function setMapCircle(distance, avoidFit) {

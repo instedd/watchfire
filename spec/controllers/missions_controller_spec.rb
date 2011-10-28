@@ -182,5 +182,30 @@ describe MissionsController do
 			response.body.should eq("csv data")
 		end
 	end
-
+	
+	describe "check_all" do
+	  it "should enable all pending in mission" do
+	    Mission.expects(:find).with(@mission.id.to_s).returns(@mission)
+	    @mission.expects(:enable_all_pending)
+	    post :check_all, :id => @mission.id.to_s, :format => 'js'
+    end
+    
+    it "renders update_pending" do
+      post :check_all, :id => @mission.id.to_s, :format => 'js'
+      response.should render_template('update_pending')
+    end
+  end
+  
+  describe "uncheck_all" do
+	  it "should disable all pending in mission" do
+	    Mission.expects(:find).with(@mission.id.to_s).returns(@mission)
+	    @mission.expects(:disable_all_pending)
+	    post :uncheck_all, :id => @mission.id.to_s, :format => 'js'
+    end
+    
+    it "renders update_pending" do
+      post :uncheck_all, :id => @mission.id.to_s, :format => 'js'
+      response.should render_template('update_pending')
+    end
+  end
 end

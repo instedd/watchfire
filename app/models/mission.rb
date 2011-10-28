@@ -81,19 +81,19 @@ class Mission < ActiveRecord::Base
   end
   
   def pending_candidates
-    self.candidates.where(:status => :pending)
+    self.candidates.where(:status => :pending).sort
   end
   
   def confirmed_candidates
-    self.candidates.where(:status => :confirmed)
+    self.candidates.where(:status => :confirmed).sort
   end
   
   def denied_candidates
-    self.candidates.where(:status => :denied)
+    self.candidates.where(:status => :denied).sort
   end
   
   def unresponsive_candidates
-    self.candidates.where(:status => :unresponsive)
+    self.candidates.where(:status => :unresponsive).sort
   end
   
   def candidates_to_call
@@ -162,6 +162,18 @@ class Mission < ActiveRecord::Base
   
   def template_text
     I18n.t :template_message, :reason => reason_for_message, :location => address
+  end
+  
+  def enable_all_pending
+    pending_candidates.each do |candidate|
+      candidate.enable!
+    end
+  end
+  
+  def disable_all_pending
+    pending_candidates.each do |candidate|
+      candidate.disable!
+    end
   end
   
   private

@@ -309,5 +309,22 @@ describe Mission do
 		  @mission.voice_message_sentences.should eq(["First sentence", "Third"])
 	  end
 	end
-  
+	
+	describe "enable/disable all" do
+	  before(:each) do
+	    @mission = Mission.new
+  	  @candidates = 1.upto(3).map{|i|mock("candidate-#{i}")}
+  	  @mission.expects(:pending_candidates).returns(@candidates)
+    end
+	  
+	  it "should enable all pending candidates" do
+  	  @candidates.each{|c| c.expects(:enable!)}
+  	  @mission.enable_all_pending
+    end
+    
+    it "should disable all pending candidates" do
+  	  @candidates.each{|c| c.expects(:disable!)}
+  	  @mission.disable_all_pending
+    end
+  end  
 end

@@ -1,13 +1,16 @@
 %tr{:class => "candidate #{"blocked" unless candidate.active}", 'data-lat' => candidate.volunteer.lat, 'data-lng' => candidate.volunteer.lng, 'data-url' => volunteer_path(candidate.volunteer)}
-	%td
-		- if candidate.pending? && !@mission.finished?
-			%span.avoid{:id => "candidate_paused_form_#{candidate.id}"}
-				= render :partial => 'shared/candidate_paused_form', :locals => {:candidate => candidate}
-		%span= candidate.volunteer.name
-	%td
-		- if candidate.has_sms?
-			%span{:class => candidate.active ? "mobile" : "gmobile"}= candidate.volunteer.sms_number
-		- if candidate.has_sms? && candidate.has_voice?
-			%br
-		- if candidate.has_voice?
-			%span{:class => candidate.active ? "phone" : "gphone"}= candidate.volunteer.voice_number
+  %td
+    - if candidate.pending? && !@mission.finished?
+      %span.avoid{:id => "candidate_paused_form_#{candidate.id}"}
+        = render :partial => 'shared/candidate_paused_form', :locals => {:candidate => candidate}
+    %span= candidate.volunteer.name
+  %td
+    - if candidate.has_sms?
+      = sms_number candidate
+    - if candidate.has_sms? && candidate.has_voice?
+      %br
+    - if candidate.has_voice?
+      = voice_number candidate
+    - if candidate.answered_at
+      %br
+      =time_ago candidate.answered_at
