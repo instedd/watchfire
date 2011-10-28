@@ -190,6 +190,8 @@ function init_candidate_events() {
 	$('.candidate input:checkbox').click(function() {
 		$(this).parent().submit();
 	});
+	
+	$("span.time").timeago();
 }
 
 function setMapCircle(distance, avoidFit) {

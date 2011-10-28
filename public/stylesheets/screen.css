@@ -93,7 +93,7 @@ tr.link {
 /* line 69, ../../app/stylesheets/screen.sass */
 #volunteers_search {
   position: relative;
-  top: -5px;
+  top: 5px;
 }
 
 /* line 75, ../../app/stylesheets/screen.sass */

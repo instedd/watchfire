@@ -2,7 +2,10 @@
   = javascript_include_tag 'volunteer_index'
 
 .left
-  %h1= "#{@volunteers_count} volunteers"
+  %h1
+    = "#{@volunteers_count} volunteers"
+    = form_tag new_volunteer_path, :method => :get do
+      %button.cadd{:type => "submit"} Add New
   
 .right
   = form_tag volunteers_path, :method => :get do

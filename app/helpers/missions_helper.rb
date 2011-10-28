@@ -22,8 +22,8 @@ module MissionsHelper
   end
   
   def time_ago(time)
-    content_tag :span, :class => "time", :title => time.to_s do
-      "#{time_ago_in_words(time, true)} ago"
+    content_tag :span, :class => "time", :title => time.iso8601 do
+      time.to_s
     end
   end
 end
