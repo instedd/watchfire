@@ -5,23 +5,18 @@ class VerboiceController < ApplicationController
   end
   
   def callback    
-    # look for user response based on digits
+    # Look for user response based on digits
     match = params[:Digits].match /(1|2)/
     
-    # digits don't match required response, play 'plan' again
+    # Digits don't match required response, play 'plan' again
     unless match
       render "plan"
       return
     end
     
-    # update status according to response
-    answer = match[1].to_i
-    
-    if answer == 1
-      @candidate.update_status :confirmed
-    else
-      @candidate.update_status :denied
-    end
+    # Update status according to response
+    response = match[1]
+    @candidate.answered_from_voice! response
   end
   
   private

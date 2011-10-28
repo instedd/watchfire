@@ -118,12 +118,11 @@ describe SmsJob do
       Delayed::Job.count.should == 0
     end
     
-    it "should call update_status on candidate" do
-      Candidate.any_instance.expects(:update_status)
+    it "should set no answer on candidate" do
+      Candidate.any_instance.expects(:no_answer!)
       
       @sms_job.perform
-    end
-    
+    end    
   end
   
   describe "candidate has retries but sms retries has hit limit" do

@@ -34,9 +34,9 @@ describe VerboiceController do
     end
     
     it "should set candidate status to confirmed if user pressed 1" do
-      @parameters[:Digits] = '1'
+      @parameters[:Digits] = "1"
       Candidate.expects(:find_by_call_session_id).with(@call.session_id).returns(@candidate)
-      @candidate.expects(:update_status).with(:confirmed)
+      @candidate.expects(:answered_from_voice!).with("1")
       
       post 'callback', @parameters
       
@@ -44,9 +44,9 @@ describe VerboiceController do
     end
     
     it "should set candidate status to denied if user pressed 2" do
-      @parameters[:Digits] = '2'
+      @parameters[:Digits] = "2"
       Candidate.expects(:find_by_call_session_id).with(@call.session_id).returns(@candidate)
-      @candidate.expects(:update_status).with(:denied)
+      @candidate.expects(:answered_from_voice!).with("2")
       
       post 'callback', @parameters
       

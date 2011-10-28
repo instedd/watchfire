@@ -114,8 +114,8 @@ describe VoiceJob do
       Delayed::Job.count.should == 0
     end
     
-    it "should call update_status on candidate" do
-      Candidate.any_instance.expects(:update_status)
+    it "should set no answer on candidate" do
+      Candidate.any_instance.expects(:no_answer!)
       
       @voice_job.perform
     end
