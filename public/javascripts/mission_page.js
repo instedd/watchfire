@@ -4,7 +4,6 @@ var geocoder;
 
 var circle;
 var outerCircle;
-var innerCircles = new Array();
 
 var refreshing;
 var beating;
@@ -32,47 +31,43 @@ function init_map() {
 		zoom: 10,
 		mapTypeId: google.maps.MapTypeId.ROADMAP
 	};
-	
+
 	event_disabled_image = new google.maps.MarkerImage('/images/icons/event_disabled.png',
 		new google.maps.Size(30, 27),
 		new google.maps.Point(0,0),
 		new google.maps.Point(15, 13));
-		
+
 	event_image = new google.maps.MarkerImage('/images/icons/event.png',
 		new google.maps.Size(30, 27),
 		new google.maps.Point(0,0),
 		new google.maps.Point(15, 13));
-		
+
 	volunteer_image = new google.maps.MarkerImage('/images/icons/volunteer.png',
 		new google.maps.Size(24, 24),
 		new google.maps.Point(0,0),
 		new google.maps.Point(12, 12));
-	
-	circle = new google.maps.Circle();
-	outerCircle = new google.maps.Circle();
-  
-	for(i = 0; i < 4; i++) {
-		innerCircles.push(new google.maps.Circle());
-	}
+
+	circle = new google.maps.Circle({clickable:false});
+	outerCircle = new google.maps.Circle({clickable:false});
 
 	var initialLocation = new google.maps.LatLng(37.520619, -122.342377);
 	map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
 	map.setCenter(initialLocation);
-	
+
 	mission_marker = new google.maps.Marker({
 		map: map,
 		icon: event_disabled_image
 	});
-	
+
 	var loc = new google.maps.LatLng(parseFloat($("#mission_lat").val()), parseFloat($("#mission_lng").val()));
-	if(!isNaN(loc.lat()) && !isNaN(loc.lng())){		
+	if(!isNaN(loc.lat()) && !isNaN(loc.lng())){
 		map.setCenter(loc);
 		mission_marker.setPosition(loc);
 		setMapCircle(parseFloat($('#distance_value').html()));
 	}
 
 	geocoder = new google.maps.Geocoder();
-	
+
 	info_window = new google.maps.InfoWindow({
 	    content: document.getElementById("info_window_content")
 	});
@@ -96,7 +91,7 @@ function remove_map_events() {
 	google.maps.event.clearInstanceListeners(mission_marker);
 	mission_marker.setDraggable(false);
 }
-	
+
 function changeMarker(event) {
 	var location = event.latLng;
 	$("#mission_lat").val(location.lat().toFixed(4));
@@ -132,7 +127,7 @@ function checkSubmit() {
 }
 
 function isPositiveInt() {
-  var value = $('#mission_req_vols').val(); 
+  var value = $('#mission_req_vols').val();
   return value.match(/^[1-9]\d*$/);
 }
 
@@ -150,14 +145,14 @@ function init_events() {
           return true;
         }
 	});
-	
+
 	$('#search_address').click(function(){
 		var loc = $("#mission_address").val();
 		geocodeLocation(loc);
 	});
-	
+
 	init_candidate_events();
-	
+
     // Events for the message form
 	$('#mission_use_custom_text').click(function(e){
 	    $(this).parents("form").submit();
@@ -170,7 +165,7 @@ function init_events() {
 	    $('#message_form_link').removeClass('hidden');
 	    $('#saved_label').addClass('hidden');
 	});
-	
+
 	// Use links to submit forms
 	$(".link_to_form").click(function(e){
 	    $(this).parent("form").submit();
@@ -182,15 +177,15 @@ function init_candidate_events() {
 	$('.candidate td').click(function(){
 		open_volunteer_info_window($(this).parents('.candidate'));
 	});
-	
+
 	$('.candidate .avoid').click(function(event){
 		event.stopImmediatePropagation();
 	});
-	
+
 	$('.candidate input:checkbox').click(function() {
 		$(this).parent().submit();
 	});
-	
+
 	$("span.time").timeago();
 }
 
@@ -233,7 +228,7 @@ function setMapCircle(distance, avoidFit) {
 		  strokeColor: circle.strokeColor != null ? circle.strokeColor : '#999999',
       fillOpacity: 0.0
 	  });
-    
+
     circleHasMap = true;
   }
 	if (!avoidFit) map.fitBounds(circle.getBounds());
@@ -264,9 +259,9 @@ function stop_refreshing()  {
 
 function refresh() {
 	if (!refreshing) return;
-	
+
 	$.getScript($('#refresh_url').val(), function(data, textStatus){
-		setTimeout(refresh, 5000);  
+		setTimeout(refresh, 5000);
 	});
 }
 
@@ -303,17 +298,6 @@ function make_circle_beat() {
 	beating = true;
 	alternance = 0;
 
-  for(i = 0; i < innerCircles.length; i++) {
-    innerCircles[i].setOptions({
-		  center: mission_marker.getPosition(),
-		  map: map,
-		  radius: i * circle.getRadius() / innerCircles.length,
-		  clickable: false,
-		  strokeWeight: 0,
-		  fillOpacity: 0.3,
-		  fillColor: '#000000'
-    });
-  }
 	beat();
 }
 
@@ -321,23 +305,13 @@ function stop_circle_beat()  {
 	beating = false;
 	circle.setOptions({strokeColor: '#999999'});
   outerCircle.setOptions({fillOpacity: 0.5});
-  for(i = 0; i < innerCircles.length; i++) {
-    innerCircles[i].setOptions({
-		  fillOpacity: 0,
-    });
-  }  
 }
 
 function beat() {
 	if (!beating) return;
-	alternance = (alternance + 3) % 100;
-  for(i = 0; i < innerCircles.length; i++) {
-    innerCircles[i].setOptions({
-		  radius: circle.getRadius() * (i + alternance / 100) / innerCircles.length,
-    });
-  }
-  innerCircles[innerCircles.length-1].setOptions({ fillOpacity: 0.3 * (1 - (alternance / 100))});
-	setTimeout(beat, 50);
+  alternance = 1 - alternance;
+  circle.setOptions({strokeColor: alternance == 0 ? '#FF6600' : '#999999'});
+	setTimeout(beat, 500);
 }
 
 function open_volunteer_info_window(volunteer) {
@@ -345,7 +319,7 @@ function open_volunteer_info_window(volunteer) {
 	var lat = volunteer.attr('data-lat');
 	var lng = volunteer.attr('data-lng');
 	var location = new google.maps.LatLng(lat, lng);
-	
+
 	$.get(url, function(data) {
 		$('#info_window_content').html(data);
 		volunteer_marker.setPosition(location);
