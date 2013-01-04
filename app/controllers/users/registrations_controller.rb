@@ -1,21 +1,5 @@
 class Users::RegistrationsController < Devise::RegistrationsController
-
-	def new
-	  redirect_to new_user_session_path
-	end
-
-	def create
-    not_found
-	end
-	
-	def destroy
-    not_found
-	end
-	
-	private
-	
-	def not_found
-    raise ActionController::RoutingError.new('Not Found')
+  def after_inactive_sign_up_path_for(resource)
+    new_session_path('user')
   end
-
 end
