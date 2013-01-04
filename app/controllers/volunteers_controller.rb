@@ -2,19 +2,19 @@ class VolunteersController < ApplicationController
 
 	before_filter :authenticate_user!
 	before_filter :store_referer, :only => [:new, :edit, :destroy]
-	
+
 	add_breadcrumb "Volunteers", :volunteers_path
 
   # GET /volunteers
   # GET /volunteers.xml
   def index
     @volunteers_count = Volunteer.count
-    
+
     @order = params[:order] || 'name'
     @direction = params[:direction] == 'DESC' ? 'DESC' : 'ASC'
     @page = params[:page] || 1
     @q = params[:q]
-    
+
     @volunteers = Volunteer.order("#{@order} #{@direction}")
     @volunteers = @volunteers.where("name like ? OR address like ?", "%#{@q}%", "%#{@q}%") unless @q.blank?
     @volunteers = @volunteers.page @page
@@ -40,7 +40,7 @@ class VolunteersController < ApplicationController
   # GET /volunteers/new.xml
   def new
     @volunteer = Volunteer.new
-    
+
     add_breadcrumb 'New', new_volunteer_path
 
     respond_to do |format|
@@ -52,7 +52,7 @@ class VolunteersController < ApplicationController
   # GET /volunteers/1/edit
   def edit
     @volunteer = Volunteer.find(params[:id])
-    
+
     add_breadcrumb @volunteer.name, volunteer_path(@volunteer)
   end
 
@@ -99,12 +99,12 @@ class VolunteersController < ApplicationController
       format.xml  { head :ok }
     end
   end
-  
+
   # POST /volunteers/import
   def import
     @view_model = ImportViewModel.from_model(VolunteerImporter.new.import(params[:file].read))
   end
-  
+
   # POST /volunteers/confirm_import
   def confirm_import
     @view_model = ImportViewModel.new(params[:import_view_model])
@@ -114,15 +114,15 @@ class VolunteersController < ApplicationController
       render 'import'
     end
   end
-  
+
   private
-  
+
   def store_referer
     session[:return_to] = request.referer
   end
-  
+
   def back
     session[:return_to] || volunteers_path
   end
-  
+
 end

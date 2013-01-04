@@ -26,11 +26,11 @@ describe VolunteersController do
   def valid_attributes
     {:name => 'John', :lat => -34.2, :lng => -58.2, :sms_number => '123', :voice_number => '456'}
   end
-  
+
   before(:all) do
     @user = User.make!
   end
-  
+
   before(:each) do
     sign_in @user
   end
@@ -158,7 +158,7 @@ describe VolunteersController do
     it "redirects to the volunteers list" do
       volunteer = Volunteer.create! valid_attributes
       delete :destroy, :id => volunteer.id.to_s
-      response.should redirect_to(volunteers_url)
+      response.should redirect_to('/') # referer
     end
   end
 
