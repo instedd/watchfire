@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111027222046) do
+ActiveRecord::Schema.define(:version => 20130104175855) do
 
   create_table "calls", :force => true do |t|
     t.string   "session_id"
@@ -70,6 +70,21 @@ ActiveRecord::Schema.define(:version => 20111027222046) do
     t.string   "name"
     t.boolean  "use_custom_text", :default => false, :null => false
     t.text     "custom_text"
+    t.integer  "organization_id"
+  end
+
+  create_table "organization_users", :force => true do |t|
+    t.integer  "organization_id"
+    t.integer  "user_id"
+    t.string   "role"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "organizations", :force => true do |t|
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "skills", :force => true do |t|
@@ -118,6 +133,7 @@ ActiveRecord::Schema.define(:version => 20111027222046) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text     "shifts"
+    t.integer  "organization_id"
   end
 
   add_index "volunteers", ["lat", "lng"], :name => "index_volunteers_on_lat_and_lng"

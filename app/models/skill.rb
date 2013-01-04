@@ -12,9 +12,9 @@ class Skill < ActiveRecord::Base
 	def pluralized
 		self.name.pluralize
 	end
-	
+
 	private
-	
+
 	def name_not_volunteer
 		name_downcase = name.try(:downcase)
 		if name_downcase == "volunteer" || name_downcase == "volunteers"

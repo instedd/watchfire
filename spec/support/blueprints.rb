@@ -1,6 +1,11 @@
 require 'machinist/active_record'
 
+Organization.blueprint do
+  name { _name }
+end
+
 Volunteer.blueprint do
+  organization { Organization.make! }
   name { _name }
   lat { _lat }
   lng { _lng }
@@ -15,6 +20,7 @@ Candidate.blueprint do
 end
 
 Mission.blueprint do
+  organization { Organization.make! }
   name { _name }
   req_vols { rand(6) + 5 }
   lat { _lat }
