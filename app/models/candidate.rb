@@ -37,16 +37,36 @@ class Candidate < ActiveRecord::Base
     Delayed::Job.enqueue(VoiceJob.new(self.id)) if self.has_voice?
   end
 
+  def organization
+    volunteer.organization
+  end
+
+  def max_sms_retries
+    organization.max_sms_retries
+  end
+
+  def max_voice_retries
+    organization.max_voice_retries
+  end
+
+  def sms_timeout
+    organization.sms_timeout
+  end
+
+  def voice_timeout
+    organization.voice_timeout
+  end
+
   def has_retries?
     has_sms_retries? || has_voice_retries?
   end
 
   def has_sms_retries?
-    has_sms? && self.sms_retries < config.max_sms_retries
+    has_sms? && self.sms_retries < max_sms_retries
   end
 
   def has_voice_retries?
-    has_voice? && self.voice_retries < config.max_voice_retries
+    has_voice? && self.voice_retries < max_voice_retries
   end
 
   def response_message

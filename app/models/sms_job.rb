@@ -2,13 +2,13 @@ class SmsJob < CandidateJob
 	def perform
 		JobLogger.debug "SmsJob: Executing for Candidate #{candidate_id}"
 		candidate = Candidate.find(candidate_id)
-		
+
 		# if candidate is not pending then stop sending sms
 		if candidate.is_not_pending?
 			JobLogger.debug "SmsJob: Candidate #{candidate_id} is not pending, quitting job"
 			return
 		end
-		
+
 		# check if candidate has run out of sms retries
 		unless candidate.has_sms_retries?
 			unless candidate.has_retries?
@@ -18,7 +18,7 @@ class SmsJob < CandidateJob
 			JobLogger.debug "SmsJob: Candidate #{candidate_id} has ran out of sms retries, quitting job"
 			return
 		end
-		
+
 		# Send SMS
 		nuntium = Nuntium.from_config
 		begin
@@ -37,9 +37,9 @@ class SmsJob < CandidateJob
 			candidate.last_sms_att = Time.now.utc
 			candidate.save :validate => false
 		end
-		
+
 		# Enqueue new job with time = sms timeout
 		JobLogger.debug "SmsJob: Enqueuing new job for Candidate #{candidate_id}"
-		Delayed::Job.enqueue SmsJob.new(candidate_id), :run_at => config.sms_timeout.minutes.from_now
+		Delayed::Job.enqueue SmsJob.new(candidate_id), :run_at => candidate.sms_timeout.minutes.from_now
 	end
 end
