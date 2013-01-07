@@ -5,7 +5,11 @@
 
   %ul
   - @organizations.each do |organization|
-    %li= link_to organization.name, select_organization_path(organization.id)
+    %li
+      %b= organization.name
+      = link_to 'select', select_organization_path(organization.id)
+      |
+      = link_to 'show', organization_path(organization.id)
 - else
   To start using Watchfire you must create an Organization.
 

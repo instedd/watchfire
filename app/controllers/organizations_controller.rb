@@ -46,4 +46,11 @@ class OrganizationsController < ApplicationController
 
     redirect_to missions_path
   end
+
+  def invite_user
+    organization = current_user.organizations.find params[:id]
+    current_user.invite_to organization, params[:email]
+
+    redirect_to organization_path(organization)
+  end
 end

@@ -56,4 +56,22 @@ describe OrganizationsController do
       user.reload.current_organization_id.should eq(organization.id)
     end
   end
+
+  describe "POST invite user" do
+    it "invites an existing user" do
+      organization = user.create_organization Organization.new(:name => 'RedCross')
+
+      user2 = User.make!
+
+      post :invite_user, :id => organization.id, :email => user2.email
+
+      response.should redirect_to(organization_path(organization.id))
+
+      organization_user = user2.organization_users.where(:organization_id => organization.id).first
+      organization_user.should_not be_nil
+      organization_user.role.should eq(:member)
+
+      user2.reload.current_organization_id.should eq(organization.id)
+    end
+  end
 end

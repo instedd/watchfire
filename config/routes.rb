@@ -11,6 +11,7 @@ Watchfire::Application.routes.draw do
   resources :organizations do
     member do
       get 'select'
+      post 'invite_user'
     end
   end
 
