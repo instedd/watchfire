@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130107153452) do
+ActiveRecord::Schema.define(:version => 20130107162729) do
 
   create_table "calls", :force => true do |t|
     t.string   "session_id"
@@ -92,6 +92,10 @@ ActiveRecord::Schema.define(:version => 20130107153452) do
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "max_sms_retries",   :default => 3
+    t.integer  "max_voice_retries", :default => 3
+    t.integer  "sms_timeout",       :default => 5
+    t.integer  "voice_timeout",     :default => 5
   end
 
   create_table "skills", :force => true do |t|

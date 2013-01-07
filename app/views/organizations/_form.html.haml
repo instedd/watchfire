@@ -2,9 +2,30 @@
   - if @organization
     = errors_for @organization
 
-  %br
-  = f.label :name
-  = f.text_field :name, :class => 'w30'
+  %p
+    = f.label :name
+    %br
+    = f.text_field :name, :class => 'w30'
+
+  %p
+    = f.label :max_voice_retries, 'Maximum voice call retries'
+    %br
+    = f.number_field :max_voice_retries, :class => 'w10'
+
+  %p
+    = f.label :voice_timeout, 'Minutes to wait between each voice call retry'
+    %br
+    = f.number_field :voice_timeout, :class => 'w10'
+
+  %p
+    = f.label :max_sms_retries, 'Maximum SMS retries'
+    %br
+    = f.number_field :max_sms_retries, :class => 'w10'
+
+  %p
+    = f.label :sms_timeout, 'Minutes to wait between each SMS retry'
+    %br
+    = f.number_field :sms_timeout, :class => 'w10'
 
   .bottom-actions
     %button.white #{@organization.new_record? ? 'Create' : 'Update'} Organization
