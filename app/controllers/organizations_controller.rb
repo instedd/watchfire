@@ -36,6 +36,7 @@ class OrganizationsController < ApplicationController
 
   def show
     @organization = current_user.organizations.find params[:id]
+    @owner = current_user.owner_of?(@organization)
     add_breadcrumb @organization.name, organization_path(@organization)
   end
 
@@ -49,8 +50,12 @@ class OrganizationsController < ApplicationController
 
   def invite_user
     organization = current_user.organizations.find params[:id]
-    current_user.invite_to organization, params[:email]
+    if current_user.owner_of?(organization)
+      current_user.invite_to organization, params[:email]
 
-    redirect_to organization_path(organization)
+      redirect_to organization_path(organization)
+    else
+      redirect_to organization_path(organization), alert: "You can't invite users because are not an owner of #{organization.name}"
+    end
   end
 end

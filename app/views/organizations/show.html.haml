@@ -1,14 +1,15 @@
 %h1= @organization.name
 
-%div Invite a user to this organization:
+- if @owner
+  %div Invite a user to this organization:
 
-%form{:action => invite_user_organization_path(:id => @organization.id), :method => 'post'}
-  = token_tag
-  %input.w30{:type => 'text', :name => 'email', placeholder: 'i.e. john@doe.com'}
-  %input{:type => 'submit', :value => 'Invite'}
+  %form{:action => invite_user_organization_path(:id => @organization.id), :method => 'post'}
+    = token_tag
+    %input.w30{:type => 'text', :name => 'email', placeholder: 'i.e. john@doe.com'}
+    %input{:type => 'submit', :value => 'Invite'}
 
-%br
-%br
+  %br
+  %br
 
 %div Current members:
 
@@ -16,4 +17,5 @@
   - @organization.users.each do |user|
     %li= user.email
 
-= link_to 'Edit', edit_organization_path(@organization)
+- if @owner
+  = link_to 'Edit', edit_organization_path(@organization)

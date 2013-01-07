@@ -5,6 +5,10 @@ module User::OrganizationConcern
     organization_users.exists?
   end
 
+  def owner_of?(organization)
+    organization_users.where(organization_id: organization.id, role: :owner).exists?
+  end
+
   def create_organization(organization)
     return unless organization.save
 
