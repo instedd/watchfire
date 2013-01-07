@@ -6,7 +6,7 @@
 
   <div class="field w30">
     <%= f.label :email %>
-    <%= f.email_field :email %>
+    <%= f.email_field :email, :value => resource.email.presence || params[:email] %>
   </div>
 
   <div class="field w30">

@@ -51,9 +51,13 @@ class OrganizationsController < ApplicationController
   def invite_user
     organization = current_user.organizations.find params[:id]
     if current_user.owner_of?(organization)
-      current_user.invite_to organization, params[:email]
+      existing = current_user.invite_to organization, params[:email]
 
-      redirect_to organization_path(organization)
+      if existing
+        redirect_to organization_path(organization), notice: "#{params[:email]} is now a member of #{organization.name}"
+      else
+        redirect_to organization_path(organization), notice: "Invitation email sent to #{params[:email]}"
+      end
     else
       redirect_to organization_path(organization), alert: "You can't invite users because are not an owner of #{organization.name}"
     end

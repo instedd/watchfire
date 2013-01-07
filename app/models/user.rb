@@ -15,4 +15,8 @@ class User < ActiveRecord::Base
   belongs_to :current_organization, :class_name => 'Organization'
 
   include User::OrganizationConcern
+
+  def display_name
+    email
+  end
 end
