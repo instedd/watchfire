@@ -20,6 +20,9 @@ Watchfire::Application.configure do
   # Disable request forgery protection in test environment
   config.action_controller.allow_forgery_protection    = false
 
+  # Action Mailer
+  config.action_mailer.default_url_options = { :host => 'localhost:3000' }
+
   # Tell Action Mailer not to deliver emails to the real world.
   # The :test delivery method accumulates sent emails in the
   # ActionMailer::Base.deliveries array.
@@ -32,7 +35,8 @@ Watchfire::Application.configure do
 
   # Print deprecation notices to the stderr
   config.active_support.deprecation = :stderr
-  
+
+
   # http://blog.angelbob.com/posts/315-RSpec-not-clearing-database-when-you-use-machinist---published-rails
   Machinist.configure do |config|
     config.cache_objects = false

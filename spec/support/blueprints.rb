@@ -21,6 +21,7 @@ end
 
 Mission.blueprint do
   organization { Organization.make! }
+  user { User.make! }
   name { _name }
   req_vols { rand(6) + 5 }
   lat { _lat }
@@ -40,6 +41,7 @@ end
 User.blueprint do
   email { _email }
   password { _password }
+  confirmed_at { Time.now }
 end
 
 Call.blueprint do

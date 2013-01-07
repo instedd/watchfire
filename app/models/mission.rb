@@ -15,6 +15,7 @@ class Mission < ActiveRecord::Base
 	belongs_to :user
 
   validates_presence_of :organization
+  validates_presence_of :user
   validates_presence_of :req_vols, :lat, :lng, :name
 
   validates_numericality_of :req_vols, :only_integer => true, :greater_than => 0

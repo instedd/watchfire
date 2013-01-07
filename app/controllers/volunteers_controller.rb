@@ -2,20 +2,20 @@ class VolunteersController < ApplicationController
 
 	before_filter :authenticate_user!
 	before_filter :store_referer, :only => [:new, :edit, :destroy]
+  before_filter :add_volunteers_breadcrumb, :only => [:index, :show, :new, :edit]
 
-	add_breadcrumb "Volunteers", :volunteers_path
 
   # GET /volunteers
   # GET /volunteers.xml
   def index
-    @volunteers_count = Volunteer.count
+    @volunteers_count = current_organization.volunteers.count
 
     @order = params[:order] || 'name'
     @direction = params[:direction] == 'DESC' ? 'DESC' : 'ASC'
     @page = params[:page] || 1
     @q = params[:q]
 
-    @volunteers = Volunteer.order("#{@order} #{@direction}")
+    @volunteers = current_organization.volunteers.order("#{@order} #{@direction}")
     @volunteers = @volunteers.where("name like ? OR address like ?", "%#{@q}%", "%#{@q}%") unless @q.blank?
     @volunteers = @volunteers.page @page
 
@@ -28,7 +28,7 @@ class VolunteersController < ApplicationController
   # GET /volunteers/1
   # GET /volunteers/1.xml
   def show
-    @volunteer = Volunteer.find(params[:id])
+    @volunteer = current_organization.volunteers.find(params[:id])
 
     respond_to do |format|
       format.html { render 'show', :layout => false}
@@ -60,6 +60,7 @@ class VolunteersController < ApplicationController
   # POST /volunteers.xml
   def create
     @volunteer = Volunteer.new(params[:volunteer])
+    @volunteer.organization_id = current_organization.id
 
     respond_to do |format|
       if @volunteer.save
@@ -75,7 +76,7 @@ class VolunteersController < ApplicationController
   # PUT /volunteers/1
   # PUT /volunteers/1.xml
   def update
-    @volunteer = Volunteer.find(params[:id])
+    @volunteer = Volunteer.find(current_organization.volunteers.find(params[:id]).id)
 
     respond_to do |format|
       if @volunteer.update_attributes(params[:volunteer])
@@ -91,7 +92,7 @@ class VolunteersController < ApplicationController
   # DELETE /volunteers/1
   # DELETE /volunteers/1.xml
   def destroy
-    @volunteer = Volunteer.find(params[:id])
+    @volunteer = Volunteer.find(current_organization.volunteers.find(params[:id]).id)
     @volunteer.destroy
 
     respond_to do |format|
@@ -125,4 +126,8 @@ class VolunteersController < ApplicationController
     session[:return_to] || volunteers_path
   end
 
+  def add_volunteers_breadcrumb
+    add_breadcrumb "#{current_organization.name}", organization_path(current_organization) if current_organization
+    add_breadcrumb "Volunteers", :volunteers_path
+  end
 end

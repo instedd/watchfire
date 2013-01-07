@@ -1,0 +1,10 @@
+= form_for @organization do |f|
+  - if @organization
+    = errors_for @organization
+
+  %br
+  = f.label :name
+  = f.text_field :name, :class => 'w30'
+
+  .bottom-actions
+    %button.white #{@organization.new_record? ? 'Create' : 'Update'} Organization

@@ -1,0 +1,14 @@
+%h1 Organizations
+
+- if @organizations.present?
+  Choose an organization, or #{link_to 'create a new one', new_organization_path}:
+
+  %ul
+  - @organizations.each do |organization|
+    %li= link_to organization.name, select_organization_path(organization.id)
+- else
+  To start using Watchfire you must create an Organization.
+
+  %br
+
+  = render 'form'

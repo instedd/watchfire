@@ -8,6 +8,12 @@ Watchfire::Application.routes.draw do
   # Nuntium Callbacks
   post "nuntium/receive"
 
+  resources :organizations do
+    member do
+      get 'select'
+    end
+  end
+
   resources :missions do
     member do
       post 'start'
@@ -21,14 +27,14 @@ Watchfire::Application.routes.draw do
 			post 'uncheck_all'
     end
   end
-  
+
   resources :volunteers do
     collection do
       post 'import'
       post 'confirm_import'
     end
   end
-  
+
 	resources :candidates, :only => [:update]
 
   root :to => "missions#index"
