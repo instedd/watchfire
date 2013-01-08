@@ -164,16 +164,19 @@ describe Mission do
       @s1 = Skill.make!
       @s2 = Skill.make!
 
-      @v1 = Volunteer.make :lat => 0.5, :lng => 0.5
+      @v1 = Volunteer.make :lat => 0.5, :lng => 0.5, :organization => @mission.organization
 
       @v1.skills << @s1
       @v1.save!
 
-      @v2 = Volunteer.make :lat => 1, :lng => 1
+      @v2 = Volunteer.make :lat => 1, :lng => 1, :organization => @mission.organization
       @v2.skills = [@s1, @s2]
       @v2.save!
 
-      @v3 = Volunteer.make! :lat => 2, :lng => 2
+      @v3 = Volunteer.make! :lat => 2, :lng => 2, :organization => @mission.organization
+
+      # In another organization:
+      @v4 = Volunteer.make! :lat => 2, :lng => 2, :organization => Organization.make!
     end
 
     it "should not filter by skill if skill is not selected" do

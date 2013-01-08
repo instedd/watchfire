@@ -29,7 +29,7 @@ class Mission < ActiveRecord::Base
 	end
 
 	def obtain_volunteers quantity, offset = 0
-	  volunteers_for_mission = Volunteer.geo_scope(:within => max_distance, :origin => self).order('distance asc')
+	  volunteers_for_mission = Volunteer.where(organization_id: organization_id).geo_scope(:within => max_distance, :origin => self).order('distance asc')
 
 	  unless skill.nil?
 	    volunteers_for_mission = volunteers_for_mission.joins('INNER JOIN skills_volunteers sv ON sv.volunteer_id = volunteers.id').where('sv.skill_id' => self.skill_id)
