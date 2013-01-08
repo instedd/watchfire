@@ -11,7 +11,7 @@
 	%span.ux-nstep.w06
 		= f.text_field :req_vols, :size => "2", :readonly => mission.running? || mission.finished?, "data-min" => "1"
 	%span
-		= f.collection_select(:skill_id, Skill.actives, :id, :pluralized, {:include_blank => 'Volunteers'}, :disabled => !mission.created?, :class => "ux-dropdown w30")
+		= f.collection_select(:skill_id, skills.actives, :id, :pluralized, {:include_blank => 'Volunteers'}, :disabled => !mission.created?, :class => "ux-dropdown w30")
 	%br
 	%br
 	= f.label :reason, "Description"

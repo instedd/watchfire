@@ -1,13 +1,14 @@
 require 'csv'
 
 class VolunteerImporter
-  
+
   include Geokit::Geocoders
-  
-  def initialize
+
+  def initialize(organization)
+    @organization = organization
     @geocode_cache = {}
   end
-    
+
   def import content, options = {}
     volunteers = []
     CSV.parse(content) do |row|
@@ -16,9 +17,9 @@ class VolunteerImporter
     end
     volunteers
   end
-  
+
   private
-  
+
   # name, roles, voice_phone, sms_phone, location
   def parse_row row, default_location
     begin
@@ -28,24 +29,25 @@ class VolunteerImporter
       sms_phone = row[3]
       location = row[4]
       geocoded_location = geocode location
-      
+
       volunteer = Volunteer.find_by_name(name) || Volunteer.new
+      volunteer.organization = @organization
       volunteer.name = name
       volunteer.voice_number = voice_phone
       volunteer.sms_number = sms_phone
       volunteer.address = location
       volunteer.lat = geocoded_location.lat
       volunteer.lng = geocoded_location.lng
-      volunteer.skills = roles.map{|n| Skill.find_or_create_by_name(n)}
+      volunteer.skills = roles.map{|n| Skill.find_or_create_by_organization_id_and_name(@organization.id, n)}
       volunteer
     rescue Exception => e
       nil
     end
   end
-  
+
   def geocode location
     @geocode_cache[location] = GoogleGeocoder.geocode(location) unless @geocode_cache[location]
     @geocode_cache[location]
   end
-  
+
 end

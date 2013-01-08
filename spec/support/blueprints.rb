@@ -35,6 +35,7 @@ MissionJob.blueprint do
 end
 
 Skill.blueprint do
+  organization { Organization.make! }
   name { _name }
 end
 

@@ -7,7 +7,7 @@
     = errors_for @volunteer
 
     %br
-  
+
     = f.label :name
     = f.text_field :name, :class => 'w60'
     %br
@@ -22,7 +22,7 @@
     %br
     = f.hidden_field :lat
     = f.hidden_field :lng
-    
+
     .box.w58
       = f.label :address
       = f.text_field :address, :placeholder => 'Search', :class => 'w54 ux-search'
@@ -36,7 +36,7 @@
 
     = f.fields_for :shifts do |shift_form|
       = render :partial => 'shifts_matrix', :locals => {:f => shift_form}
-		
+
     .bottom-actions
       %button.white Save
       = link_to 'Cancel', :back, :class => "tgrey"
@@ -48,7 +48,7 @@
 .clear
 
 %ul.hidden#allSkills
-  - Skill.all.each do |s|
+  - skills.all.each do |s|
     %li= s.name
 
 %ul.hidden#volSkills

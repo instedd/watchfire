@@ -1,16 +1,23 @@
-class ImportViewModel < ViewModel  
+class ImportViewModel < ViewModel
   attr_accessor :volunteers
-  
-  def self.from_model volunteers
-    import_view_model = ImportViewModel.new
+
+  def self.from_model(organization, volunteers)
+    import_view_model = ImportViewModel.new(organization)
     import_view_model.volunteers = volunteers.map{|v| VolunteerViewModel.from_model v}
     import_view_model
   end
-  
-  def volunteers_attributes=(attributes)
-    @volunteers = attributes.values.map{|attrs| VolunteerViewModel.new attrs}
+
+  def initialize(organization, attributes = {})
+    @organization = organization
+    super(attributes)
   end
-  
+
+  def volunteers_attributes=(attributes)
+    @volunteers = attributes.values.map do |attrs|
+      VolunteerViewModel.new attrs.merge({organization_id: @organization.id})
+    end
+  end
+
   def save
     valid = true
     begin
@@ -24,17 +31,17 @@ class ImportViewModel < ViewModel
     end
     valid
   end
-  
+
   def size
     @volunteers.size
   end
-  
+
   def conflicts
     @volunteers.reject{|v| v.valid?}.size
   end
-  
+
   def has_conflicts?
     @volunteers.reject{|v| v.valid?}.size > 0
   end
-  
+
 end

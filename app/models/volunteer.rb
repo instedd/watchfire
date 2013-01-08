@@ -21,7 +21,7 @@ class Volunteer < ActiveRecord::Base
   validate :has_location
 
 	def skill_names=(names)
-		self.skills = names.split(',').map{|n| Skill.find_or_create_by_name(n)}.select{|s| s.valid?}
+		self.skills = names.split(',').map{|n| Skill.find_or_create_by_organization_id_and_name(organization_id, n.strip)}.select(&:valid?)
 	end
 
 	def skill_names
