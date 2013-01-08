@@ -1,0 +1,1 @@
+Rails.application.routes.default_url_options = Rails.configuration.action_mailer.default_url_options
