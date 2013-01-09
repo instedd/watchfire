@@ -4,6 +4,7 @@ Watchfire::Application.routes.draw do
   # Verboice callbacks
   post "verboice/plan" => "verboice#plan", :defaults => { :format => 'xml' }
   post "verboice/callback" => "verboice#callback", :defaults => { :format => 'xml' }
+  get "verboice/status_callback" => "verboice#status_callback"
 
   # Nuntium Callbacks
   post "nuntium/receive"
