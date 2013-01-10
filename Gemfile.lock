@@ -44,7 +44,6 @@ GEM
     cover_me (1.1.2)
       configatron
       hashie
-    crack (0.1.8)
     daemons (1.1.4)
     debugger (1.2.3)
       columnize (>= 0.3.1)
@@ -86,8 +85,6 @@ GEM
       haml (~> 3.0)
       railties (~> 3.0)
     hashie (1.1.0)
-    httparty (0.7.8)
-      crack (= 0.1.8)
     i18n (0.5.0)
     jquery-rails (1.0.12)
       railties (~> 3.0)
@@ -162,9 +159,9 @@ GEM
       polyglot
       polyglot (>= 0.3.1)
     tzinfo (0.3.29)
-    verboice (0.1.1)
-      httparty
+    verboice (0.6.0)
       json
+      rest-client
     warden (1.0.5)
       rack (>= 1.0)
     yamler (0.1.0)
@@ -196,4 +193,4 @@ DEPENDENCIES
   rest-client
   rspec-rails (~> 2.6)
   timecop
-  verboice (~> 0.1.1)
+  verboice (= 0.6.0)

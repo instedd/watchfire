@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130108160252) do
+ActiveRecord::Schema.define(:version => 20130109154849) do
 
   create_table "calls", :force => true do |t|
     t.string   "session_id"
@@ -32,6 +32,7 @@ ActiveRecord::Schema.define(:version => 20130108160252) do
     t.boolean  "active",         :default => true, :null => false
     t.string   "answered_from"
     t.datetime "answered_at"
+    t.string   "voice_status"
   end
 
   create_table "delayed_jobs", :force => true do |t|

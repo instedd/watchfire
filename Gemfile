@@ -26,7 +26,7 @@ gem 'delayed_job'
 gem 'rest-client'
 gem 'nuntium_api', '~> 0.19', :require => 'nuntium'
 gem 'geokit-rails3'
-gem 'verboice', "~> 0.1.1"
+gem 'verboice', "0.6.0"
 gem 'devise'
 gem 'devise_invitable'
 gem 'breadcrumbs_on_rails'

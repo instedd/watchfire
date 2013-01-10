@@ -20,7 +20,7 @@ describe VoiceJob do
     end
 
     it "should call the volunteer" do
-      @verboice.expects(:call).with(@candidate.volunteer.voice_number).returns(@response)
+      @verboice.expects(:call).with(@candidate.volunteer.voice_number, :status_callback_url => Rails.application.routes.url_helpers.verboice_status_callback_url).returns(@response)
 
       @voice_job.perform
     end
