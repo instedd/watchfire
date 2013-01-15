@@ -1,4 +1,4 @@
-%h1= @organization.name
+= render 'tabs'
 
 - if @owner
   %div Invite a user to this organization:
@@ -16,6 +16,3 @@
 %ul
   - @organization.users.each do |user|
     %li= user.email
-
-- if @owner
-  = link_to 'Edit', edit_organization_path(@organization)

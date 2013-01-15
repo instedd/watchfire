@@ -23,10 +23,15 @@ class OrganizationsController < ApplicationController
 
   def edit
     @organization = current_user.organizations.find params[:id]
+    @owner = current_user.owner_of?(@organization)
+    redirect_to :show unless @owner
   end
 
   def update
     @organization = Organization.find current_user.organizations.find(params[:id]).id
+    @owner = current_user.owner_of?(@organization)
+    redirect_to :show unless @owner
+
     if @organization.update_attributes(params[:organization])
       redirect_to organization_path(@organization), :notice => 'Organization was successfully updated'
     else

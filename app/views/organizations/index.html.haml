@@ -12,7 +12,8 @@
     - @organizations.each do |organization|
       %tr
         %td= link_to organization.name, organization_path(organization.id)
-        %td= link_to 'Select', select_organization_path(organization.id)
+        %td
+          = link_to 'Select', select_organization_path(organization.id)
 
   - if @organizations.empty?
     .missions_empty
