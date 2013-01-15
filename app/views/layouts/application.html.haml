@@ -19,7 +19,7 @@
             - if user_signed_in? && current_user.has_organizations?
               = section 'Events', missions_path, :missions
               = section 'Volunteers', volunteers_path, :volunteers
-            = section 'Organizations', organizations_path, :organizations
+              = section 'Organizations', organizations_path, :organizations
         %ul.RightMenu
           - if user_signed_in?
             %li

@@ -1,18 +1,23 @@
-%h1 Organizations
+%h1
+  Organizations
+  - if @organizations.present?
+    = form_tag new_organization_path, :method => :get do
+      %button.cadd{:type => "submit"} Create New
 
-- if @organizations.present?
-  Choose an organization, or #{link_to 'create a new one', new_organization_path}:
+.tablewrapp
+  %table.GralTable.ButtonTable
+    %tr
+      %th Name
+      %th &nbsp;
+    - @organizations.each do |organization|
+      %tr
+        %td= link_to organization.name, organization_path(organization.id)
+        %td= link_to 'Select', select_organization_path(organization.id)
 
-  %ul
-  - @organizations.each do |organization|
-    %li
-      %b= organization.name
-      = link_to 'select', select_organization_path(organization.id)
-      |
-      = link_to 'show', organization_path(organization.id)
-- else
-  To start using Watchfire you must create an Organization.
+  - if @organizations.empty?
+    .missions_empty
+      %div.info To start using Watchfire you must create an Organization
+      %a.add{:href => new_organization_path}
+        Create Organization
+        %button.cadd
 
-  %br
-
-  = render 'form'
