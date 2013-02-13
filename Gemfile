@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-gem 'rails', '3.0.9'
+gem 'rails', '3.0.20'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
@@ -41,10 +41,10 @@ gem 'foreman'
 # and rake tasks are available in development mode:
 group :development, :test do
 #   gem 'webrat'
-	gem "rspec-rails", "~> 2.6"
+	gem 'rspec-rails'
 	gem 'machinist', '>= 2.0.0.beta2'
 	gem 'faker'
-	gem 'mocha'
+	gem 'mocha', :require => false
 	gem 'timecop'
 	gem 'cover_me', '>= 1.0.0.rc6'
   # gem 'rb-fsevent', :require => false if RUBY_PLATFORM =~ /darwin/i
