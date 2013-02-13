@@ -4,12 +4,14 @@
 .left
   %h1
     = "#{@volunteers_count} volunteers"
-    = form_tag new_volunteer_path, :method => :get do
-      %button.cadd{:type => "submit"} Add New
-  
-.right
-  = form_tag volunteers_path, :method => :get do
-    = text_field_tag :q, @q, :placeholder => "Search", :class => "w30 ux-search", :id => "volunteers_search"
+    - if current_organization
+      = form_tag new_volunteer_path, :method => :get do
+        %button.cadd{:type => "submit"} Add New
+
+- if current_organization
+  .right
+    = form_tag volunteers_path, :method => :get do
+      = text_field_tag :q, @q, :placeholder => "Search", :class => "w30 ux-search", :id => "volunteers_search"
 
 .clear
 
@@ -31,27 +33,34 @@
             %button.avoid.fdelete
           = form_tag edit_volunteer_path(volunteer), :method => :get do
             %button.avoid.farrow
+  - unless current_organization
+    .missions_empty
+      %div.info To start using Watchfire you must create an Organization
+      %a.add{:href => new_organization_path}
+        Create Organization
+        %button.cadd
   = paginate @volunteers
 %br
-%br
-%h1 Bulk volunteers creation
-%span.smalldescription Create volunteers uploading a CSV file.
-%br
-= link_to '/samples/volunteers.csv' do
-  %button.fimport Download a sample CSV file
-%span.tgrey and fill it with the accounts data
-%br
-%br
-.ux-collapsible.collapsed{'data-on-expanded' => 'box grey w40'}
-  %span
-    %a
-      %button.fexport Upload it for bulk account creation
-  .ux-content
-    = form_for :import_volunteers, :url => import_volunteers_path, :html => {:multipart => true} do |f|
-      %hr
-      = file_field_tag :file
-      %hr
-      .botttom-actions.right
-        %a.tgrey.ux-collapse-trigger{:href => "#"} Cancel 
-        %button.grey Next
-      %br.clear
+- if current_organization
+  %br
+  %h1 Bulk volunteers creation
+  %span.smalldescription Create volunteers uploading a CSV file.
+  %br
+  = link_to '/samples/volunteers.csv' do
+    %button.fimport Download a sample CSV file
+  %span.tgrey and fill it with the accounts data
+  %br
+  %br
+  .ux-collapsible.collapsed{'data-on-expanded' => 'box grey w40'}
+    %span
+      %a
+        %button.fexport Upload it for bulk account creation
+    .ux-content
+      = form_for :import_volunteers, :url => import_volunteers_path, :html => {:multipart => true} do |f|
+        %hr
+        = file_field_tag :file
+        %hr
+        .botttom-actions.right
+          %a.tgrey.ux-collapse-trigger{:href => "#"} Cancel
+          %button.grey Next
+        %br.clear

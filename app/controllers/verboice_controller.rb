@@ -1,5 +1,5 @@
 class VerboiceController < ApplicationController
-  before_filter :load_candidate
+  expose(:candidate) { Candidate.find_by_call_session_id params[:CallSid] }
 
   def plan
   end
@@ -16,20 +16,13 @@ class VerboiceController < ApplicationController
 
     # Update status according to response
     response = match[1]
-    @candidate.answered_from_voice! response
+    candidate.answered_from_voice! response
   end
 
   def status_callback
-    @candidate.voice_status = params[:CallStatus]
-    @candidate.save!
+    candidate.voice_status = params[:CallStatus]
+    candidate.save!
 
     head :ok
   end
-
-  private
-
-  def load_candidate
-    @candidate = Candidate.find_by_call_session_id params[:CallSid]
-  end
-
 end

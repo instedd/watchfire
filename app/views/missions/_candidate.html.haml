@@ -1,6 +1,6 @@
 %tr{:class => "candidate #{"blocked" unless candidate.active}", 'data-lat' => candidate.volunteer.lat, 'data-lng' => candidate.volunteer.lng, 'data-url' => volunteer_path(candidate.volunteer)}
   %td
-    - if candidate.pending? && !@mission.finished?
+    - if candidate.pending? && !mission.finished?
       %span.avoid{:id => "candidate_paused_form_#{candidate.id}"}
         = render :partial => 'shared/candidate_paused_form', :locals => {:candidate => candidate}
     %span= candidate.volunteer.name

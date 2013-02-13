@@ -39,32 +39,11 @@ class OrganizationsController < ApplicationController
     end
   end
 
-  def show
-    @organization = current_user.organizations.find params[:id]
-    @owner = current_user.owner_of?(@organization)
-    add_breadcrumb @organization.name, organization_path(@organization)
-  end
-
   def select
     organization = current_user.organizations.find params[:id]
     current_user.current_organization_id = organization.id
     current_user.save!
 
     redirect_to missions_path
-  end
-
-  def invite_user
-    organization = current_user.organizations.find params[:id]
-    if current_user.owner_of?(organization)
-      existing = current_user.invite_to organization, params[:email]
-
-      if existing
-        redirect_to organization_path(organization), notice: "#{params[:email]} is now a member of #{organization.name}"
-      else
-        redirect_to organization_path(organization), notice: "Invitation email sent to #{params[:email]}"
-      end
-    else
-      redirect_to organization_path(organization), alert: "You can't invite users because are not an owner of #{organization.name}"
-    end
   end
 end

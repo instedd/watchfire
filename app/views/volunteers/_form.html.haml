@@ -3,8 +3,8 @@
   = javascript_include_tag 'http://maps.googleapis.com/maps/api/js?sensor=false'
 
 .left.w60
-  = form_for @volunteer do |f|
-    = errors_for @volunteer
+  = form_for volunteer do |f|
+    = errors_for volunteer
 
     %br
 
@@ -40,8 +40,8 @@
     .bottom-actions
       %button.white Save
       = link_to 'Cancel', :back, :class => "tgrey"
-      - unless @volunteer.new_record?
-        = link_to @volunteer, :confirm => "Are you sure?", :method => :delete do
+      - unless volunteer.new_record?
+        = link_to volunteer, :confirm => "Are you sure?", :method => :delete do
           %button.fdelete.right Delete this volunteer
         %br{:clear => 'all'}
 .right
@@ -52,5 +52,5 @@
     %li= s.name
 
 %ul.hidden#volSkills
-  - @volunteer.skills.each do |s|
+  - volunteer.skills.each do |s|
     %li= s.name

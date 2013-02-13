@@ -31,6 +31,9 @@ gem 'devise'
 gem 'devise_invitable'
 gem 'breadcrumbs_on_rails'
 gem 'kaminari'
+# gem 'pigeon', :path => '../pigeon'
+gem 'decent_exposure'
+gem 'guid'
 
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators

@@ -3,10 +3,6 @@ module ApplicationHelper
     current_user.current_organization
   end
 
-  def skills
-    current_organization.skills
-  end
-
   def section title, url, name
     raw "<li class=\"#{controller_name == name.to_s ? "active" : ""}\">#{link_to title, url}</li>"
   end

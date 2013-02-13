@@ -12,7 +12,6 @@ Watchfire::Application.routes.draw do
   resources :organizations do
     member do
       get 'select'
-      post 'invite_user'
     end
   end
 
@@ -36,6 +35,15 @@ Watchfire::Application.routes.draw do
       post 'confirm_import'
     end
   end
+
+  resources :members do
+    collection do
+      post 'invite'
+      get 'accept_invite'
+    end
+  end
+
+  resources :channels
 
 	resources :candidates, :only => [:update]
 

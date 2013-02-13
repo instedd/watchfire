@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130109154849) do
+ActiveRecord::Schema.define(:version => 20130121172617) do
 
   create_table "calls", :force => true do |t|
     t.string   "session_id"
@@ -52,7 +52,15 @@ ActiveRecord::Schema.define(:version => 20130109154849) do
 
   create_table "invites", :force => true do |t|
     t.integer  "organization_id"
-    t.string   "email"
+    t.string   "token"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "members", :force => true do |t|
+    t.integer  "organization_id"
+    t.integer  "user_id"
+    t.string   "role"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -79,14 +87,6 @@ ActiveRecord::Schema.define(:version => 20130109154849) do
     t.boolean  "use_custom_text", :default => false, :null => false
     t.text     "custom_text"
     t.integer  "organization_id"
-  end
-
-  create_table "organization_users", :force => true do |t|
-    t.integer  "organization_id"
-    t.integer  "user_id"
-    t.string   "role"
-    t.datetime "created_at"
-    t.datetime "updated_at"
   end
 
   create_table "organizations", :force => true do |t|

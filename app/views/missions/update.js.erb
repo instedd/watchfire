@@ -1,18 +1,18 @@
-$('#scroll').html('<%=escape_javascript(render :partial => "volunteers", :locals => { :mission => @mission } )%>');
-$('#mission_title').html('<%=escape_javascript(render :partial => "title", :locals => { :mission => @mission } )%>');
-$('#mission_message').html('<%=escape_javascript(render :partial => "message", :locals => { :mission => @mission } )%>');
-$('#form_container').html('<%=escape_javascript(render :partial => "form", :locals => { :mission => @mission } )%>');
-$('#mission_status').html('<%=escape_javascript(render :partial => "status", :locals => { :mission => @mission } )%>');
-$('#mission_distance').html('<%=escape_javascript(render :partial => "distance", :locals => { :mission => @mission } )%>');
-$('#mission_actions').html('<%=escape_javascript(render :partial => "actions", :locals => { :mission => @mission } )%>');
+$('#scroll').html('<%=escape_javascript(render :partial => "volunteers", :locals => { :mission => mission } )%>');
+$('#mission_title').html('<%=escape_javascript(render :partial => "title", :locals => { :mission => mission } )%>');
+$('#mission_message').html('<%=escape_javascript(render :partial => "message", :locals => { :mission => mission } )%>');
+$('#form_container').html('<%=escape_javascript(render :partial => "form", :locals => { :mission => mission } )%>');
+$('#mission_status').html('<%=escape_javascript(render :partial => "status", :locals => { :mission => mission } )%>');
+$('#mission_distance').html('<%=escape_javascript(render :partial => "distance", :locals => { :mission => mission } )%>');
+$('#mission_actions').html('<%=escape_javascript(render :partial => "actions", :locals => { :mission => mission } )%>');
 
 init_events();
 check_running();
 close_info_window();
 hide_or_show_candidate_lists();
 
-<% if @mission.farthest %>
-	setMapCircle(<%= @mission.farthest %>);
+<% if mission.farthest %>
+	setMapCircle(<%= mission.farthest %>);
 <%end%>
 
 $.instedd.init_components($('#form_container'));

@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe MissionsController do
-
   before(:all) do
     @user = User.make!
     @organization = @user.create_organization Organization.new(:name => 'RedCross')
@@ -15,14 +14,14 @@ describe MissionsController do
   describe "show" do
     it "assigns mission" do
       get :show, :id => @mission.id.to_s
-      assigns(:mission).should eq(@mission)
+      controller.mission.should eq(@mission)
     end
   end
 
   describe "new" do
     it "renders show template with new mission" do
       get :new
-      assigns(:mission).should be_new_record
+      controller.mission.should be_new_record
       response.should render_template('show')
     end
   end
@@ -30,14 +29,14 @@ describe MissionsController do
   describe "index" do
     it "should assign all missions that belong to the user" do
       get :index
-      assigns(:missions).should eq([@mission])
+      controller.missions.should eq([@mission])
     end
 
     it "should not return missions of other users" do
       other_user = User.make!
       other_mission = Mission.make! :user => other_user
       get :index
-      assigns(:missions).should_not include other_mission
+      controller.missions.should_not include other_mission
     end
   end
 
@@ -54,7 +53,7 @@ describe MissionsController do
 
     it "should check for volunteers" do
       mission = mock('mission')
-      Mission.expects(:new).returns(mission)
+      controller.stubs(:mission => mission)
       mission.expects(:check_and_save)
       mission.stubs(:user=)
       mission.stubs(:organization=)
@@ -79,14 +78,14 @@ describe MissionsController do
 
   describe "update" do
     it "checks for volunteers if it's needed" do
-      Mission.expects(:find).with(@mission.id.to_s).returns(@mission)
+      controller.stubs(:mission => @mission)
       @mission.expects(:check_for_volunteers?).returns(true)
       @mission.expects(:check_and_save)
       put :update, :id => @mission.id.to_s, :mission => {}, :format => 'js'
     end
 
     it "only saves if there is no need to check for volunteers" do
-      Mission.expects(:find).with(@mission.id.to_s).returns(@mission)
+      controller.stubs(:mission => @mission)
       @mission.expects(:check_for_volunteers?).returns(false)
       @mission.expects(:save)
       put :update, :id => @mission.id.to_s, :mission => {}, :format => 'js'
@@ -94,37 +93,38 @@ describe MissionsController do
 
     it "assigns mission" do
       put :update, :id => @mission.id.to_s, :mission => {}, :format => 'js'
-      assigns(:mission).should eq(@mission)
+      controller.mission.should eq(@mission)
     end
 
     it "updates attributes" do
-      Mission.any_instance.expects(:attributes=).with({'foo' => 'bar'})
+      controller.stubs(:mission => @mission)
+      @mission.expects(:attributes=).with({'foo' => 'bar'})
       put :update, :id => @mission.id.to_s, :mission => {'foo' => 'bar'}, :format => 'js'
     end
   end
 
   describe "start" do
     it "should call volunteers" do
-      Mission.expects(:find).with(@mission.id).returns(@mission)
+      controller.stubs(:mission => @mission)
       @mission.expects(:call_volunteers)
       post :start, :id => @mission.id, :format => 'js'
-      assigns(:mission).should eq(@mission)
+      controller.mission.should eq(@mission)
     end
   end
 
   describe "stop" do
     it "should stop calling volunteers" do
-      Mission.expects(:find).with(@mission.id).returns(@mission)
+      controller.stubs(:mission => @mission)
       @mission.expects(:stop_calling_volunteers)
       post :stop, :id => @mission.id, :format => 'js'
-      assigns(:mission).should eq(@mission)
+      controller.mission.should eq(@mission)
     end
   end
 
   describe "refresh" do
     it "should assign mission" do
       get :refresh, :id => @mission.id.to_s
-      assigns(:mission).should eq(@mission)
+      controller.mission.should eq(@mission)
     end
 
     it "should render refresh with js" do
@@ -140,20 +140,20 @@ describe MissionsController do
 
   describe "finish" do
     it "should finish mission" do
-      Mission.expects(:find).with(@mission.id.to_s).returns(@mission)
+      controller.stubs(:mission => @mission)
       @mission.expects(:finish)
       post :finish, :id => @mission.id.to_s
-      assigns(:mission).should eq(@mission)
+      controller.mission.should eq(@mission)
       response.should render_template('show')
     end
   end
 
   describe "open" do
     it "should re open mission" do
-      Mission.expects(:find).with(@mission.id.to_s).returns(@mission)
+      controller.stubs(:mission => @mission)
       @mission.expects(:open)
       post :open, :id => @mission.id.to_s
-      assigns(:mission).should eq(@mission)
+      controller.mission.should eq(@mission)
       response.should render_template('show')
     end
   end
@@ -168,31 +168,34 @@ describe MissionsController do
 
   describe "clone" do
     it "should create a mission duplicate" do
-      new_mission = mock('new_mission')
-      Mission.any_instance.expects(:new_duplicate).returns(new_mission)
+      new_mission = mock('new_mission', id: 123)
+      controller.stubs(:mission => @mission)
+      @mission.expects(:new_duplicate).returns(new_mission)
       post :clone, :id => @mission.id.to_s
-      assigns(:mission).should eq(new_mission)
     end
 
-    it "renders show" do
+    it "redirects to new mission path" do
+      new_mission = mock('new_mission', id: 123)
+      controller.stubs(:mission => @mission)
+      @mission.expects(:new_duplicate).returns(new_mission)
       post :clone, :id => @mission.id.to_s
-      response.should render_template('show')
+      response.should redirect_to(mission_path(123))
     end
   end
 
 	describe "export" do
 		it "should export results" do
-			Mission.expects(:find).with(@mission.id.to_s).returns(@mission)
+      controller.stubs(:mission => @mission)
 			VolunteerExporter.expects(:export).with(@mission).returns("csv data")
 			get :export, :id => @mission.id.to_s
-			assigns(:mission).should eq(@mission)
+			controller.mission.should eq(@mission)
 			response.body.should eq("csv data")
 		end
 	end
 
 	describe "check_all" do
 	  it "should enable all pending in mission" do
-	    Mission.expects(:find).with(@mission.id.to_s).returns(@mission)
+      controller.stubs(:mission => @mission)
 	    @mission.expects(:enable_all_pending)
 	    post :check_all, :id => @mission.id.to_s, :format => 'js'
     end
@@ -205,7 +208,7 @@ describe MissionsController do
 
   describe "uncheck_all" do
 	  it "should disable all pending in mission" do
-	    Mission.expects(:find).with(@mission.id.to_s).returns(@mission)
+      controller.stubs(:mission => @mission)
 	    @mission.expects(:disable_all_pending)
 	    post :uncheck_all, :id => @mission.id.to_s, :format => 'js'
     end

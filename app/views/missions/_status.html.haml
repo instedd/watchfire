@@ -1,4 +1,4 @@
-= hidden_field_tag :status, @mission.status, :id => 'status_field'
+= hidden_field_tag :status, mission.status, :id => 'status_field'
 #progress.values
 	= render :partial => 'progress', :locals => {:mission => mission}
 - if mission.created?

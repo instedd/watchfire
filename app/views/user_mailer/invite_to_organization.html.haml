@@ -1,1 +1,1 @@
-= link_to 'Click to create a Watchfire account an join #{@organization.name}', new_user_registration_url(email: @email)
+= link_to 'Click to create a Watchfire account an join #{@organization.name}', accept_invite_members_url(token: @token)

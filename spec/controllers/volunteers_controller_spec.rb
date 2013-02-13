@@ -26,18 +26,10 @@ describe VolunteersController do
     end
   end
 
-  describe "GET show" do
-    it "assigns the requested volunteer as @volunteer" do
-      volunteer = Volunteer.create! valid_attributes
-      get :show, :id => volunteer.id.to_s
-      assigns(:volunteer).should eq(volunteer)
-    end
-  end
-
   describe "GET new" do
     it "assigns a new volunteer as @volunteer" do
       get :new
-      assigns(:volunteer).should be_a_new(Volunteer)
+      controller.volunteer.should be_a_new(Volunteer)
     end
   end
 
@@ -59,8 +51,8 @@ describe VolunteersController do
 
       it "assigns a newly created volunteer as @volunteer" do
         post :create, :volunteer => valid_attributes
-        assigns(:volunteer).should be_a(Volunteer)
-        assigns(:volunteer).should be_persisted
+        controller.volunteer.should be_a(Volunteer)
+        controller.volunteer.should be_persisted
       end
 
       it "redirects to the created volunteer" do
@@ -74,7 +66,7 @@ describe VolunteersController do
         # Trigger the behavior that occurs when invalid params are submitted
         Volunteer.any_instance.stubs(:save).returns(false)
         post :create, :volunteer => {}
-        assigns(:volunteer).should be_a_new(Volunteer)
+        controller.volunteer.should be_a_new(Volunteer)
       end
 
       it "re-renders the 'new' template" do
@@ -89,19 +81,17 @@ describe VolunteersController do
   describe "PUT update" do
     describe "with valid params" do
       it "updates the requested volunteer" do
-        volunteer = Volunteer.create! valid_attributes
-        # Assuming there are no other volunteers in the database, this
-        # specifies that the Volunteer created on the previous line
-        # receives the :update_attributes message with whatever params are
-        # submitted in the request.
-        Volunteer.any_instance.expects(:update_attributes).with({'these' => 'params'})
+        volunteer = stub(:volunteer)
+        controller.stubs(:volunteer => volunteer)
+        volunteer.stubs(:id => 123)
+        volunteer.expects(:update_attributes).with({'these' => 'params'})
         put :update, :id => volunteer.id, :volunteer => {'these' => 'params'}
       end
 
       it "assigns the requested volunteer as @volunteer" do
         volunteer = Volunteer.create! valid_attributes
         put :update, :id => volunteer.id, :volunteer => valid_attributes
-        assigns(:volunteer).should eq(volunteer)
+        controller.volunteer.should eq(volunteer)
       end
 
       it "redirects to the volunteer" do
@@ -117,7 +107,7 @@ describe VolunteersController do
         # Trigger the behavior that occurs when invalid params are submitted
         Volunteer.any_instance.stubs(:save).returns(false)
         put :update, :id => volunteer.id.to_s, :volunteer => {}
-        assigns(:volunteer).should eq(volunteer)
+        controller.volunteer.should eq(volunteer)
       end
 
       it "re-renders the 'edit' template" do

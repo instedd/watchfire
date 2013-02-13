@@ -1,8 +1,8 @@
 - unless mission.new_record?
-	= hidden_field_tag :refresh, refresh_mission_path(@mission), :id => 'refresh_url'
-	= form_tag clone_mission_path(@mission) do
+	= hidden_field_tag :refresh, refresh_mission_path(mission), :id => 'refresh_url'
+	= form_tag clone_mission_path(mission) do
 		%button.cadd Recruit another role
-	= form_tag export_mission_path(@mission), :method => :get do
+	= form_tag export_mission_path(mission), :method => :get do
 		%button.fimport Download recruiting results
-	= form_tag mission_path(@mission), :method => :delete do
+	= form_tag mission_path(mission), :method => :delete do
 		%button.fdelete{'data-confirm' => 'Are you sure?'} Delete this event

@@ -52,6 +52,7 @@ GEM
     debugger-linecache (1.1.2)
       debugger-ruby_core_source (>= 1.1.1)
     debugger-ruby_core_source (1.1.6)
+    decent_exposure (2.0.1)
     delayed_job (2.1.4)
       activesupport (~> 3.0)
       daemons
@@ -78,6 +79,7 @@ GEM
       thor (~> 0.14.6)
     guard-rspec (0.4.5)
       guard (>= 0.4.0)
+    guid (0.1.1)
     haml (3.1.2)
     haml-rails (0.3.4)
       actionpack (~> 3.0)
@@ -173,6 +175,7 @@ DEPENDENCIES
   breadcrumbs_on_rails
   compass
   cover_me (>= 1.0.0.rc6)
+  decent_exposure
   delayed_job
   devise
   devise_invitable
@@ -180,6 +183,7 @@ DEPENDENCIES
   faker
   geokit-rails3
   guard-rspec
+  guid
   haml-rails
   jquery-rails
   kaminari

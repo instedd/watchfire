@@ -1,10 +1,9 @@
 class CandidatesController < ApplicationController
+  expose(:candidate) { Candidate.find(params[:id]) }
+  expose(:mission) { candidate.mission }
 
 	def update
-		@candidate = Candidate.find(params[:id])
-		@candidate.update_attributes(params[:candidate])
-		@mission = @candidate.mission
+		candidate.update_attributes(params[:candidate])
 	end
-	
 end
 

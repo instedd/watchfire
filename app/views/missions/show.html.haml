@@ -3,28 +3,28 @@
 	= javascript_include_tag 'mission_page'
 	= javascript_include_tag 'jquery.timeago'
 #mission_title
-	= render :partial => 'title', :locals => { :mission => @mission }
+	= render :partial => 'title', :locals => { :mission => mission }
 %br
 .left
 	#left_panel.box.w60
 		#form_container
-			= render :partial => 'form', :locals => { :mission => @mission }
+			= render :partial => 'form', :locals => { :mission => mission }
 		#map_canvas.map
 		.hidden
 			#info_window_content
 		#mission_distance
-			= render :partial => 'distance', :locals => { :distance => @mission.farthest, :mission => @mission }
+			= render :partial => 'distance', :locals => { :distance => mission.farthest, :mission => mission }
 .right
 	.box.w30
 		#mission_status.sbox.grey.StateDisplay
-			= render :partial => 'status', :locals => {:mission => @mission}
+			= render :partial => 'status', :locals => {:mission => mission}
 		#mission_message.event-desc
-			= render :partial => 'message', :locals => {:mission => @mission}
+			= render :partial => 'message', :locals => {:mission => mission}
 		%hr.shadow
 		#scroll
-			= render :partial => 'volunteers', :locals => {:mission => @mission}
+			= render :partial => 'volunteers', :locals => {:mission => mission}
 .clear
 %br
 %hr
 #mission_actions.bottom-actions
-	= render :partial => 'actions', :locals => {:mission => @mission}
+	= render :partial => 'actions', :locals => {:mission => mission}

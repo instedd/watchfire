@@ -6,12 +6,12 @@
 		%tr
 			%th My Events
 			%th
-				%select#combo_status.ux-dropdown.w20{:disabled => @missions.empty? ? 'disabled' : false}
+				%select#combo_status.ux-dropdown.w20{:disabled => missions.all.empty? ? 'disabled' : false}
 					%option{:value => 'active', :selected =>'selected'} Only Active
 					%option{:value => 'finished'} Only Fully Staffed
 					%option{:value => ''} Show all
-		- if !@missions.empty?
-			- @missions.each do |mission|
+		- if missions.all.present?
+			- missions.each do |mission|
 				%tr.mission.link{'data-url' => mission_path(mission), 'data-status' => mission.status}
 					%td{:class => mission.running? ? 'mactive' : 'mpaused'}
 						%span
@@ -35,10 +35,16 @@
 			%tr
 				%td &nbsp;
 				%td &nbsp;
-	- if @missions.empty?
+	- if missions.all.empty?
 		.missions_empty
-			%div= image_tag 'http://theme.instedd.org/theme/images/icons/72/grey/fire.png'
-			%div.info You have no events yet
-			%a.add{:href => new_mission_path}
-				Create Event 
-				%button.cadd
+			- if current_organization
+				%div= image_tag 'http://theme.instedd.org/theme/images/icons/72/grey/fire.png'
+				%div.info You have no events yet
+				%a.add{:href => new_mission_path}
+					Create Event
+					%button.cadd
+			- else
+				%div.info To start using Watchfire you must create an Organization
+				%a.add{:href => new_organization_path}
+					Create Organization
+					%button.cadd

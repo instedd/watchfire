@@ -1,2 +1,2 @@
-$('#pending_list').html('<%= escape_javascript(render :partial => "candidate_list", :locals => {:title => 'Pending', :candidates => @mission.pending_candidates} )%>')
+$('#pending_list').html('<%= escape_javascript(render :partial => "candidate_list", :locals => {:title => 'Pending', :candidates => mission.pending_candidates} )%>')
 init_candidate_events();
