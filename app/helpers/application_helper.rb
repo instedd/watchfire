@@ -13,7 +13,7 @@ module ApplicationHelper
 
   def watchfire_version
     begin
-      @@watchfire_version = File.read('VERSION').strip unless defined? @@watchfire_version
+      @@watchfire_version = File.read('REVISION').strip unless defined? @@watchfire_version
     rescue Errno::ENOENT
       @@watchfire_version = 'Development'
     end
