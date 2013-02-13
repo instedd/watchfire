@@ -33,9 +33,11 @@
                 .container
                   %ul
                     - if current_user.current_organization
-                      - current_user.organizations.sort_by(&:name).each do |organization|
-                        %li= link_to organization.name, select_organization_path(organization)
-                      %hr/
+                      - other_organizations = current_user.organizations.sort_by(&:name) - [current_user.current_organization]
+                      - if other_organizations.present?
+                        - other_organizations.each do |organization|
+                          %li= link_to organization.name, select_organization_path(organization)
+                        %hr/
                     %li= link_to 'My Account', edit_user_registration_path
                   %hr/
                   %ul
