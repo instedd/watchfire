@@ -12,6 +12,8 @@ defaults: &defaults
   basic_auth_name: COMPLETE
   basic_auth_pwd: COMPLETE
   ispeech_api_key: COMPLETE
+  default_url_options:
+    host: localhost:3000
 
 development:
   <<: *defaults

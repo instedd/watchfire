@@ -1,4 +1,5 @@
 Watchfire::Application.configure do
+  watchfire_settings = YAML::load_file("#{Rails.root}/config/settings.yml").with_indifferent_access
   # Settings specified here will take precedence over those in config/application.rb
 
   # The production environment is meant for finished, "live" apps.
@@ -36,6 +37,9 @@ Watchfire::Application.configure do
 
   # Disable delivery errors, bad email addresses will be ignored
   # config.action_mailer.raise_delivery_errors = false
+
+  # Action Mailer
+  config.action_mailer.default_url_options = watchfire_settings[:production][:default_url_options].symbolize_keys
 
   # Enable threaded mode
   # config.threadsafe!
