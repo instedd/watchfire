@@ -52,4 +52,6 @@ group :development, :test do
 	gem 'guard-rspec'
   gem 'pry'
   gem 'pry-debugger'
+  gem 'capistrano'
+  gem 'rvm-capistrano'
 end

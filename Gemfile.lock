@@ -32,6 +32,12 @@ GEM
     bcrypt-ruby (2.1.4)
     breadcrumbs_on_rails (2.0.0)
     builder (2.1.2)
+    capistrano (2.14.2)
+      highline
+      net-scp (>= 1.0.0)
+      net-sftp (>= 2.0.0)
+      net-ssh (>= 2.0.14)
+      net-ssh-gateway (>= 1.1.0)
     chunky_png (1.2.0)
     coderay (1.0.8)
     columnize (0.3.6)
@@ -89,6 +95,7 @@ GEM
       haml (~> 3.0)
       railties (~> 3.0)
     hashie (1.1.0)
+    highline (1.6.15)
     i18n (0.5.0)
     jquery-rails (1.0.12)
       railties (~> 3.0)
@@ -107,6 +114,13 @@ GEM
     mime-types (1.16)
     mocha (0.9.12)
     mysql2 (0.2.11)
+    net-scp (1.1.0)
+      net-ssh (>= 2.6.5)
+    net-sftp (2.1.1)
+      net-ssh (>= 2.6.5)
+    net-ssh (2.6.5)
+    net-ssh-gateway (1.2.0)
+      net-ssh (>= 2.6.5)
     nuntium_api (0.19)
       json
       rest-client
@@ -155,6 +169,8 @@ GEM
       activesupport (~> 3.0)
       railties (~> 3.0)
       rspec (~> 2.6.0)
+    rvm-capistrano (1.2.7)
+      capistrano (>= 2.0.0)
     sass (3.1.6)
     slop (3.4.3)
     thor (0.14.6)
@@ -175,6 +191,7 @@ PLATFORMS
 
 DEPENDENCIES
   breadcrumbs_on_rails
+  capistrano
   compass
   cover_me (>= 1.0.0.rc6)
   decent_exposure
@@ -199,5 +216,6 @@ DEPENDENCIES
   rails (= 3.0.9)
   rest-client
   rspec-rails (~> 2.6)
+  rvm-capistrano
   timecop
   verboice (= 0.6.0)
