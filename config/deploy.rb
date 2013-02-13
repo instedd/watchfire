@@ -22,13 +22,9 @@ namespace :deploy do
   end
 
   task :symlink_configs, :roles => :app do
-    %W(settings).each do |file|
+    %W(settings database).each do |file|
       run "ln -nfs #{shared_path}/#{file}.yml #{release_path}/config/"
     end
-  end
-
-  task :symlink_data, :roles => :app do
-    run "ln -nfs #{shared_path}/data #{release_path}/"
   end
 end
 
