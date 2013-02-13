@@ -34,6 +34,7 @@ gem 'kaminari'
 # gem 'pigeon', :path => '../pigeon'
 gem 'decent_exposure'
 gem 'guid'
+gem 'foreman'
 
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators
