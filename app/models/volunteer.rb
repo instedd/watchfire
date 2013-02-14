@@ -17,6 +17,9 @@ class Volunteer < ActiveRecord::Base
   validates_numericality_of :lat, :less_than_or_equal_to => 90, :greater_than_or_equal_to => -90, :if => Proc.new{|x| x.lat.present?}
   validates_numericality_of :lng, :less_than_or_equal_to => 180, :greater_than_or_equal_to => -180, :if => Proc.new{|x| x.lng.present?}
 
+  validates_format_of :sms_number, with: /\A\+?[\s\d\.\-\(\)]+\Z/, allow_blank: true
+  validates_format_of :voice_number, with: /\A\+?[\s\d\.\-\(\)]+\Z/, allow_blank: true
+
   validate :has_phone_or_sms
   validate :has_location
 
