@@ -5,7 +5,7 @@
       = f.label :use_custom_text, 'Use Custom Text'
   %p We will call and text the recruitees below with the following message:
   - if mission.use_custom_text
-    = f.text_area :custom_text, :rows => 3, :cols => 47, :disabled => mission.running? || mission.finished?
+    = f.text_area :custom_text, :rows => 3, :disabled => mission.running? || mission.finished?, :style => 'width:98%'
     %p.tgrey
       %em.left= I18n.t :voice_message_options
       %a#message_form_link.hidden.right{:href => "#"} Save
