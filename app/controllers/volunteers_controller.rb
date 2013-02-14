@@ -82,7 +82,16 @@ class VolunteersController < ApplicationController
 
   # POST /volunteers/import
   def import
-    @view_model = ImportViewModel.from_model(current_organization, VolunteerImporter.new(current_organization).import(params[:file].read))
+    if params[:file]
+      @view_model = ImportViewModel.from_model(current_organization, VolunteerImporter.new(current_organization).import(params[:file].read))
+      if @view_model.size == 0
+        return redirect_to volunteers_path, alert: "The file you uploaded appears to be empty"
+      end
+    else
+      redirect_to volunteers_path, alert: "You must choose a file to upload"
+    end
+  rescue CSV::MalformedCSVError
+    redirect_to volunteers_path, alert: "The file you uploaded is not a CSV file"
   end
 
   # POST /volunteers/confirm_import
