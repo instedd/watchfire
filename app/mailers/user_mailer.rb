@@ -2,6 +2,8 @@ class UserMailer < Devise::Mailer
   add_template_helper MailerHelper
   layout 'mail'
 
+  default from: Watchfire::Application.config.from_email
+
   def invite_to_organization(inviter, organization, email, token)
     @organization = organization
     @email = email
