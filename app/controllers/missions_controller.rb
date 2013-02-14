@@ -87,7 +87,7 @@ class MissionsController < ApplicationController
 	private
 
   def add_missions_breadcrumb
-    add_breadcrumb "#{current_organization.name}", organization_path(current_organization) if current_organization
+    add_breadcrumb "#{current_organization.name}", organizations_path if current_organization
     add_breadcrumb "Events", :missions_path
   end
 end

@@ -11,9 +11,10 @@
       %th &nbsp;
     - @organizations.each do |organization|
       %tr
-        %td= link_to organization.name, organization_path(organization.id)
+        %td= link_to organization.name, select_organization_path(organization.id)
         %td
-          = link_to 'Select', select_organization_path(organization.id)
+          = form_tag select_organization_path(organization.id), :method => :get do
+            %button.avoid.farrow
 
   - if @organizations.empty?
     .missions_empty
