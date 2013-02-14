@@ -11,7 +11,7 @@ class VolunteerImporter
 
   def import content, options = {}
     volunteers = []
-    CSV.parse(content) do |row|
+    CSV.parse(content, col_sep: CSV.guess_column_separator(content)) do |row|
       volunteer = parse_row row, options[:default_location]
       volunteers << volunteer unless volunteer.nil?
     end
