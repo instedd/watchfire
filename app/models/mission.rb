@@ -157,6 +157,7 @@ class Mission < ActiveRecord::Base
   def new_duplicate
     new_mission = self.clone
     new_mission.status = :created
+    new_mission.save!
     new_mission
   end
 
