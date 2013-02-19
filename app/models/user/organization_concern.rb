@@ -33,9 +33,14 @@ module User::OrganizationConcern
         :already_member
       end
     else
-      invite = organization.invites.create! token: Guid.new.to_s
-      UserMailer.invite_to_organization(self, organization, user_email, invite.token).deliver
-      :invited_new
+      existing_invite = organization.invites.find_by_email user_email
+      if existing_invite
+        :already_invited
+      else
+        invite = organization.invites.create! email: user_email, token: Guid.new.to_s
+        UserMailer.invite_to_organization(self, organization, user_email, invite.token).deliver
+        :invited_new
+      end
     end
   end
 

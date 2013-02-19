@@ -13,6 +13,8 @@ class MembersController < ApplicationController
         redirect_to members_path, notice: "Invitation email sent to #{params[:email]}"
       when :already_member
         redirect_to members_path, alert: "#{params[:email]} is already a member of #{current_organization.name}"
+      when :already_invited
+        redirect_to members_path, alert: "#{params[:email]} was already invited to #{current_organization.name}"
       end
     else
       redirect_to members_path, alert: "You can't invite users because are not an owner of #{current_organization.name}"
