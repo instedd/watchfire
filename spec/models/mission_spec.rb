@@ -260,8 +260,8 @@ describe Mission do
       @new_mission = @mission.new_duplicate
     end
 
-    it "creates an unsaved mission" do
-      @new_mission.new_record?.should be_true
+    it "creates an saved mission" do
+      @new_mission.new_record?.should be_false
     end
 
     it "copies values" do
