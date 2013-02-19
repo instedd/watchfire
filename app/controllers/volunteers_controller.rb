@@ -115,7 +115,7 @@ class VolunteersController < ApplicationController
   end
 
   def add_volunteers_breadcrumb
-    add_breadcrumb "#{current_organization.name}", organization_path(current_organization) if current_organization
+    add_breadcrumb "#{current_organization.name}", organizations_path if current_organization
     add_breadcrumb "Volunteers", :volunteers_path
   end
 end
