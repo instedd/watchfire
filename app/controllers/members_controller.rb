@@ -6,12 +6,13 @@ class MembersController < ApplicationController
 
   def invite
     if organization_owner?
-      existing = current_user.invite_to current_organization, params[:email]
-
-      if existing
+      case current_user.invite_to(current_organization, params[:email])
+      when :invited_existing
         redirect_to members_path, notice: "#{params[:email]} is now a member of #{current_organization.name}"
-      else
+      when :invited_new
         redirect_to members_path, notice: "Invitation email sent to #{params[:email]}"
+      when :already_member
+        redirect_to members_path, alert: "#{params[:email]} is already a member of #{current_organization.name}"
       end
     else
       redirect_to members_path, alert: "You can't invite users because are not an owner of #{current_organization.name}"

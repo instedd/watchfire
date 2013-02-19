@@ -27,17 +27,20 @@ module User::OrganizationConcern
     user_email = user_email.strip
     existing_user = User.find_by_email user_email
     if existing_user
-      existing_user.join organization
-      true
+      if existing_user.join organization
+        :invited_existing
+      else
+        :already_member
+      end
     else
       invite = organization.invites.create! token: Guid.new.to_s
       UserMailer.invite_to_organization(self, organization, user_email, invite.token).deliver
-      false
+      :invited_new
     end
   end
 
   def join(organization)
-    return if members.where(organization_id: organization.id).exists?
+    return false if members.where(organization_id: organization.id).exists?
 
     make_default_organization_if_first(organization) do
       members.create! organization_id: organization.id, role: :member
