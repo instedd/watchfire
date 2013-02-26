@@ -45,4 +45,8 @@ class ImportViewModel < ViewModel
     @volunteers.reject{|v| v.valid?}.size > 0
   end
 
+  def selected
+    @volunteers.select{|v| v.selected}.size
+  end
+
 end

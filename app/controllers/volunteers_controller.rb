@@ -98,7 +98,11 @@ class VolunteersController < ApplicationController
   def confirm_import
     @view_model = ImportViewModel.new(current_organization, params[:import_view_model] || {})
     if @view_model.save
-      redirect_to volunteers_path
+      if @view_model.selected > 0
+        redirect_to volunteers_path, notice: "#{@view_model.selected} volunteers imported"
+      else
+        redirect_to volunteers_path, alert: "No volunteers imported"
+      end
     else
       render 'import'
     end
