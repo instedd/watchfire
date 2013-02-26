@@ -24,6 +24,12 @@ describe VolunteersController do
       get :index
       assigns(:volunteers).should eq([volunteer])
     end
+
+    it "searches by voice or SMS number if the query string matches a phone number" do
+      volunteer = Volunteer.create! valid_attributes
+      get :index, :q => "123"
+      assigns(:volunteers).should eq([volunteer])
+    end
   end
 
   describe "GET new" do

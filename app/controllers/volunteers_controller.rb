@@ -14,7 +14,11 @@ class VolunteersController < ApplicationController
     @q = params[:q]
 
     @volunteers = volunteers.order("#{@order} #{@direction}")
-    @volunteers = @volunteers.where("name like ? OR address like ?", "%#{@q}%", "%#{@q}%") unless @q.blank?
+    if /\A\+?[\s\d\.\-\(\)]+\Z/.match(@q)
+      @volunteers = @volunteers.where("voice_number like ? or sms_number like ?", "%#{@q}%", "%#{@q}%")
+    else
+      @volunteers = @volunteers.where("name like ? OR address like ?", "%#{@q}%", "%#{@q}%") unless @q.blank?
+    end
     @volunteers = @volunteers.page @page
 
     respond_to do |format|
