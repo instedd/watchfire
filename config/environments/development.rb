@@ -24,7 +24,7 @@ Watchfire::Application.configure do
   config.action_dispatch.best_standards_support = :builtin
 
 	# Action Mailer
-	config.action_mailer.default_url_options = { :host => 'localhost:1234' }
+	config.action_mailer.default_url_options = { :host => 'localhost:3000' }
 
 	# Logging
 	config.log_level = :debug

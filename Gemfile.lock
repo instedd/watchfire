@@ -29,7 +29,7 @@ GEM
       activesupport (= 3.0.20)
     activesupport (3.0.20)
     arel (2.0.10)
-    bcrypt-ruby (2.1.4)
+    bcrypt-ruby (3.0.1)
     breadcrumbs_on_rails (2.0.0)
     builder (2.1.2)
     capistrano (2.14.2)
@@ -62,8 +62,8 @@ GEM
     delayed_job (2.1.4)
       activesupport (~> 3.0)
       daemons
-    devise (1.4.2)
-      bcrypt-ruby (~> 2.1.2)
+    devise (1.4.9)
+      bcrypt-ruby (~> 3.0)
       orm_adapter (~> 0.0.3)
       warden (~> 1.0.3)
     devise_invitable (0.5.4)
@@ -126,7 +126,7 @@ GEM
     nuntium_api (0.19)
       json
       rest-client
-    orm_adapter (0.0.5)
+    orm_adapter (0.0.7)
     polyglot (0.3.3)
     pry (0.9.12)
       coderay (~> 1.0.5)
@@ -183,7 +183,7 @@ GEM
     verboice (0.6.0)
       json
       rest-client
-    warden (1.0.5)
+    warden (1.0.6)
       rack (>= 1.0)
     yamler (0.1.0)
 
@@ -197,7 +197,7 @@ DEPENDENCIES
   cover_me (>= 1.0.0.rc6)
   decent_exposure
   delayed_job
-  devise
+  devise (= 1.4.9)
   devise_invitable
   enumerated_attribute
   faker
