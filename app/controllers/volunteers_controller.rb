@@ -96,7 +96,7 @@ class VolunteersController < ApplicationController
 
   # POST /volunteers/confirm_import
   def confirm_import
-    @view_model = ImportViewModel.new(current_organization, params[:import_view_model])
+    @view_model = ImportViewModel.new(current_organization, params[:import_view_model] || {})
     if @view_model.save
       redirect_to volunteers_path
     else

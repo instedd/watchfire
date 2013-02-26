@@ -9,6 +9,7 @@ class ImportViewModel < ViewModel
 
   def initialize(organization, attributes = {})
     @organization = organization
+    @volunteers = []
     super(attributes)
   end
 

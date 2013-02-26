@@ -135,4 +135,11 @@ describe VolunteersController do
     end
   end
 
+  describe "POST confirm_import" do
+    it "accepts an empty volunteer list" do
+      post :confirm_import
+      response.should redirect_to(volunteers_path)
+    end
+  end
+
 end
