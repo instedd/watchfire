@@ -11,8 +11,6 @@ check_running();
 close_info_window();
 hide_or_show_candidate_lists();
 
-<% if mission.farthest %>
-	setMapCircle(<%= mission.farthest %>);
-<%end%>
+setMapCircle(<%= mission.farthest || 0 %>);
 
 $.instedd.init_components($('#form_container'));

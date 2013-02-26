@@ -190,6 +190,7 @@ function init_candidate_events() {
 }
 
 function setMapCircle(distance, avoidFit) {
+  distance = distance || 0;
   if (circleHasMap) {
     outerCircle.setOptions({
 		  center: mission_marker.getPosition(),
@@ -231,7 +232,7 @@ function setMapCircle(distance, avoidFit) {
 
     circleHasMap = true;
   }
-	if (!avoidFit) map.fitBounds(circle.getBounds());
+	if (!avoidFit && distance > 0) map.fitBounds(circle.getBounds());
 }
 
 function reverseGeocode(loc) {
