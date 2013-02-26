@@ -254,6 +254,14 @@ describe Mission do
     mission.valid?.should be_false
   end
 
+  it "should limit the length of the description to 200 characters" do
+    mission = Mission.make!
+    mission.reason = 'a' * 200
+    mission.valid?.should be_true
+    mission.reason = 'a' * 201
+    mission.valid?.should be_false
+  end
+
   describe "mission duplicate for new skill recruitment" do
     before(:each) do
       @mission = Mission.make! :skill => Skill.make!

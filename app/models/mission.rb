@@ -18,6 +18,8 @@ class Mission < ActiveRecord::Base
   validates_presence_of :user
   validates_presence_of :req_vols, :lat, :lng, :name
 
+  validates :reason, :length => { :maximum => 200 }
+
   validates_numericality_of :req_vols, :only_integer => true, :greater_than => 0
   validates_numericality_of :lat, :less_than_or_equal_to => 90, :greater_than_or_equal_to => -90
   validates_numericality_of :lng, :less_than_or_equal_to => 180, :greater_than_or_equal_to => -180
