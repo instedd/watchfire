@@ -27,6 +27,13 @@ class VolunteersController < ApplicationController
     end
   end
 
+  def show
+    respond_to do |format|
+      format.html { render 'show', :layout => false}
+      format.xml  { render :xml => volunteer }
+    end
+  end
+
   # GET /volunteers/new
   # GET /volunteers/new.xml
   def new

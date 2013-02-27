@@ -33,6 +33,14 @@ describe VolunteersController do
   end
 
   describe "GET new" do
+    it "assigns the request volunteer as @volunteer" do
+      volunteer = Volunteer.create! valid_attributes
+      get :show, :id => volunteer.id.to_s
+      controller.volunteer.should eq(volunteer)
+    end
+  end
+
+  describe "GET new" do
     it "assigns a new volunteer as @volunteer" do
       get :new
       controller.volunteer.should be_a_new(Volunteer)

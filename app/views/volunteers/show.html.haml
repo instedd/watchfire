@@ -1,0 +1,8 @@
+.volunteer_name= volunteer.name
+.volunteer_address= volunteer.address
+.volunteer_phones
+	- if volunteer.sms_number.present?
+		%span.mobile= volunteer.sms_number
+	%br
+	- if volunteer.voice_number.present?
+		%span.phone= volunteer.voice_number
