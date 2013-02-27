@@ -5,7 +5,9 @@ class MembersController < ApplicationController
   end
 
   def invite
-    if organization_owner?
+    if params[:email].blank?
+      redirect_to members_path, alert: "Email cannot be blank"
+    elsif organization_owner?
       case current_user.invite_to(current_organization, params[:email])
       when :invited_existing
         redirect_to members_path, notice: "#{params[:email]} is now a member of #{current_organization.name}"

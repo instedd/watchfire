@@ -41,13 +41,22 @@ describe MembersController do
       invites.length.should eq(1)
       invites.first.token.should_not be_nil
     end
+
+    it "rejects blank email" do
+      post :invite
+
+      response.should redirect_to(members_path)
+
+      invites = Invite.where(organization_id: organization.id).all
+      invites.length.should eq(0)
+    end
   end
 
   describe "GET accept invite" do
     it "accepts an invite" do
       user2 = User.make!
 
-      organization.invites.create! token: '1234'
+      organization.invites.create! token: '1234', email: 'foo@bar.com'
 
       sign_in user2
       get :accept_invite, token: '1234'
