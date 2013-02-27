@@ -39,5 +39,8 @@ module Watchfire
 
     # Configure sensitive parameters which will be filtered from the log file.
     config.filter_parameters += [:password]
+
+    # Default base URL for InSTEDD platform theme
+    config.platform_base_url = 'http://theme.instedd.org'
   end
 end

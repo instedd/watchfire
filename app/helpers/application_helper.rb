@@ -19,4 +19,12 @@ module ApplicationHelper
     end
     @@watchfire_version
   end
+
+  def platform_base_url
+    @@platform_base_url ||= Watchfire::Application.config.platform_base_url
+  end
+
+  def platform_url path = ''
+    URI::join(platform_base_url, path).to_s
+  end
 end
