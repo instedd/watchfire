@@ -2,7 +2,7 @@
 	= hidden_field_tag :refresh, refresh_mission_path(mission), :id => 'refresh_url'
 	- unless skills.actives.empty?
 		= form_tag clone_mission_path(mission) do
-			%button.cadd Recruit another role
+			%button.cadd Recruit for another skill
 	= form_tag export_mission_path(mission), :method => :get do
 		%button.fimport Download recruiting results
 	= form_tag mission_path(mission), :method => :delete do
