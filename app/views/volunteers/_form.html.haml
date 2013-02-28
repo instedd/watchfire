@@ -12,12 +12,12 @@
     = f.text_field :name, :class => 'w60'
     %br
     %br
-		= label_tag 'Voice numbers'
-		= text_field_tag 'volunteer[voice_numbers]', nil, :id => 'voice_numbers', :class => 'w60'
-		%br
-		%br
-		= f.label :sms_number, 'SMS numbers'
-		= text_field_tag 'volunteer[sms_numbers]', nil, :id => 'sms_numbers', :class => 'w60'
+    = label_tag 'Voice numbers'
+    = text_field_tag 'volunteer[voice_numbers]', nil, :id => 'voice_numbers', :class => 'w60'
+    %br
+    %br
+    = f.label :sms_number, 'SMS numbers'
+    = text_field_tag 'volunteer[sms_numbers]', nil, :id => 'sms_numbers', :class => 'w60'
     %br
     %br
     = f.hidden_field :lat
@@ -56,9 +56,9 @@
     %li= s.name
 
 %ul.hidden#volunteer_voice_numbers
-	- @volunteer.voice_channels.each do |voice_channel|
-		%li= voice_channel.address
-		
+  - @volunteer.voice_channels.each do |voice_channel|
+    %li= voice_channel.address
+    
 %ul.hidden#volunteer_sms_numbers
-	- @volunteer.sms_channels.each do |sms_channel|
-		%li= sms_channel.address
+  - @volunteer.sms_channels.each do |sms_channel|
+    %li= sms_channel.address

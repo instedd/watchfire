@@ -3,26 +3,31 @@ module MissionsHelper
     "width: #{mission.progress * 100}%;"
   end
 
-  def sms_number candidate
+  def sms_numbers candidate
     if candidate.answered_from
-      enabled = candidate.answered_from == candidate.volunteer.sms_number
+      enabled = candidate.answered_from == candidate.volunteer.sms_channels.address
     else
       enabled = candidate.active
     end
-    content_tag :span, candidate.volunteer.sms_number, :class => enabled ? "mobile" : "gmobile"
+    candidate.volunteer.sms_channels.map { |channel|
+      content_tag :span, channel.address, :class => enabled ? "mobile" : "gmobile"
+    }.reduce(:+)
   end
 
-  def voice_number candidate
+  def voice_numbers candidate
     if candidate.answered_from
-      enabled = candidate.answered_from == candidate.volunteer.voice_number
+      enabled = candidate.answered_from == candidate.volunteer.voice_channels.first.address
     else
       enabled = candidate.active
     end
-    content = candidate.volunteer.voice_number
+    content = candidate.volunteer.voice_channels.first.address
     if candidate.voice_status && candidate.status == :pending
       content = "#{content} (#{candidate.voice_status})"
     end
-    content_tag :span, content, :class => enabled ? "phone" : "gphone"
+    # FIXME: show voice status next to current number
+    candidate.volunteer.voice_channels.map { |channel|
+      content_tag :span, channel.address, :class => enabled ? "phone" : "gphone"
+    }.reduce(:+)
   end
 
   def time_ago(time)

@@ -20,8 +20,8 @@
     %tr
       = sort_header 'Name', :name
       = sort_header 'Address', :address
-			%th Voice Numbers
-			%th SMS Numbers
+      %th Voice Numbers
+      %th SMS Numbers
     - @volunteers.each do |volunteer|
       %tr.link{'data-url' => edit_volunteer_path(volunteer)}
         %td= volunteer.name
