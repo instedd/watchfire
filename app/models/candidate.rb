@@ -14,10 +14,10 @@ class Candidate < ActiveRecord::Base
 
   validates_uniqueness_of :volunteer_id, :scope => :mission_id, :on => :create
 
-	after_initialize :init
+  after_initialize :init
 
-	def self.find_last_for_sms_number number
-    Candidate.joins(:volunteer).where(:volunteers => {:sms_number => number}).order('last_sms_att DESC').readonly(false).first
+  def self.find_last_for_sms_number number
+    Candidate.joins(:volunteer => [:sms_channels]).where(:channels =>{:address => number}).order('last_sms_att DESC').readonly(false).first
   end
 
   def self.find_by_call_session_id id
@@ -25,11 +25,11 @@ class Candidate < ActiveRecord::Base
   end
 
   def has_sms?
-    !self.volunteer.sms_number.nil? && !self.volunteer.sms_number.blank?
+    volunteer.sms_channels.size > 0
   end
 
   def has_voice?
-    !self.volunteer.voice_number.nil? && !self.volunteer.voice_number.blank?
+    volunteer.voice_channels.size > 0
   end
 
   def call
@@ -93,12 +93,14 @@ class Candidate < ActiveRecord::Base
 
   def answered_from_sms!(response)
     new_status = response == "yes" ? :confirmed : :denied
-    update_status new_status, volunteer.sms_number
+    # FIXME: maybe take the phone number as a parameter?
+    update_status new_status, volunteer.sms_channels.first.address
   end
 
   def answered_from_voice!(response)
     new_status = response == "1" ? :confirmed : :denied
-    update_status new_status, volunteer.voice_number
+    # FIXME: maybe take the phone number as a parameter?
+    update_status new_status, volunteer.voice_channels.first.address
   end
 
   def no_answer!
@@ -120,13 +122,13 @@ class Candidate < ActiveRecord::Base
     mission.check_for_more_volunteers
   end
 
-	def init
-		self.voice_retries ||= 0
-		self.sms_retries ||= 0
-	end
+  def init
+    self.voice_retries ||= 0
+    self.sms_retries ||= 0
+  end
 
-	def config
-	  Watchfire::Application.config
-	end
+  def config
+    Watchfire::Application.config
+  end
 
 end

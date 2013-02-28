@@ -6,11 +6,11 @@
     %span= candidate.volunteer.name
   %td
     - if candidate.has_sms?
-      = sms_number candidate
+      = sms_numbers candidate
     - if candidate.has_sms? && candidate.has_voice?
       %br
     - if candidate.has_voice?
-      = voice_number candidate
+      = voice_numbers candidate
     - if candidate.answered_at
       %br
       =time_ago candidate.answered_at

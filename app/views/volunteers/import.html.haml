@@ -11,8 +11,8 @@
 			%tr
 				%th Name
 				%th Address
-				%th Voice Number
-				%th SMS Number
+				%th Voice numbers
+				%th SMS numbers
 			= f.fields_for :volunteers, @view_model.volunteers do |c|
 				- volunteer = c.object
 				- if volunteer.valid?
@@ -20,8 +20,8 @@
 					= c.hidden_field :address
 					= c.hidden_field :lat
 					= c.hidden_field :lng
-					= c.hidden_field :voice_number
-					= c.hidden_field :sms_number
+					= c.hidden_field :voice_numbers
+					= c.hidden_field :sms_numbers
 					= c.hidden_field :skill_names
 					- unless volunteer.new_record?
 						= c.hidden_field :id
@@ -34,8 +34,8 @@
 							.error_content= import_errors_for volunteer
 						= volunteer.name
 					%td= volunteer.address
-					%td= volunteer.voice_number
-					%td= volunteer.sms_number
+					%td= volunteer.voice_numbers
+					%td= volunteer.sms_numbers
 	.bottom-actions
 		%button.white Import
 		= link_to 'Cancel', volunteers_path, :class => "tgrey"

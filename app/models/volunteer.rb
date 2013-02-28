@@ -1,14 +1,17 @@
 class Volunteer < ActiveRecord::Base
 
-	acts_as_mappable
+  acts_as_mappable
 
   belongs_to :organization
 
   has_many :candidates, :dependent => :destroy
   has_many :missions, :through => :candidates
-	has_and_belongs_to_many :skills
+  has_and_belongs_to_many :skills
 
-	serialize :shifts
+  has_many :sms_channels, :dependent => :destroy, :inverse_of => :volunteer
+  has_many :voice_channels, :dependent => :destroy, :inverse_of => :volunteer
+  
+  serialize :shifts
 
   validates_presence_of :organization
   validates_presence_of :name
@@ -17,23 +20,20 @@ class Volunteer < ActiveRecord::Base
   validates_numericality_of :lat, :less_than_or_equal_to => 90, :greater_than_or_equal_to => -90, :if => Proc.new{|x| x.lat.present?}
   validates_numericality_of :lng, :less_than_or_equal_to => 180, :greater_than_or_equal_to => -180, :if => Proc.new{|x| x.lng.present?}
 
-  validates_format_of :sms_number, with: /\A\+?[\s\d\.\-\(\)]+\Z/, allow_blank: true
-  validates_format_of :voice_number, with: /\A\+?[\s\d\.\-\(\)]+\Z/, allow_blank: true
-
-  validate :has_phone_or_sms
+  validate :has_channel
   validate :has_location
 
-	def skill_names=(names)
-		self.skills = names.split(',').map{|n| Skill.find_or_create_by_organization_id_and_name(organization_id, n.strip)}.select(&:valid?)
-	end
-
-	def skill_names
-	  self.skills.map(&:name).join(',')
+  def skill_names=(names)
+    self.skills = names.split(',').map{|n| Skill.find_or_create_by_organization_id_and_name(organization_id, n.strip)}.select(&:valid?)
   end
 
-	def available? day, hour
-	  begin
-	    self.shifts[day.to_s][hour.to_s] == "1"
+  def skill_names
+    self.skills.map(&:name).join(',')
+  end
+
+  def available? day, hour
+    begin
+      self.shifts[day.to_s][hour.to_s] == "1"
     rescue
       true
     end
@@ -45,10 +45,29 @@ class Volunteer < ActiveRecord::Base
     self.available? day, hour
   end
 
+  def voice_numbers
+    self.voice_channels.reject{|c|c.marked_for_destruction?}.map(&:address).join(', ')
+  end
+  
+  def voice_numbers=(numbers)
+    self.voice_channels = numbers.split(',').map{|number| VoiceChannel.new(:address => number.strip)}
+  end
+  
+  def sms_numbers
+    self.sms_channels.reject{|c|c.marked_for_destruction?}.map(&:address).join(', ')
+  end
+  
+  def sms_numbers=(numbers)
+    self.sms_channels = numbers.split(',').map{|number| SmsChannel.new(:address => number.strip)}
+  end
+
+
   private
 
-  def has_phone_or_sms
-    if voice_number.blank? && sms_number.blank?
+  def has_channel
+    sms_channels_count = sms_channels.reject{|c| c.marked_for_destruction?}.size
+    voice_channels_count = voice_channels.reject{|c| c.marked_for_destruction?}.size
+    if sms_channels_count == 0 && voice_channels_count == 0
       errors[:base] << 'A volunteer has to have a voice number or an sms number'
     end
   end

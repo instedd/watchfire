@@ -25,19 +25,23 @@ class VolunteerImporter
     begin
       name = row[0]
       roles = row[1].split('/').map(&:strip) rescue []
-      voice_phone = row[2]
-      sms_phone = row[3]
+      voice_numbers = row[2].split('/').map(&:strip) rescue []
+      sms_numbers = row[3].split('/').map(&:strip) rescue []
       location = row[4]
       geocoded_location = geocode location
 
       volunteer = Volunteer.find_by_name(name) || Volunteer.new
       volunteer.organization = @organization
       volunteer.name = name
-      volunteer.voice_number = voice_phone
-      volunteer.sms_number = sms_phone
       volunteer.address = location
       volunteer.lat = geocoded_location.lat
       volunteer.lng = geocoded_location.lng
+
+			volunteer.voice_channels.each{|c| c.mark_for_destruction}
+			volunteer.sms_channels.each{|c| c.mark_for_destruction}
+			voice_numbers.each{|n| volunteer.voice_channels.build(:address => n)}
+			sms_numbers.each{|n| volunteer.sms_channels.build(:address => n)}
+
       volunteer.skills = roles.map{|n| Skill.find_or_create_by_organization_id_and_name(@organization.id, n)}
       volunteer
     rescue Exception => e

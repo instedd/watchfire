@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130219145013) do
+ActiveRecord::Schema.define(:version => 20130228130701) do
 
   create_table "calls", :force => true do |t|
     t.string   "session_id"
@@ -34,6 +34,14 @@ ActiveRecord::Schema.define(:version => 20130219145013) do
     t.string   "answered_from"
     t.datetime "answered_at"
     t.string   "voice_status"
+  end
+
+  create_table "channels", :force => true do |t|
+    t.integer  "volunteer_id"
+    t.string   "type"
+    t.string   "address"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "delayed_jobs", :force => true do |t|
@@ -148,8 +156,6 @@ ActiveRecord::Schema.define(:version => 20130219145013) do
     t.float    "lat"
     t.float    "lng"
     t.string   "address"
-    t.string   "voice_number"
-    t.string   "sms_number"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text     "shifts"

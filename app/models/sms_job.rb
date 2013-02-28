@@ -24,7 +24,7 @@ class SmsJob < CandidateJob
 		begin
 			message = {
 				:from => "sms://watchfire",
-				:to => candidate.volunteer.sms_number.with_protocol,
+				:to => candidate.volunteer.sms_channels.first.address.with_protocol,
 				:body => candidate.mission.sms_message
 			}
 			JobLogger.debug "SmsJob: Sending AO message to Candidate #{candidate_id}, address is #{message[:to]}"

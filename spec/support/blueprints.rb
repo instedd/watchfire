@@ -10,8 +10,8 @@ Volunteer.blueprint do
   lat { _lat }
   lng { _lng }
   address { _address }
-  voice_number { _phone_number }
-  sms_number { _phone_number }
+	voice_channels { [VoiceChannel.make] }
+	sms_channels { [SmsChannel.make] }
 end
 
 Candidate.blueprint do
@@ -43,6 +43,14 @@ User.blueprint do
   email { _email }
   password { _password }
   confirmed_at { Time.now }
+end
+
+VoiceChannel.blueprint do
+	address { _phone_number }
+end
+
+SmsChannel.blueprint do
+	address { _phone_number }
 end
 
 Call.blueprint do

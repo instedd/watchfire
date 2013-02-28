@@ -3,6 +3,7 @@ require 'spec_helper'
 describe Volunteer do
   before(:each) do
     @volunteer = Volunteer.new
+		@valid_attributes = {:name => "name", :lat => 10, :lng => 20, :address => "address", :sms_channels => [SmsChannel.make], :organization => Organization.make}
   end
 
   describe "availability" do
@@ -41,6 +42,23 @@ describe Volunteer do
       @volunteer.shifts[day.to_s][hour.to_s] = "0"
     end
   end
+
+	describe "valid" do
+		it "should be valid with valid attributes" do
+			@volunteer.attributes = @valid_attributes
+			@volunteer.valid?.should be_true
+		end
+		
+		it "should be invalid with no channels" do
+			@volunteer.attributes = @valid_attributes.except(:sms_channels)
+			@volunteer.valid?.should be_false
+		end
+		
+		it "should be invalid without name" do
+			@volunteer.attributes = @valid_attributes.except(:name)
+			@volunteer.valid?.should be_false
+		end
+	end
 
   describe "skill names" do
     it "should assign skill names" do

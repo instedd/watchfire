@@ -12,6 +12,20 @@ $(function(){
 		  tags: getHtmls($('#allSkills li'))
 	});
 
+	$("#voice_numbers").superblyTagField({
+		allowNewTags: true,
+		showTagsNumber: 0,
+		addItemOnBlur:true,
+		preset: getHtmls($('#volunteer_voice_numbers li'))
+	});
+	
+	$("#sms_numbers").superblyTagField({
+		allowNewTags: true,
+		showTagsNumber: 0,
+		addItemOnBlur:true,
+		preset: getHtmls($('#volunteer_sms_numbers li'))
+	});
+
   init_map();
   
   $('.day-hour').click(function() {

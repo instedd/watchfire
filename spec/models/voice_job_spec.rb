@@ -20,7 +20,7 @@ describe VoiceJob do
     end
 
     it "should call the volunteer" do
-      @verboice.expects(:call).with(@candidate.volunteer.voice_number, :status_callback_url => Rails.application.routes.url_helpers.verboice_status_callback_url).returns(@response)
+      @verboice.expects(:call).with(@candidate.volunteer.voice_channels.first.address, :status_callback_url => Rails.application.routes.url_helpers.verboice_status_callback_url).returns(@response)
 
       @voice_job.perform
     end
@@ -144,7 +144,7 @@ describe VoiceJob do
   describe "candidate has run out of voice retries and doesn't have sms" do
     before(:each) do
       @organization = Organization.make! :max_sms_retries => 10, :max_voice_retries => 20
-      @volunteer = Volunteer.make! :sms_number => nil, :organization => @organization
+      @volunteer = Volunteer.make! :sms_channels => [], :organization => @organization
       @candidate = Candidate.make! :volunteer => @volunteer, :status => :pending, :voice_retries => @organization.max_voice_retries
       @voice_job = VoiceJob.new @candidate.id
     end

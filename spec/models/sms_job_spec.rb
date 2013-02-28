@@ -49,8 +49,9 @@ describe SmsJob do
     end
 
     it "should send sms to the candidate sms phone number" do
+      pending "deal with multiple numbers"
       @nuntium.expects(:send_ao).with do |message|
-        message[:to] == "sms://#{@candidate.volunteer.sms_number}"
+        message[:to] == "sms://#{@candidate.volunteer.sms_channels.first.address}"
       end
 
       @sms_job.perform
@@ -148,7 +149,7 @@ describe SmsJob do
   describe "candidate has run out of sms retries and doesn't have voice" do
     before(:each) do
       @organization = Organization.make! :max_sms_retries => 10, :max_voice_retries => 20
-      @volunteer = Volunteer.make! :voice_number => nil, :organization => @organization
+      @volunteer = Volunteer.make! :voice_channels => [], :organization => @organization
       @candidate = Candidate.make! :volunteer => @volunteer, :status => :pending, :sms_retries => @organization.max_sms_retries
       @sms_job = SmsJob.new @candidate.id
     end

@@ -1,8 +1,9 @@
 .volunteer_name= volunteer.name
 .volunteer_address= volunteer.address
 .volunteer_phones
-	- if volunteer.sms_number.present?
-		%span.mobile= volunteer.sms_number
-	%br
-	- if volunteer.voice_number.present?
-		%span.phone= volunteer.voice_number
+	- volunteer.sms_channels.each do |sms_channel|
+		%span.mobile= sms_channel.address
+		%br
+	- volunteer.voice_channels.each do |voice_channel|
+		%span.phone= voice_channel.address
+		%br

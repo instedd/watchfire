@@ -7,7 +7,7 @@ class VolunteerExporter
 			csv << headers
 			mission.candidates.each do |candidate|
 				volunteer = candidate.volunteer
-				csv << [volunteer.name, volunteer.voice_number, volunteer.sms_number, volunteer.address, candidate.status.to_s]
+				csv << [volunteer.name, volunteer.voice_numbers, volunteer.sms_numbers, volunteer.address, candidate.status.to_s]
 			end
 		end
 	end

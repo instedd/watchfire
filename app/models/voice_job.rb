@@ -47,8 +47,8 @@ class VoiceJob < CandidateJob
 
   def call candidate
     begin
-      JobLogger.debug "VoiceJob: Calling Candidate #{candidate_id} through Verboice, number is #{candidate.volunteer.voice_number}"
-      response = @verboice.call candidate.volunteer.voice_number, :status_callback_url => Rails.application.routes.url_helpers.verboice_status_callback_url
+      JobLogger.debug "VoiceJob: Calling Candidate #{candidate_id} through Verboice, number is #{candidate.volunteer.voice_channels.first.address}"
+      response = @verboice.call candidate.volunteer.voice_channels.first.address, :status_callback_url => Rails.application.routes.url_helpers.verboice_status_callback_url
 
       session_id = response['call_id']
       JobLogger.debug "VoiceJob: Adding Call with session_id #{session_id} to Candidate #{candidate_id}"
