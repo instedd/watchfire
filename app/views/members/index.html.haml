@@ -9,8 +9,18 @@
   %br
   %br
 
-%div Current members:
+- if members.empty?
+  - if current_organization
+    %div.info There are no members in this organization
+  - else
+    .missions_empty
+      %div.info To start using Watchfire you must create an Organization
+      %a.add{:href => new_organization_path}
+        Create Organization
+        %button.cadd
+- else
+  %div Current members:
 
-%ul
-  - members.each do |member|
-    %li= member.user.email
+  %ul
+    - members.each do |member|
+      %li= member.user.email
