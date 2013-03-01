@@ -72,7 +72,7 @@ def _email
 end
 
 def _password
-  rand(36**8).to_s(36)
+  rand(36**8).to_s(36).ljust(8, '0')
 end
 
 def _phone_number
