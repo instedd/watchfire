@@ -3,7 +3,7 @@ require 'spec_helper'
 describe VoiceChannel do
 	before(:each) do
 		@channel = VoiceChannel.new
-		@valid_attributes = {:address => "address", :volunteer => Volunteer.new}
+		@valid_attributes = {:address => "123", :volunteer => Volunteer.new}
 	end
 	
 	it "should be valid with valid attributes" do

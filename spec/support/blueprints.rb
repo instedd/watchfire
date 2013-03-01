@@ -55,6 +55,7 @@ end
 
 Call.blueprint do
   session_id { _guid }
+  voice_number { _phone_number }
   candidate { Candidate.make! }
 end
 

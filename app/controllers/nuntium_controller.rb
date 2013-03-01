@@ -30,7 +30,7 @@ class NuntiumController < BasicAuthController
       end
 
       # update status based on response
-      candidate.answered_from_sms! response
+      candidate.answered_from_sms! response, number
 
       message = candidate.response_message
     rescue => e

@@ -16,7 +16,7 @@ class VerboiceController < ApplicationController
 
     # Update status according to response
     response = match[1]
-    candidate.answered_from_voice! response
+    candidate.answered_from_voice! response, Call.find_by_session_id(params[:CallSid]).voice_number
   end
 
   def status_callback

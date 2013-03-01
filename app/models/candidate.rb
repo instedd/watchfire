@@ -91,16 +91,14 @@ class Candidate < ActiveRecord::Base
     self.volunteer.name <=> other.volunteer.name
   end
 
-  def answered_from_sms!(response)
+  def answered_from_sms!(response, number)
     new_status = response == "yes" ? :confirmed : :denied
-    # FIXME: maybe take the phone number as a parameter?
-    update_status new_status, volunteer.sms_channels.first.address
+    update_status new_status, number
   end
 
-  def answered_from_voice!(response)
+  def answered_from_voice!(response, number)
     new_status = response == "1" ? :confirmed : :denied
-    # FIXME: maybe take the phone number as a parameter?
-    update_status new_status, volunteer.voice_channels.first.address
+    update_status new_status, number
   end
 
   def no_answer!

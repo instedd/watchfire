@@ -126,44 +126,41 @@ describe Candidate do
   describe "update status" do
     before(:each) do
       @candidate = Candidate.make!
-      # FIXME
-      # @candidate.mission.expects(:check_for_more_volunteers)
+      @sms_number = @candidate.volunteer.sms_channels.first.address
+      @voice_number = @candidate.volunteer.voice_channels.first.address
+      @candidate.mission.expects(:check_for_more_volunteers)
       Timecop.freeze
     end
 
     it "should handle 'yes' response from sms" do
-      pending "decide what to do with the answered_from_* api"
-      @candidate.answered_from_sms! "yes"
+      @candidate.answered_from_sms! "yes", @sms_number
 
       @candidate.confirmed?.should be_true
-      @candidate.answered_from.should eq(@candidate.volunteer.sms_number)
+      @candidate.answered_from.should eq(@sms_number)
       @candidate.answered_at.should eq(Time.now.utc)
     end
 
     it "should handle 'no' response from sms" do
-      pending "decide what to do with the answered_from_* api"
-      @candidate.answered_from_sms! "no"
+      @candidate.answered_from_sms! "no", @sms_number
 
       @candidate.denied?.should be_true
-      @candidate.answered_from.should eq(@candidate.volunteer.sms_number)
+      @candidate.answered_from.should eq(@sms_number)
       @candidate.answered_at.should eq(Time.now.utc)
     end
 
     it "should handle '1' response from voice" do
-      pending "decide what to do with the answered_from_* api"
-      @candidate.answered_from_voice! "1"
+      @candidate.answered_from_voice! "1", @voice_number
 
       @candidate.confirmed?.should be_true
-      @candidate.answered_from.should eq(@candidate.volunteer.voice_number)
+      @candidate.answered_from.should eq(@voice_number)
       @candidate.answered_at.should eq(Time.now.utc)
     end
 
     it "should handle '2' response from voice" do
-      pending "decide what to do with the answered_from_* api"
-      @candidate.answered_from_voice! "2"
+      @candidate.answered_from_voice! "2", @voice_number
 
       @candidate.denied?.should be_true
-      @candidate.answered_from.should eq(@candidate.volunteer.voice_number)
+      @candidate.answered_from.should eq(@voice_number)
       @candidate.answered_at.should eq(Time.now.utc)
     end
 
@@ -188,6 +185,33 @@ describe Candidate do
 
     it "should return nil if doesn't exist" do
       Candidate.find_by_call_session_id("foo").should be_nil
+    end
+  end
+
+  describe "find by last sms number" do
+    before(:each) do
+      @volunteer = Volunteer.make! :sms_channels => [SmsChannel.make, SmsChannel.make]
+      @sms_number_1 = @volunteer.sms_channels[0].address
+      @sms_number_2 = @volunteer.sms_channels[1].address
+
+      Timecop.freeze
+      @candidate = Candidate.make! :volunteer => @volunteer, :last_sms_att => Time.now.utc
+    end
+
+    it "should find candidate by any of its sms numbers" do
+      Candidate.find_last_for_sms_number(@sms_number_1).should eq(@candidate)
+      Candidate.find_last_for_sms_number(@sms_number_2).should eq(@candidate)
+    end
+
+    it "should return nil if number doesn't match any candidate" do
+      Candidate.find_last_for_sms_number('foo').should be_nil
+    end
+    
+    it "should find most recent candidate" do
+      @new_candidate = Candidate.make! :volunteer => @volunteer, :last_sms_att => (Time.now.utc + 1)
+
+      Candidate.find_last_for_sms_number(@sms_number_1).should eq(@new_candidate)
+      Candidate.find_last_for_sms_number(@sms_number_2).should eq(@new_candidate)
     end
   end
 

@@ -3,31 +3,36 @@ module MissionsHelper
     "width: #{mission.progress * 100}%;"
   end
 
-  def sms_numbers candidate
+  def sms_numbers candidate, sep=$,
+    sep ||= tag :br
     if candidate.answered_from
-      enabled = candidate.answered_from == candidate.volunteer.sms_channels.address
+      enabled = candidate.volunteer.has_sms_number?(candidate.answered_from)
     else
       enabled = candidate.active
     end
-    candidate.volunteer.sms_channels.map { |channel|
+    safe_join(candidate.volunteer.sms_channels.map { |channel|
       content_tag :span, channel.address, :class => enabled ? "mobile" : "gmobile"
-    }.reduce(:+)
+    }, sep)
   end
 
-  def voice_numbers candidate
+  def voice_numbers candidate, sep=$,
+    sep ||= tag :br
     if candidate.answered_from
-      enabled = candidate.answered_from == candidate.volunteer.voice_channels.first.address
+      enabled = candidate.volunteer.has_voice_number?(candidate.answered_from)
     else
       enabled = candidate.active
     end
-    content = candidate.volunteer.voice_channels.first.address
+    current_voice_number = nil
     if candidate.voice_status && candidate.status == :pending
-      content = "#{content} (#{candidate.voice_status})"
+      current_voice_number = candidate.last_call.voice_number
     end
-    # FIXME: show voice status next to current number
-    candidate.volunteer.voice_channels.map { |channel|
-      content_tag :span, channel.address, :class => enabled ? "phone" : "gphone"
-    }.reduce(:+)
+    safe_join(candidate.volunteer.voice_channels.map { |channel|
+      content = channel.address
+      if channel.address == current_voice_number
+        content = "#{content} (#{candidate.voice_status})"
+      end
+      content_tag :span, content, :class => enabled ? "phone" : "gphone"
+    }, sep)
   end
 
   def time_ago(time)

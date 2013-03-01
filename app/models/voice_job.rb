@@ -28,7 +28,7 @@ class VoiceJob < CandidateJob
       state = response['state']
       unless state == "active" || state == "queued"
         JobLogger.debug "VoiceJob: Candidate #{candidate_id} last call has finished => call him"
-        call candidate
+        call candidate, last_call
       else
         JobLogger.debug "VoiceJob: Candidate #{candidate_id} has a pending call in Verboice => do not call him"
       end
@@ -45,18 +45,27 @@ class VoiceJob < CandidateJob
 
   private
 
-  def call candidate
+  def call candidate, last_call = nil
+    voice_numbers = candidate.volunteer.voice_channels.sort_by(&:id).map(&:address)
+    number_index = 0
+    if last_call
+      number_index = (voice_numbers.index(last_call.voice_number) || -1) + 1
+    end
+    voice_number = voice_numbers[number_index % voice_numbers.length]
+
     begin
       JobLogger.debug "VoiceJob: Calling Candidate #{candidate_id} through Verboice, number is #{candidate.volunteer.voice_channels.first.address}"
-      response = @verboice.call candidate.volunteer.voice_channels.first.address, :status_callback_url => Rails.application.routes.url_helpers.verboice_status_callback_url
+      response = @verboice.call voice_number, :status_callback_url => Rails.application.routes.url_helpers.verboice_status_callback_url
 
       session_id = response['call_id']
       JobLogger.debug "VoiceJob: Adding Call with session_id #{session_id} to Candidate #{candidate_id}"
-      candidate.calls.create! :session_id => session_id
+      candidate.calls.create! :session_id => session_id, :voice_number => voice_number
     rescue Exception => e
       JobLogger.error "VoiceJob: Error calling Candidate #{candidate_id}, exception: #{e}"
     ensure
-      candidate.voice_retries = candidate.voice_retries + 1
+      if number_index == voice_numbers.size - 1
+        candidate.voice_retries = candidate.voice_retries + 1
+      end
       candidate.last_voice_att = Time.now.utc
       candidate.save :validate => false
     end

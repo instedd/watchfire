@@ -11,13 +11,14 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130228130701) do
+ActiveRecord::Schema.define(:version => 20130228211738) do
 
   create_table "calls", :force => true do |t|
     t.string   "session_id"
     t.integer  "candidate_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "voice_number"
   end
 
   create_table "candidates", :force => true do |t|

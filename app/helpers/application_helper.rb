@@ -27,4 +27,11 @@ module ApplicationHelper
   def platform_url path = ''
     URI::join(platform_base_url, path).to_s
   end
+
+  def safe_join(array, sep=$,)
+    sep ||= "".html_safe
+    sep = ERB::Util.html_escape(sep)
+
+    array.map { |i| ERB::Util.html_escape(i) }.join(sep).html_safe
+  end
 end

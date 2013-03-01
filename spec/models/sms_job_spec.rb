@@ -49,7 +49,6 @@ describe SmsJob do
     end
 
     it "should send sms to the candidate sms phone number" do
-      pending "deal with multiple numbers"
       @nuntium.expects(:send_ao).with do |message|
         message[:to] == "sms://#{@candidate.volunteer.sms_channels.first.address}"
       end
@@ -195,6 +194,41 @@ describe SmsJob do
       new_candidate.last_sms_att.should == Time.now.utc
     end
 
+  end
+
+  describe "with multiple sms phone numbers" do
+    before(:each) do
+      @volunteer = Volunteer.make! :sms_channels => [SmsChannel.make, SmsChannel.make]
+      @candidate = Candidate.make! :status => :pending, :sms_retries => 0, :volunteer => @volunteer
+      @sms_job = SmsJob.new @candidate.id
+    end
+
+    it "should send sms to each number" do
+      @candidate.volunteer.sms_channels.each do |sms_channel|
+        @nuntium.expects(:send_ao).with do |message|
+          message[:to] == "sms://#{sms_channel.address}"
+        end
+      end
+
+      @sms_job.perform
+    end
+
+    it "should increase sms retries by 1 regardless of number of channels" do
+      @nuntium.stubs(:send_ao).twice
+
+      @sms_job.perform
+
+      new_candidate = Candidate.find(@candidate.id)
+      new_candidate.sms_retries.should == @candidate.sms_retries + 1
+    end
+
+    describe "on nuntium error" do
+      it "should try to send sms to all sms numbers" do
+        @nuntium.stubs(:send_ao).raises(Nuntium::Exception, "Nuntium error").then.returns
+
+        @sms_job.perform
+      end
+    end
   end
 
 end

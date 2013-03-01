@@ -22,15 +22,19 @@ class SmsJob < CandidateJob
 		# Send SMS
 		nuntium = Nuntium.from_config
 		begin
-			message = {
-				:from => "sms://watchfire",
-				:to => candidate.volunteer.sms_channels.first.address.with_protocol,
-				:body => candidate.mission.sms_message
-			}
-			JobLogger.debug "SmsJob: Sending AO message to Candidate #{candidate_id}, address is #{message[:to]}"
-			nuntium.send_ao message
-		rescue Nuntium::Exception => e
-			JobLogger.error "SmsJob: Error sending AO for Candidate #{candidate_id}, exception: #{e}"
+			candidate.volunteer.sms_channels.each do |sms_channel|
+				begin
+					message = {
+						:from => "sms://watchfire",
+						:to => sms_channel.address.with_protocol,
+						:body => candidate.mission.sms_message
+					}
+					JobLogger.debug "SmsJob: Sending AO message to Candidate #{candidate_id}, address is #{message[:to]}"
+					nuntium.send_ao message
+				rescue Nuntium::Exception => e
+					JobLogger.error "SmsJob: Error sending AO for Candidate #{candidate_id}, exception: #{e}"
+				end
+			end
 		ensure
 			# Increase retries and set last sms attempt timestamp
 			candidate.sms_retries = candidate.sms_retries + 1

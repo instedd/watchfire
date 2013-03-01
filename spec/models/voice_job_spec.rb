@@ -216,4 +216,49 @@ describe VoiceJob do
     end
   end
 
+  describe "with multiple voice numbers" do
+    before(:each) do
+      @volunteer = Volunteer.make! :voice_channels => [VoiceChannel.make, VoiceChannel.make]
+      @voice_channels = @volunteer.voice_channels.sort_by(&:id)
+      @candidate = Candidate.make! :status => :pending, :voice_retries => 0, :volunteer => @volunteer
+      @status_callback_url = Rails.application.routes.url_helpers.verboice_status_callback_url
+    end
+
+    it "should call all the voice numbers in order" do
+      @verboice.expects(:call).with(@voice_channels[0].address, :status_callback_url => @status_callback_url).returns(@response)
+      @response.stubs(:[]).with('call_id').returns('123')
+
+      @voice_job = VoiceJob.new @candidate.id
+      @voice_job.perform
+
+      @verboice.expects(:call_state).with('123').returns('completed')
+      @verboice.expects(:call).with(@voice_channels[1].address, :status_callback_url => @status_callback_url).returns(@response)
+      @response.stubs(:[]).with('call_id').returns('456')
+
+      @voice_job = VoiceJob.new @candidate.id
+      @voice_job.perform
+    end
+
+    it "should increment retries only when calling the last number in the list" do
+      @verboice.expects(:call).returns(@response)
+      @response.stubs(:[]).with('call_id').returns('123')
+
+      @voice_job = VoiceJob.new @candidate.id
+      @voice_job.perform
+
+      new_candidate = Candidate.find(@candidate.id)
+      new_candidate.voice_retries.should eq(@candidate.voice_retries)
+
+      @verboice.expects(:call_state).with('123').returns('completed')
+      @verboice.expects(:call).returns(@response)
+      @response.stubs(:[]).with('call_id').returns('456')
+
+      @voice_job = VoiceJob.new @candidate.id
+      @voice_job.perform
+
+      new_candidate = Candidate.find(@candidate.id)
+      new_candidate.voice_retries.should eq(@candidate.voice_retries + 1)
+    end
+  end
+
 end

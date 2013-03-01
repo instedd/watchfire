@@ -14,8 +14,8 @@ class VolunteersController < ApplicationController
     @q = params[:q]
 
     @volunteers = volunteers.order("#{@order} #{@direction}")
-    if /\A\+?[\s\d\.\-\(\)]+\Z/.match(@q)
-      @volunteers = @volunteers.where("voice_number like ? or sms_number like ?", "%#{@q}%", "%#{@q}%")
+    if Channel::ADDRESS_REGEX.match(@q)
+      @volunteers = @volunteers.joins(:sms_channels, :voice_channels).where("channels.address like ?", "%#{@q}%")
     else
       @volunteers = @volunteers.where("name like ? OR address like ?", "%#{@q}%", "%#{@q}%") unless @q.blank?
     end

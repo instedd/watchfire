@@ -56,9 +56,9 @@
     %li= s.name
 
 %ul.hidden#volunteer_voice_numbers
-  - @volunteer.voice_channels.each do |voice_channel|
+  - volunteer.voice_channels.each do |voice_channel|
     %li= voice_channel.address
     
 %ul.hidden#volunteer_sms_numbers
-  - @volunteer.sms_channels.each do |sms_channel|
+  - volunteer.sms_channels.each do |sms_channel|
     %li= sms_channel.address
