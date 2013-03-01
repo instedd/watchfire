@@ -152,7 +152,7 @@ class Mission < ActiveRecord::Base
 
   def title
     skill_name = skill.present? ? skill.name : 'Volunteer'
-    message = reason.present? ? " (#{reason})" : ""
+    message = reason.present? ? " (#{truncate(reason, :length => 200)})" : ""
     "#{name}: #{pluralize(req_vols, skill_name)}#{message}"
   end
 

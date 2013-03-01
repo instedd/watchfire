@@ -16,7 +16,7 @@
     %p.tgrey
       %em Hello, this is the Red Cross. There is
       - if mission.reason.present?
-        = mission.reason
+        = truncate(mission.reason, :length => 200)
       - else
         %em a single house fire
       %em located at
