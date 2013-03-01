@@ -23,7 +23,6 @@ Mission.blueprint do
   organization { Organization.make! }
   user { User.make! }
   name { _name }
-  req_vols { rand(6) + 5 }
   lat { _lat }
   lng { _lng }
   address { _address }
@@ -37,6 +36,10 @@ end
 Skill.blueprint do
   organization { Organization.make! }
   name { _name }
+end
+
+MissionSkill.blueprint do
+  mission { Mission.make! }
 end
 
 User.blueprint do

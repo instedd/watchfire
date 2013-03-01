@@ -216,7 +216,7 @@ describe Mission do
 
   it "should begin with 1 volunteer to recruit" do
     mission = Mission.new
-    mission.req_vols.should eq(1)
+    mission.total_req_vols.should eq(1)
   end
 
   describe "title" do

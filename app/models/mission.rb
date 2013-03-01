@@ -12,16 +12,14 @@ class Mission < ActiveRecord::Base
   has_many :mission_jobs, :dependent => :destroy
   has_many :mission_skills, :dependent => :destroy, :include => :skill, :order => "priority ASC"
 
-	belongs_to :skill
 	belongs_to :user
 
   validates_presence_of :organization
   validates_presence_of :user
-  validates_presence_of :req_vols, :lat, :lng, :name
+  validates_presence_of :lat, :lng, :name
 
   validates :reason, :length => { :maximum => 200 }
 
-  validates_numericality_of :req_vols, :only_integer => true, :greater_than => 0
   validates_numericality_of :lat, :less_than_or_equal_to => 90, :greater_than_or_equal_to => -90
   validates_numericality_of :lng, :less_than_or_equal_to => 180, :greater_than_or_equal_to => -180
 
@@ -31,20 +29,19 @@ class Mission < ActiveRecord::Base
 		return self.candidates.where('status = ?', st).count
 	end
 
-	def obtain_volunteers quantity, offset = 0
-	  volunteers_for_mission = Volunteer.where(organization_id: organization_id).geo_scope(:within => max_distance, :origin => self).order('distance asc')
-
-	  unless skill.nil?
-	    volunteers_for_mission = volunteers_for_mission.joins('INNER JOIN skills_volunteers sv ON sv.volunteer_id = volunteers.id').where('sv.skill_id' => self.skill_id)
-	  end
-
-    volunteers_for_mission.select{|v| v.available_at? Time.now.utc}[offset..offset+quantity-1] || []
-	end
+  def obtain_volunteers
+    vols = []
+    mission_skills.each do |mission_skill|
+      num_vols = (mission_skill.req_vols / available_ratio).to_i
+      vols = mission_skill.obtain_volunteers num_vols, vols
+    end
+    vols
+  end
 
 	def check_and_save
 		if self.valid?
 			if self.status_created?
-				vols = self.obtain_volunteers (self.req_vols / available_ratio).to_i
+				vols = self.obtain_volunteers
 				Mission.transaction do
 					self.save!
 					set_candidates vols
@@ -108,19 +105,51 @@ class Mission < ActiveRecord::Base
 	end
 
   def check_for_more_volunteers
-    pending = pending_candidates.count
-    confirmed = confirmed_candidates.count
-    needed = ((req_vols - confirmed) / available_ratio).to_i
+    # fetch pending and confirmed candidates ordered by the number of 
+    # skills the volunteer posses, so less specialized volunteers are
+    # picked first
+    pending = pending_candidates.sort { |c1, c2| 
+      c1.volunteer.skills.size <=> c2.volunteer.skills.size
+    }
+    confirmed = confirmed_candidates.sort { |c1, c2| 
+      c1.volunteer.skills.size <=> c2.volunteer.skills.size
+    }
 
-    if pending < needed
-      recruit = needed - pending
-      volunteers = obtain_volunteers recruit, candidates.count
-      Mission.transaction do
-        volunteers.each{|v| add_volunteer v}
+    # go through each mission skill by priority and check if we got the
+    # desired number of volunteers for each, creating new candidates for
+    # those skills with insufficient candidates pending response
+    finished = true
+    mission_skills.each do |mission_skill|
+      req_vols = mission_skill.req_vols
+
+      # claim some volunteers for the skill requirement
+      skill_confirmed = mission_skill.claim_candidates confirmed
+      confirmed = confirmed - skill_confirmed
+
+      if skill_confirmed.size < req_vols
+        # still volunteers required for this skill
+        needed = ((req_vols - skill_confirmed.size) / available_ratio).to_i
+        # claim volunteers from the pending candidates pool
+        skill_pending = mission_skill.claim_candidates pending, needed
+        pending = pending - skill_pending
+
+        if skill_pending.size < needed
+          # not enough number of volunteers in the pending pool that can
+          # fulfill this skill requirement
+          recruit = needed - skill_pending.size
+          # find new volunteers for this skill
+          new_volunteers = mission_skill.obtain_volunteers recruit, self.volunteers
+          Mission.transaction do
+            new_volunteers.each {|v| add_volunteer v}
+          end
+          self.candidates.reload
+        end
+        # we're not done yet
+        finished = false
       end
-			self.candidates.reload
     end
-		update_status :finished if needed <= 0
+
+		update_status :finished if finished
 		self.save! if self.changed?
   end
 
@@ -130,7 +159,11 @@ class Mission < ActiveRecord::Base
   end
 
 	def check_for_volunteers?
-		self.req_vols != self.req_vols_was || self.lat != self.lat_was || self.lng != self.lng_was || self.skill_id != self.skill_id_was
+		mission_skills.any? { |ms| 
+      ms.marked_for_destruction? || ms.new_record? ||
+        ms.req_vols != ms.req_vols_was || 
+        ms.skill_id != ms.skill_id_was
+    } || self.lat != self.lat_was || self.lng != self.lng_was
 	end
 
 	def sms_message
@@ -145,9 +178,13 @@ class Mission < ActiveRecord::Base
 		voice_message.split('.').map(&:strip).reject{|s| s.blank?}
 	end
 
+  def total_req_vols
+    mission_skills.map(&:req_vols).reduce(&:+)
+  end
+
   def progress
     confirmed_candidates = candidate_count(:confirmed)
-    value = confirmed_candidates > 0 ? confirmed_candidates / req_vols.to_f : 0
+    value = confirmed_candidates > 0 ? confirmed_candidates / total_req_vols.to_f : 0
     [value, 1].min
   end
 
@@ -184,6 +221,10 @@ class Mission < ActiveRecord::Base
     end
   end
 
+  def max_distance
+    Watchfire::Application.config.max_distance
+  end
+
   private
 
 	def reason_for_message
@@ -204,15 +245,11 @@ class Mission < ActiveRecord::Base
   end
 
   def init
-    self.req_vols ||= 1
+    mission_skills << mission_skills.new if mission_skills.empty?
   end
 
   def available_ratio
     Watchfire::Application.config.available_ratio
-  end
-
-  def max_distance
-    Watchfire::Application.config.max_distance
   end
 
 end
