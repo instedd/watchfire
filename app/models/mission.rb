@@ -10,6 +10,7 @@ class Mission < ActiveRecord::Base
   has_many :candidates, :dependent => :destroy, :include => :volunteer
   has_many :volunteers, :through => :candidates
   has_many :mission_jobs, :dependent => :destroy
+  has_many :mission_skills, :dependent => :destroy, :include => :skill, :order => "priority ASC"
 
 	belongs_to :skill
 	belongs_to :user

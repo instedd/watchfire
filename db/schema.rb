@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130228211738) do
+ActiveRecord::Schema.define(:version => 20130301171333) do
 
   create_table "calls", :force => true do |t|
     t.string   "session_id"
@@ -83,8 +83,16 @@ ActiveRecord::Schema.define(:version => 20130228211738) do
     t.datetime "updated_at"
   end
 
-  create_table "missions", :force => true do |t|
+  create_table "mission_skills", :force => true do |t|
+    t.integer  "mission_id"
+    t.integer  "skill_id"
+    t.integer  "priority"
     t.integer  "req_vols"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "missions", :force => true do |t|
     t.float    "lat"
     t.float    "lng"
     t.string   "reason"
@@ -92,7 +100,6 @@ ActiveRecord::Schema.define(:version => 20130228211738) do
     t.string   "address"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "skill_id"
     t.integer  "user_id"
     t.string   "name"
     t.boolean  "use_custom_text", :default => false, :null => false
