@@ -46,7 +46,9 @@ class VoiceJob < CandidateJob
   private
 
   def call candidate, last_call = nil
+    # get an ordered list of numbers to call
     voice_numbers = candidate.volunteer.voice_channels.sort_by(&:id).map(&:address)
+    # and pick either the first, or the next from the one called last
     number_index = 0
     if last_call
       number_index = (voice_numbers.index(last_call.voice_number) || -1) + 1
@@ -63,6 +65,7 @@ class VoiceJob < CandidateJob
     rescue Exception => e
       JobLogger.error "VoiceJob: Error calling Candidate #{candidate_id}, exception: #{e}"
     ensure
+      # increment retries only if the called number was the last one for the volunteer
       if number_index == voice_numbers.size - 1
         candidate.voice_retries = candidate.voice_retries + 1
       end
