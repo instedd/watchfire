@@ -14,6 +14,10 @@ describe MissionSkill do
     @skill = Skill.make! :organization => @organization
   end
 
+  it "should begin with 1 volunteer to recruit" do
+    @mission_skill.req_vols.should eq(1)
+  end
+
   describe "obtain_volunteers" do
     before(:each) do
       # mission is at (0,0)

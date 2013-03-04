@@ -1,6 +1,6 @@
 class Skill < ActiveRecord::Base
 
-	scope :actives, where('id IN (SELECT skill_id from skills_volunteers) OR id IN (SELECT skill_id from missions)')
+	scope :actives, where('id IN (SELECT skill_id from skills_volunteers) OR id IN (SELECT skill_id from mission_skills)')
 
 	belongs_to :organization
 	has_and_belongs_to_many :volunteers

@@ -25,8 +25,6 @@ class Mission < ActiveRecord::Base
 
   accepts_nested_attributes_for :mission_skills
 
-  after_initialize :init
-
 	def candidate_count(st)
 		return self.candidates.where('status = ?', st).count
 	end
@@ -36,7 +34,7 @@ class Mission < ActiveRecord::Base
     mission_skills.each do |mission_skill|
       mission_skill.mission = self  # needed to successfully call obtain_volunteers
       num_vols = (mission_skill.req_vols / available_ratio).to_i
-      vols = mission_skill.obtain_volunteers num_vols, vols
+      vols = vols + mission_skill.obtain_volunteers(num_vols, vols)
     end
     vols
   end
@@ -44,9 +42,10 @@ class Mission < ActiveRecord::Base
 	def check_and_save
 		if self.valid?
 			if self.status_created?
-				vols = self.obtain_volunteers
 				Mission.transaction do
 					self.save!
+          mission_skills.reload
+          vols = self.obtain_volunteers
 					set_candidates vols
 				end
 				self.candidates.reload
@@ -250,10 +249,6 @@ class Mission < ActiveRecord::Base
   def update_status status
     self.status = status
     self.save!
-  end
-
-  def init
-    mission_skills << mission_skills.new if mission_skills.empty?
   end
 
   def available_ratio

@@ -7,7 +7,7 @@
 		%span confirmed
 .R
 	- unless mission.new_record?
-		%span= mission.req_vols
+		%span= mission.total_req_vols
 		%span needed
 %br{:clear => "all"}
 .M

@@ -8,6 +8,7 @@ class MissionsController < ApplicationController
 
 	def new
 	  add_breadcrumb "New", :new_mission_path
+    mission.mission_skills << MissionSkill.new
 
 		render 'show'
 	end
@@ -60,10 +61,6 @@ class MissionsController < ApplicationController
 		mission.destroy
 		redirect_to missions_url
 	end
-
-	def clone
-    redirect_to mission_path(mission.new_duplicate.id)
-  end
 
 	def export
 		csv = VolunteerExporter.export mission

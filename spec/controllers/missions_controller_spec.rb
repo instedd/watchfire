@@ -51,6 +51,11 @@ describe MissionsController do
       }.to change(Mission, :count).by(1)
     end
 
+    it "should create mission with one mission skill" do
+      post :create, :mission => @valid_attributes
+      Mission.last.mission_skills.size.should eq(1)
+    end
+
     it "should check for volunteers" do
       mission = mock('mission')
       controller.stubs(:mission => mission)
@@ -163,23 +168,6 @@ describe MissionsController do
       delete :destroy, :id => @mission.id.to_s
       Mission.find_by_id(@mission.id).should be_nil
       response.should redirect_to(missions_url)
-    end
-  end
-
-  describe "clone" do
-    it "should create a mission duplicate" do
-      new_mission = mock('new_mission', id: 123)
-      controller.stubs(:mission => @mission)
-      @mission.expects(:new_duplicate).returns(new_mission)
-      post :clone, :id => @mission.id.to_s
-    end
-
-    it "redirects to new mission path" do
-      new_mission = mock('new_mission', id: 123)
-      controller.stubs(:mission => @mission)
-      @mission.expects(:new_duplicate).returns(new_mission)
-      post :clone, :id => @mission.id.to_s
-      response.should redirect_to(mission_path(123))
     end
   end
 

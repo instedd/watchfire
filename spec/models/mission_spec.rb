@@ -116,6 +116,22 @@ describe Mission do
 
   end
 
+  it "should obtain volunteers for each skill" do
+    @mission = Mission.make
+    @ms1 = MissionSkill.make :mission => @mission, :req_vols => 5
+    @ms2 = MissionSkill.make :mission => @mission, :req_vols => 10
+    @mission.mission_skills = [@ms1, @ms2]
+    @mission.save!
+
+    @mission.stubs(:available_ratio).returns(0.5)
+    @ms1.expects(:obtain_volunteers).with(10, []).returns((1..5).to_a)
+    @ms2.expects(:obtain_volunteers).with(20, (1..5).to_a).returns((6..10).to_a)
+
+    vols = @mission.obtain_volunteers
+    vols.size.should eq(10)
+    vols.should eq((1..10).to_a)
+  end
+
   describe "candidate allocation" do
     before(:each) do
       @mission = Mission.make!
@@ -215,11 +231,6 @@ describe Mission do
       @mission.check_for_more_volunteers
     end
 
-  end
-
-  it "should begin with 1 volunteer to recruit" do
-    mission = Mission.new
-    mission.total_req_vols.should eq(1)
   end
 
   describe "title" do

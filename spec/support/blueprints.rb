@@ -26,6 +26,7 @@ Mission.blueprint do
   lat { _lat }
   lng { _lng }
   address { _address }
+  mission_skills { [MissionSkill.make] }
 end
 
 MissionJob.blueprint do
@@ -39,7 +40,6 @@ Skill.blueprint do
 end
 
 MissionSkill.blueprint do
-  mission { Mission.make! }
 end
 
 User.blueprint do

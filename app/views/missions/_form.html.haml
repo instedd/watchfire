@@ -6,13 +6,18 @@
 	= f.text_field :name, :class => "ux-text w58", :size => "2", :placeholder => "Enter the name of this event, e.g. 'Fire on Rangeland' ", :readonly => mission.running? || mission.finished?
 	%br
 	%br
-	= f.label :req_vols, "Recruitees"
-	%br
-	%span.ux-nstep.w06
-		= f.text_field :req_vols, :size => "2", :readonly => mission.running? || mission.finished?, "data-min" => "1"
-	%span
-		= f.collection_select(:skill_id, skills.actives, :id, :pluralized, {:include_blank => 'Volunteers'}, :disabled => !mission.created?, :class => "ux-dropdown w30")
-	%br
+	= f.label "Recruitees"
+	- mission.mission_skills.each do |mission_skill|
+		= f.fields_for :mission_skills, mission_skill do |ms|
+			= ms.hidden_field :id
+			%br
+			%span.ux-nstep.w06
+				= ms.text_field :req_vols, :size => "2", :class => 'req_vols', :readonly => mission.running? || mission.finished?, "data-min" => "1"
+			%span
+				= ms.collection_select(:skill_id, skills.actives, :id, :pluralized, {:include_blank => 'Volunteers'}, :disabled => !mission.created?, :class => "ux-dropdown w30 skill_id")
+			%br
+	- unless skills.actives.empty?
+		%button.cadd Recruit for another skill
 	%br
 	= f.label :reason, "Description"
 	%br

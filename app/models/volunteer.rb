@@ -28,7 +28,7 @@ class Volunteer < ActiveRecord::Base
   end
 
   def skill_names
-    self.skills.map(&:name).join(',')
+    self.skills.map(&:name).join(', ')
   end
 
   def available? day, hour

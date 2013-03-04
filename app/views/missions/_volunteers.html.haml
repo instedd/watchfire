@@ -14,6 +14,6 @@
     = render :partial => 'candidate_list', :locals => {:title => 'Denied', :candidates => mission.denied_candidates}
 - else
   - if mission.valid?
-    %p.empty-event No volunteers with the skill "#{mission.skill.try(:name) || 'Volunteer'}" are available near the event location
+    %p.empty-event No volunteers with the selected skills are available near the event location
   - else
     %p.empty-event This event has not been initialized, complete all the fields and start recruiting
