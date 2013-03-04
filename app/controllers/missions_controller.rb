@@ -30,6 +30,9 @@ class MissionsController < ApplicationController
 		else
 			mission.save
 		end
+    if params[:new_skill]
+      mission.mission_skills << mission.mission_skills.new
+    end
 	end
 
 	def start

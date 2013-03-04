@@ -168,6 +168,20 @@ function init_events() {
 	    $(this).parent("form").submit();
 	    return false;
 	});
+
+	$("#mission_form .cadd").click(function(e) {
+		e.preventDefault();
+		form = $('#mission_form');
+		form.append("<input type='hidden' name='new_skill' value='1'>");
+		form.submit();
+	});
+	$('#mission_form .cremove').click(function(e) {
+		e.preventDefault();
+		form = $('#mission_form');
+		name = $(this).attr('data-name');
+		form.append("<input type='hidden' name='" + name + "' value='1'>");
+		form.submit();
+	});
 }
 
 function init_candidate_events() {
