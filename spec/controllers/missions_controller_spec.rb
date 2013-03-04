@@ -42,7 +42,7 @@ describe MissionsController do
 
   describe "create" do
     before(:each) do
-      @valid_attributes = {:req_vols => 5, :lat => 1, :lng => 2, :reason => 'foo', :address => 'bar', :name => 'name'}
+      @valid_attributes = {:mission_skills_attributes => { '0' => {:req_vols => 5} }, :lat => 1, :lng => 2, :reason => 'foo', :address => 'bar', :name => 'name'}
     end
 
     it "should create mission" do

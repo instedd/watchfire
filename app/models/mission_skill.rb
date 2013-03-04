@@ -1,4 +1,6 @@
 class MissionSkill < ActiveRecord::Base
+  include ActionView::Helpers::TextHelper
+
   belongs_to :mission
   belongs_to :skill
 
@@ -40,6 +42,15 @@ class MissionSkill < ActiveRecord::Base
       }
     end
     candidates.take(quantity)
+  end
+
+  def check_for_volunteers?
+    self.req_vols != self.req_vols_was || self.skill_id != self.skill_id_was
+  end
+
+  def title
+    skill_name = skill.present? ? skill.name : 'Volunteer'
+    pluralize(req_vols, skill_name)
   end
 
   private

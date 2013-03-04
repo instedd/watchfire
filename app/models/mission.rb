@@ -23,6 +23,8 @@ class Mission < ActiveRecord::Base
   validates_numericality_of :lat, :less_than_or_equal_to => 90, :greater_than_or_equal_to => -90
   validates_numericality_of :lng, :less_than_or_equal_to => 180, :greater_than_or_equal_to => -180
 
+  accepts_nested_attributes_for :mission_skills
+
   after_initialize :init
 
 	def candidate_count(st)
@@ -32,6 +34,7 @@ class Mission < ActiveRecord::Base
   def obtain_volunteers
     vols = []
     mission_skills.each do |mission_skill|
+      mission_skill.mission = self  # needed to successfully call obtain_volunteers
       num_vols = (mission_skill.req_vols / available_ratio).to_i
       vols = mission_skill.obtain_volunteers num_vols, vols
     end
@@ -104,41 +107,55 @@ class Mission < ActiveRecord::Base
 		self.candidates.where(:status => :pending, :active => true)
 	end
 
+  def allocate_candidates confirmed, pending
+    # go through each mission skill by priority and check if we got the desired
+    # number of volunteers for each by allocating confirmed and pending
+    # candidates
+    mission_skills.map do |mission_skill|
+      data = { :mission_skill => mission_skill }
+
+      data[:confirmed] = mission_skill.claim_candidates confirmed
+      confirmed = confirmed - data[:confirmed]
+
+      if data[:confirmed].size < mission_skill.req_vols
+        data[:needed] = ((mission_skill.req_vols - data[:confirmed].size) / available_ratio).to_i
+        data[:pending] = mission_skill.claim_candidates pending, data[:needed]
+        pending = pending - data[:pending]
+      else
+        data[:pending] = []
+        data[:needed] = 0
+      end
+
+      data
+    end
+  end
+
+  def candidate_allocation_order
+    # by default, candidates are ordered by the number of skills the volunteer
+    # posses, so less specialized volunteers are allocated first
+    Proc.new do |c1, c2| 
+      c1.volunteer.skills.size <=> c2.volunteer.skills.size
+    end
+  end
+
   def check_for_more_volunteers
-    # fetch pending and confirmed candidates ordered by the number of 
-    # skills the volunteer posses, so less specialized volunteers are
-    # picked first
-    pending = pending_candidates.sort { |c1, c2| 
-      c1.volunteer.skills.size <=> c2.volunteer.skills.size
-    }
-    confirmed = confirmed_candidates.sort { |c1, c2| 
-      c1.volunteer.skills.size <=> c2.volunteer.skills.size
-    }
+    # allocate the confirmed and pending candidates to the required skills for
+    # the mission
+    pending = pending_candidates.sort(&candidate_allocation_order)
+    confirmed = confirmed_candidates.sort(&candidate_allocation_order)
+    allocation = allocate_candidates(confirmed, pending)
 
-    # go through each mission skill by priority and check if we got the
-    # desired number of volunteers for each, creating new candidates for
-    # those skills with insufficient candidates pending response
+    # for each mission skill with allocated candidates, check if we need to add
+    # new volunteers to fulfill the required number
     finished = true
-    mission_skills.each do |mission_skill|
-      req_vols = mission_skill.req_vols
-
-      # claim some volunteers for the skill requirement
-      skill_confirmed = mission_skill.claim_candidates confirmed
-      confirmed = confirmed - skill_confirmed
-
-      if skill_confirmed.size < req_vols
-        # still volunteers required for this skill
-        needed = ((req_vols - skill_confirmed.size) / available_ratio).to_i
-        # claim volunteers from the pending candidates pool
-        skill_pending = mission_skill.claim_candidates pending, needed
-        pending = pending - skill_pending
-
-        if skill_pending.size < needed
+    allocation.each do |data|
+      if data[:needed] > 0
+        if data[:pending].size < data[:needed]
           # not enough number of volunteers in the pending pool that can
           # fulfill this skill requirement
-          recruit = needed - skill_pending.size
+          recruit = data[:needed] - data[:pending].size
           # find new volunteers for this skill
-          new_volunteers = mission_skill.obtain_volunteers recruit, self.volunteers
+          new_volunteers = data[:mission_skill].obtain_volunteers recruit, self.volunteers
           Mission.transaction do
             new_volunteers.each {|v| add_volunteer v}
           end
@@ -160,9 +177,7 @@ class Mission < ActiveRecord::Base
 
 	def check_for_volunteers?
 		mission_skills.any? { |ms| 
-      ms.marked_for_destruction? || ms.new_record? ||
-        ms.req_vols != ms.req_vols_was || 
-        ms.skill_id != ms.skill_id_was
+      ms.marked_for_destruction? || ms.new_record? || ms.check_for_volunteers?
     } || self.lat != self.lat_was || self.lng != self.lng_was
 	end
 
@@ -189,16 +204,9 @@ class Mission < ActiveRecord::Base
   end
 
   def title
-    skill_name = skill.present? ? skill.name : 'Volunteer'
+    requirements = mission_skills.map(&:title).join(', ')
     message = reason.present? ? " (#{truncate(reason, :length => 200)})" : ""
-    "#{name}: #{pluralize(req_vols, skill_name)}#{message}"
-  end
-
-  def new_duplicate
-    new_mission = self.clone
-    new_mission.status = :created
-    new_mission.save!
-    new_mission
+    "#{name}: #{requirements}#{message}"
   end
 
   def custom_text_changed?

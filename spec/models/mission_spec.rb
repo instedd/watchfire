@@ -91,7 +91,7 @@ describe Mission do
 
   describe "check for volunteers" do
     before(:each) do
-      @mission = Mission.make! :skill => Skill.make!
+      @mission = Mission.make! :mission_skills => [MissionSkill.make(:skill => Skill.make!)]
     end
 
     it "should tell true if lat has changed" do
@@ -105,113 +105,116 @@ describe Mission do
     end
 
     it "should tell true if required volunteers has changed" do
-      @mission.req_vols = @mission.req_vols + 1
+      @mission.mission_skills[0].req_vols = @mission.mission_skills[0].req_vols + 1
       @mission.check_for_volunteers?.should be_true
     end
 
     it "should tell true if skill has changed" do
-      @mission.skill = Skill.make!
+      @mission.mission_skills[0].skill = Skill.make!
       @mission.check_for_volunteers?.should be_true
     end
 
   end
 
-  describe "get more volunteers" do
+  describe "candidate allocation" do
     before(:each) do
-      @mission = Mission.make :name => 'name'
+      @mission = Mission.make!
       @mission.stubs(:available_ratio).returns(0.5)
     end
 
+    it "should allocate by priority" do
+      @ms1 = MissionSkill.make!(:mission => @mission, :priority => 2, :req_vols => 3)
+      @ms2 = MissionSkill.make!(:mission => @mission, :priority => 1, :req_vols => 2)
+      @ms3 = MissionSkill.make!(:mission => @mission, :priority => 3, :req_vols => 2)
+      @mission.mission_skills = [@ms1, @ms2, @ms3]
+      @mission.save!
+
+      @candidates = (1..3).map { Candidate.make! }
+      @pendings = (1..2).map { Candidate.make! }
+
+      allocation = @mission.allocate_candidates(@candidates, @pendings)
+
+      allocation.size.should eq(3)
+      allocation[0][:mission_skill].should eq(@ms2)
+      allocation[0][:needed].should eq(0)
+      allocation[0][:confirmed].should eq(@candidates[0..1])
+      allocation[0][:pending].should eq([])
+      allocation[1][:mission_skill].should eq(@ms1)
+      allocation[1][:needed].should eq(4)  # 2 missing * available_ratio
+      allocation[1][:confirmed].should eq(@candidates[2..2])
+      allocation[1][:pending].should eq(@pendings)
+      allocation[2][:mission_skill].should eq(@ms3)
+      allocation[2][:needed].should eq(4)    # 2 missing * available_ratio
+      allocation[2][:confirmed].should eq([])
+      allocation[2][:pending].should eq([])  # no pending candidates left
+    end
+  end
+
+  describe "get more volunteers" do
+    before(:each) do
+      @mission = Mission.make! :name => 'name'
+      @mission_skill = MissionSkill.make!(:mission => @mission, :req_vols => 5)
+      @mission.mission_skills = [@mission_skill]
+      @mission.save!
+    end
+
     it "should increase volunteers if pending is not enough" do
-      @mission.req_vols = 5
-			@mission.lat = 10.0
-			@mission.lng = 10.0
       @mission.expects(:pending_candidates).returns((1..8).to_a)
       @mission.expects(:confirmed_candidates).returns([])
+      @mission.stubs(:candidate_allocation_order).
+        returns(Proc.new { |c1,c2| c1 <=> c2 })
+      allocation = [{ 
+        :mission_skill => @mission_skill, 
+        :confirmed => [], 
+        :pending => (1..8).to_a, 
+        :needed => 10
+      }]
+      @mission.expects(:allocate_candidates).returns(allocation)
 
-			candidates = (1..10).to_a
-			candidates.expects :reload
-      @mission.expects(:candidates).twice.returns(candidates)
-
-      @mission.expects(:obtain_volunteers).with(2,10).returns(['c1','c2'])
-
+      @mission_skill.expects(:obtain_volunteers).
+        with(2, @mission.volunteers).returns(['c1', 'c2'])
       @mission.expects(:add_volunteer).with('c1')
       @mission.expects(:add_volunteer).with('c2')
+
+      @mission.expects(:update_status).never
 
       @mission.check_for_more_volunteers
     end
 
     it "should not increase volunteers if there are enough pendings and set as finished" do
-      @mission.req_vols = 5
-			@mission.lat = 10.0
-			@mission.lng = 10.0
       @mission.expects(:pending_candidates).returns((1..8).to_a)
       @mission.expects(:confirmed_candidates).returns((1..2).to_a)
-
-      @mission.expects(:obtain_volunteers).never
-      @mission.expects(:add_volunteer).never
+      @mission.stubs(:candidate_allocation_order).
+        returns(Proc.new { |c1,c2| c1 <=> c2 })
+      allocation = [{ 
+        :mission_skill => @mission_skill, 
+        :confirmed => (1..2).to_a,
+        :pending => (1..8).to_a, 
+        :needed => 6
+      }]
+      @mission.expects(:allocate_candidates).returns(allocation)
+      @mission.expects(:update_status).never
 
       @mission.check_for_more_volunteers
     end
 
-  end
+    it "should update status to finished if all requirements are satisfied" do
+      @mission.expects(:pending_candidates).returns([])
+      @mission.expects(:confirmed_candidates).returns((1..5).to_a)
+      @mission.stubs(:candidate_allocation_order).
+        returns(Proc.new { |c1,c2| c1 <=> c2 })
+      allocation = [{ 
+        :mission_skill => @mission_skill, 
+        :confirmed => (1..5).to_a,
+        :pending => [], 
+        :needed => 0
+      }]
+      @mission.expects(:allocate_candidates).returns(allocation)
+      @mission.expects(:update_status).with(:finished)
 
-  describe "obtain volunteers" do
-    before(:each) do
-      @time = Time.utc(2011, 9, 1, 10, 30, 0)
-      @mission = Mission.make! :lat => 0, :lng => 0
-
-      @s1 = Skill.make!
-      @s2 = Skill.make!
-
-      @v1 = Volunteer.make :lat => 0.5, :lng => 0.5, :organization => @mission.organization
-
-      @v1.skills << @s1
-      @v1.save!
-
-      @v2 = Volunteer.make :lat => 1, :lng => 1, :organization => @mission.organization
-      @v2.skills = [@s1, @s2]
-      @v2.save!
-
-      @v3 = Volunteer.make! :lat => 2, :lng => 2, :organization => @mission.organization
-
-      # In another organization:
-      @v4 = Volunteer.make! :lat => 2, :lng => 2, :organization => Organization.make!
+      @mission.check_for_more_volunteers
     end
 
-    it "should not filter by skill if skill is not selected" do
-      @mission.skill.should be nil
-      volunteers = @mission.obtain_volunteers 3
-      volunteers.should == [@v1, @v2, @v3]
-    end
-
-    it "should filter by skill" do
-      @mission.skill = @s1
-      @mission.save!
-
-      volunteers = @mission.obtain_volunteers 3
-      volunteers.should == [@v1, @v2]
-    end
-
-    it "should filter by shift" do
-      @v1.shifts = {'thursday' => {"10" => "1"}}
-      @v1.save!
-      @v2.shifts = {"thursday" => {"10" => "0"}}
-      @v2.save!
-      @v3.shifts = {"thursday" => {"10" => "1"}}
-      @v3.save!
-
-      Timecop.travel(@time)
-      volunteers = @mission.obtain_volunteers 3
-      volunteers.should == [@v1, @v3]
-    end
-
-    it "should filter by max distance" do
-      @mission.expects(:max_distance).returns(200)
-      v4 = Volunteer.make! :lat => 3, :lng => 3
-      volunteers = @mission.obtain_volunteers 4
-      volunteers.should == [@v1, @v2, @v3]
-    end
   end
 
   it "should begin with 1 volunteer to recruit" do
@@ -221,16 +224,13 @@ describe Mission do
 
   describe "title" do
     before(:each) do
-      @mission = Mission.new :name => "name", :req_vols => 3, :skill => Skill.new(:name => "skill"), :reason => "reason"
+      @mission = Mission.new :name => "name", :reason => "reason",
+        :mission_skills => [MissionSkill.make(:req_vols => 3, 
+          :skill => Skill.new(:name => "skill"))] 
     end
 
     it "should tell title with all fields" do
       @mission.title.should eq("name: 3 skills (reason)")
-    end
-
-    it "should tell title with singular value" do
-      @mission.req_vols = 1
-      @mission.title.should eq("name: 1 skill (reason)")
     end
 
     it "should tell title without reason" do
@@ -240,9 +240,11 @@ describe Mission do
       @mission.title.should eq("name: 3 skills")
     end
 
-    it "should tell title without skill" do
-      @mission.skill = nil
-      @mission.title.should eq("name: 3 Volunteers (reason)")
+    it "should tell title with multiple required skills" do
+      @mission.mission_skills << 
+        MissionSkill.make(:mission => @mission, :req_vols => 1)
+
+      @mission.title.should eq("name: 3 skills, 1 Volunteer (reason)") 
     end
   end
 
@@ -260,32 +262,6 @@ describe Mission do
     mission.valid?.should be_true
     mission.reason = 'a' * 201
     mission.valid?.should be_false
-  end
-
-  describe "mission duplicate for new skill recruitment" do
-    before(:each) do
-      @mission = Mission.make! :skill => Skill.make!
-      @new_mission = @mission.new_duplicate
-    end
-
-    it "creates an saved mission" do
-      @new_mission.new_record?.should be_false
-    end
-
-    it "copies values" do
-      @new_mission.name.should eq(@mission.name)
-      @new_mission.req_vols.should eq(@mission.req_vols)
-      @new_mission.reason.should eq(@mission.reason)
-      @new_mission.lat.should eq(@mission.lat)
-      @new_mission.lng.should eq(@mission.lng)
-      @new_mission.address.should eq(@mission.address)
-      @new_mission.skill.should eq(@mission.skill)
-    end
-
-    it "should have created status" do
-      @new_mission.created?.should be_true
-    end
-
   end
 
 	describe "messages" do
