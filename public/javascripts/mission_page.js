@@ -178,7 +178,7 @@ function init_events() {
 	$('#mission_form .cremove').click(function(e) {
 		e.preventDefault();
 		form = $('#mission_form');
-		name = $(this).attr('data-name');
+		name = $(this).data('name');
 		form.append("<input type='hidden' name='" + name + "' value='1'>");
 		form.submit();
 	});

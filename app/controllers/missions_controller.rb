@@ -30,7 +30,7 @@ class MissionsController < ApplicationController
 		else
 			mission.save
 		end
-    if params[:new_skill]
+    if params[:new_skill] && mission.valid?
       mission.mission_skills << mission.mission_skills.new
     end
 	end

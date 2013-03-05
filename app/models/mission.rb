@@ -64,7 +64,7 @@ class Mission < ActiveRecord::Base
 	end
 
 	def farthest
-		@farthest = @farthest || (self.candidates.last.volunteer.distance_from(self).round(2) rescue nil)
+		@farthest = @farthest || (self.volunteers.geo_scope(:origin => self).order("distance DESC").first.distance.round(2) rescue nil)
 	end
 
 	def call_volunteers
