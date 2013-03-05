@@ -8,10 +8,10 @@ class SanMateoFaker
   Radius = 5
   Bounds = Geokit::Bounds.from_point_and_radius(Center, Radius)
   
-  def self.fake n
+  def self.fake n, organization
     1.upto(n).each do
       location = random_location
-      Volunteer.make! :lat => location.lat, :lng => location.lng, :address => address(location)
+      Volunteer.make! :lat => location.lat, :lng => location.lng, :address => address(location), :organization => organization
     end
   end
   
