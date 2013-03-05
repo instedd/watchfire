@@ -23,6 +23,8 @@ class Volunteer < ActiveRecord::Base
   validate :has_channel
   validate :has_location
 
+  default_scope includes(:voice_channels, :sms_channels)
+
   def skill_names=(names)
     self.skills = names.split(',').map{|n| Skill.find_or_create_by_organization_id_and_name(organization_id, n.strip)}.select(&:valid?)
   end

@@ -7,5 +7,5 @@
     %span
         = f.collection_select(:skill_id, skills.actives, :id, :pluralized, {:include_blank => 'Volunteers'}, :disabled => !mission.created?, :class => "ux-dropdown w30 skill_id")
     - unless mission.mission_skills.size == 1 || !mission.created?
-        %button.cremove{'data-name' => "#{f.object_name}[_destroy]"} Remove this skill
+        %button.cremove{'data-name' => "#{f.object_name}[_destroy]"}
     %br

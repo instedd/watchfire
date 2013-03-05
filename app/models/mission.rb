@@ -91,20 +91,24 @@ class Mission < ActiveRecord::Base
     update_status :paused
   end
 
+  def candidates_with_channels
+    self.candidates.includes(:volunteer => [:voice_channels, :sms_channels])
+  end
+
   def pending_candidates
-    self.candidates.where(:status => :pending).sort
+    self.candidates_with_channels.where(:status => :pending).sort
   end
 
   def confirmed_candidates
-    self.candidates.where(:status => :confirmed).sort
+    self.candidates_with_channels.where(:status => :confirmed).sort
   end
 
   def denied_candidates
-    self.candidates.where(:status => :denied).sort
+    self.candidates_with_channels.where(:status => :denied).sort
   end
 
   def unresponsive_candidates
-    self.candidates.where(:status => :unresponsive).sort
+    self.candidates_with_channels.where(:status => :unresponsive).sort
   end
 
   def candidates_to_call
