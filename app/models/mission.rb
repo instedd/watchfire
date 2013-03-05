@@ -29,6 +29,11 @@ class Mission < ActiveRecord::Base
 		return self.candidates.where('status = ?', st).count
 	end
 
+  def add_mission_skill params = {}
+    new_priority = (mission_skills.maximum('priority') || 0) + 1
+    mission_skills << mission_skills.build({ :priority => new_priority }.merge(params))
+  end
+
   def obtain_volunteers
     vols = []
     mission_skills.each do |mission_skill|

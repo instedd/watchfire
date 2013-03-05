@@ -8,7 +8,7 @@ class MissionsController < ApplicationController
 
 	def new
 	  add_breadcrumb "New", :new_mission_path
-    mission.mission_skills << MissionSkill.new
+    mission.add_mission_skill
 
 		render 'show'
 	end
@@ -31,7 +31,7 @@ class MissionsController < ApplicationController
 			mission.save
 		end
     if params[:new_skill] && mission.valid?
-      mission.mission_skills << mission.mission_skills.new
+      mission.add_mission_skill
     end
 	end
 

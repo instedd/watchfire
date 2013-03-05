@@ -1,5 +1,6 @@
 .mission_skill
     = f.hidden_field :id
+    = f.hidden_field :priority
     %br
     %span.ux-nstep.w06
         = f.text_field :req_vols, :size => "2", :class => 'req_vols', :readonly => mission.running? || mission.finished?, "data-min" => "1"
