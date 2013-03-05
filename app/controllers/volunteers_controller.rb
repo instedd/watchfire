@@ -57,7 +57,7 @@ class VolunteersController < ApplicationController
   def create
     respond_to do |format|
       if volunteer.save
-        format.html { redirect_to(back, :notice => 'Volunteer was successfully created.') }
+        format.html { redirect_to(back, :notice => "#{volunteer.name} was successfully created.") }
         format.xml  { render :xml => volunteer, :status => :created, :location => volunteer }
       else
         format.html { render :action => "new" }
@@ -71,7 +71,7 @@ class VolunteersController < ApplicationController
   def update
     respond_to do |format|
       if volunteer.update_attributes(params[:volunteer])
-        format.html { redirect_to(back, :notice => 'Volunteer was successfully updated.') }
+        format.html { redirect_to(back, :notice => "#{volunteer.name} was successfully updated.") }
         format.xml  { head :ok }
       else
         format.html { render :action => "edit" }
