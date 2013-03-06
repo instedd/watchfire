@@ -4,6 +4,10 @@ class MissionsController < ApplicationController
 
   def show
     add_breadcrumb mission.name, mission_path(mission)
+    respond_to do |format|
+      format.html
+      format.json { render :json => mission }
+    end
   end
 
 	def new

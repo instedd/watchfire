@@ -1,6 +1,12 @@
 $(function(){
 	init_events();
-	show_by_status($('#combo_status').val());
+    var status = $.cookie('mission_combo_status');
+    if (status !== undefined) {
+        $('#combo_status').val(status);
+        show_by_status(status);
+    } else {
+        show_by_status($('#combo_status').val());
+    }
 });
 
 function init_events() {
@@ -11,6 +17,8 @@ function init_events() {
 	
 	$('#combo_status').change(function(event){
 		var status = $(this).val();
+        $.removeCookie('mission_combo_status');
+        $.cookie('mission_combo_status', status);
 		show_by_status(status);
 	});
 }
