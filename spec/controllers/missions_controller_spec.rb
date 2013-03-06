@@ -3,7 +3,13 @@ require 'spec_helper'
 describe MissionsController do
   before(:all) do
     @user = User.make!
-    @organization = @user.create_organization Organization.new(:name => 'RedCross')
+    @organization = @user.create_organization Organization.make
+  end
+
+  after(:all) do
+    @organization.members.destroy_all
+    @organization.destroy
+    @user.destroy
   end
 
   before(:each) do

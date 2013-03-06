@@ -4,7 +4,7 @@ describe MembersController do
   render_views
 
   let!(:user) { User.make! }
-  let!(:organization) { user.create_organization Organization.new(name: 'RedCross') }
+  let!(:organization) { user.create_organization Organization.make }
 
   before(:each) do
     sign_in user
