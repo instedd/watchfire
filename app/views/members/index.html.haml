@@ -1,10 +1,9 @@
 - if organization_owner?
   %div Invite a user to this organization:
 
-  %form{:action => invite_members_path, :method => 'post'}
-    = token_tag
-    %input.w30{:type => 'text', :name => 'email', placeholder: 'i.e. john@doe.com'}
-    %input{:type => 'submit', :value => 'Invite'}
+  = form_tag invite_members_path do
+    = text_field_tag 'email', '', class: 'w30', placeholder: 'i.e. john@doe.com'
+    = submit_tag 'Invite'
 
   %br
   %br
