@@ -1,0 +1,55 @@
+- content_for :head do
+  = javascript_include_tag 'http://maps.googleapis.com/maps/api/js?sensor=false'
+  = javascript_include_tag 'knockout-2.2.1.debug'
+  = javascript_include_tag 'mission_koshow'
+  = javascript_include_tag 'jquery.timeago'
+#mission_title
+  %h1(data-bind="text: title")
+%br
+.left
+  #left_panel.box.w60
+    #form_container
+      = label_tag :name, "Event name"
+      %br
+      = text_field_tag :name, '', :class => "ux-text w58", :size => "2", :placeholder => "Enter the name of this event, e.g. 'Fire on Rangeland' ", :readonly => mission.running? || mission.finished?, 'data-bind' => 'value: name'
+      %br
+      %br
+      = label_tag "Recruitees"
+      %div(data-bind="foreach: mission_skills")
+        .mission_skill
+          %span.ux-nstep.w06
+            = text_field_tag :req_vols, '', :size => "2", :class => 'req_vols', :readonly => mission.running? || mission.finished?, "data-min" => "1", "data-bind" => "value: req_vols"
+          %span
+            = select_tag :skill_id, options_from_collection_for_select(skills.actives, :id, :pluralized), :include_blank => 'Volunteers', :disabled => !mission.created?, :class => "ux-dropdown w30 skill_id", 'data-bind' => 'value: skill_id'
+          -# unless mission.mission_skills.size == 1 || !mission.created?
+          %button.cremove(data-bind="click: $root.removeMissionSkill, visible: $root.mission_skills().length > 1")
+          %br
+      -# unless !mission.created? || mission.new_record? || skills.actives.empty?
+      %button.cadd(data-bind="click: addMissionSkill") Recruit for another skill
+      %br
+      = label_tag :reason, "Description"
+      %br
+      = text_area_tag :reason, '', :class => "w54 ux-wajbar", :maxlength => "200", :size => "", :readonly => mission.running? || mission.finished?, :placeholder => "Enter the description, e.g 'a single house fire'", 'data-bind' => 'value: reason'
+      %br
+      = label_tag :address
+      %br
+      %span.small-text Enter an address to find recruits nearby or you can right-click in the map to indicate a location
+      = text_field_tag :address, '', :class => "w42 ux-text", :readonly => !mission.created?, :placeholder => "Enter the address, e.g '1710 Trousdale, Burlingame'"
+      %button#search_address.fsearch{:disabled => !mission.created?, :class => !mission.created? ? "disabled" : "" } Find recruitees nearby
+      %br
+      %br
+    #map_canvas.map
+    .hidden
+      #info_window_content
+    #mission_distance
+.right
+  .box.w30
+    #mission_status.sbox.grey.StateDisplay
+    #mission_message.event-desc
+    %hr.shadow
+    #scroll
+.clear
+%br
+%hr
+#mission_actions.bottom-actions
+

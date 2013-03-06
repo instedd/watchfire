@@ -26,6 +26,9 @@ Watchfire::Application.routes.draw do
 			post 'check_all'
 			post 'uncheck_all'
     end
+    collection do
+      get 'konew'
+    end
   end
 
   resources :volunteers do

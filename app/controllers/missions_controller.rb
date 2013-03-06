@@ -1,6 +1,6 @@
 class MissionsController < ApplicationController
 	before_filter :authenticate_user!
-  before_filter :add_missions_breadcrumb, :only => [:index, :new, :show]
+  before_filter :add_missions_breadcrumb, :only => [:index, :new, :konew, :show]
 
   def show
     add_breadcrumb mission.name, mission_path(mission)
@@ -16,6 +16,14 @@ class MissionsController < ApplicationController
 
 		render 'show'
 	end
+
+	def konew
+	  add_breadcrumb "New", :new_mission_path
+    mission.add_mission_skill
+
+		render 'koshow'
+	end
+
 
 	def index
 	end
