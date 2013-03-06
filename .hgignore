@@ -8,4 +8,4 @@ coverage.data
 config/settings.yml
 .DS_Store
 *.swp
-
+.sass-cache/

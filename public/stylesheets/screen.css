@@ -1,122 +1,122 @@
-/* line 7, ../../app/stylesheets/screen.sass */
+/* line 7, ../../app/assets/stylesheets/screen.sass */
 form {
   display: inline;
 }
 
-/* line 10, ../../app/stylesheets/screen.sass */
+/* line 10, ../../app/assets/stylesheets/screen.sass */
 #map_canvas {
   width: 600px;
   height: 278px;
 }
 
-/* line 14, ../../app/stylesheets/screen.sass */
+/* line 14, ../../app/assets/stylesheets/screen.sass */
 #map_canvas_volunteer {
   width: 580px;
   height: 278px;
 }
 
-/* line 18, ../../app/stylesheets/screen.sass */
+/* line 18, ../../app/assets/stylesheets/screen.sass */
 .hidden {
   display: none;
 }
 
-/* line 21, ../../app/stylesheets/screen.sass */
+/* line 21, ../../app/assets/stylesheets/screen.sass */
 .volunteer_name {
   font-size: 18px;
 }
 
-/* line 24, ../../app/stylesheets/screen.sass */
+/* line 24, ../../app/assets/stylesheets/screen.sass */
 .volunteer_address {
   font-size: 14px;
   color: #555555;
 }
 
-/* line 28, ../../app/stylesheets/screen.sass */
+/* line 28, ../../app/assets/stylesheets/screen.sass */
 .volunteer_skills {
   font-size: 13px;
   color: #555555;
 }
 
-/* line 32, ../../app/stylesheets/screen.sass */
+/* line 32, ../../app/assets/stylesheets/screen.sass */
 .volunteer_phones {
   font-size: 12px;
   margin-top: 10px;
 }
 
-/* line 36, ../../app/stylesheets/screen.sass */
+/* line 36, ../../app/assets/stylesheets/screen.sass */
 .missions_empty {
   padding-top: 55px;
   height: 200px;
   text-align: center;
 }
-/* line 40, ../../app/stylesheets/screen.sass */
+/* line 40, ../../app/assets/stylesheets/screen.sass */
 .missions_empty .info {
   margin-top: 10px;
   color: #555555;
   font-style: italic;
 }
-/* line 43, ../../app/stylesheets/screen.sass */
+/* line 43, ../../app/assets/stylesheets/screen.sass */
 .missions_empty .add {
   color: #1f86c8;
 }
 
-/* line 47, ../../app/stylesheets/screen.sass */
+/* line 47, ../../app/assets/stylesheets/screen.sass */
 .Availability td {
   cursor: pointer;
 }
 
-/* line 51, ../../app/stylesheets/screen.sass */
+/* line 51, ../../app/assets/stylesheets/screen.sass */
 #pending_list td, #pending_list span {
   cursor: pointer;
 }
 
-/* line 54, ../../app/stylesheets/screen.sass */
+/* line 54, ../../app/assets/stylesheets/screen.sass */
 tr.link {
   cursor: pointer;
 }
 
-/* line 57, ../../app/stylesheets/screen.sass */
+/* line 57, ../../app/assets/stylesheets/screen.sass */
 #version {
   display: inline;
   margin-left: 50px;
 }
 
-/* line 62, ../../app/stylesheets/screen.sass */
+/* line 62, ../../app/assets/stylesheets/screen.sass */
 #mission_form textarea {
   width: 594px !important;
 }
 
-/* line 66, ../../app/stylesheets/screen.sass */
+/* line 66, ../../app/assets/stylesheets/screen.sass */
 .import_error_description {
   background: none;
   text-align: left;
 }
-/* line 69, ../../app/stylesheets/screen.sass */
+/* line 69, ../../app/assets/stylesheets/screen.sass */
 .import_error_description > * {
   margin-left: 0px;
 }
 
-/* line 73, ../../app/stylesheets/screen.sass */
+/* line 73, ../../app/assets/stylesheets/screen.sass */
 #volunteers_search {
   position: relative;
   top: 5px;
 }
 
-/* line 79, ../../app/stylesheets/screen.sass */
+/* line 79, ../../app/assets/stylesheets/screen.sass */
 #check_candidates a {
   color: #ff6600;
 }
-/* line 81, ../../app/stylesheets/screen.sass */
+/* line 81, ../../app/assets/stylesheets/screen.sass */
 #check_candidates a:hover {
   color: #ff8533;
 }
 
-/* line 85, ../../app/stylesheets/screen.sass */
+/* line 85, ../../app/assets/stylesheets/screen.sass */
 .gphone, .gmobile {
   color: #999999;
 }
 
-/* line 89, ../../app/stylesheets/screen.sass */
+/* line 89, ../../app/assets/stylesheets/screen.sass */
 span.time {
   display: inline-block;
   margin-top: 5px;
