@@ -174,7 +174,7 @@ class Mission < ActiveRecord::Base
       end
     end
 
-		update_status :finished if finished
+		finish if finished
 		self.save! if self.changed?
   end
 

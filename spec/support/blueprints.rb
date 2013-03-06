@@ -1,7 +1,7 @@
 require 'machinist/active_record'
 
 Organization.blueprint do
-  name { _name }
+  name { "#{_name}-#{sn}" }
 end
 
 Volunteer.blueprint do
