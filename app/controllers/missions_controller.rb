@@ -3,10 +3,13 @@ class MissionsController < ApplicationController
   before_filter :add_missions_breadcrumb, :only => [:index, :new, :konew, :show]
 
   def show
-    add_breadcrumb mission.name, mission_path(mission)
     respond_to do |format|
-      format.html
-      format.json { render :json => mission }
+      format.html {
+        add_breadcrumb mission.name, mission_path(mission)
+      }
+      format.json { 
+        render :json => mission.as_json(:include => :mission_skills) 
+      }
     end
   end
 
@@ -24,7 +27,6 @@ class MissionsController < ApplicationController
 		render 'koshow'
 	end
 
-
 	def index
 	end
 
@@ -32,11 +34,17 @@ class MissionsController < ApplicationController
 		mission.user = current_user
     mission.organization = current_organization
 		mission.check_and_save
-		render 'update.js'
+    respond_to do |format|
+      format.html { render 'update.js' }
+      format.json {
+        render :json => mission.as_json(:include => :mission_skills).merge({
+          :errors => mission.errors
+        })
+      }
+    end
 	end
 
 	def update
-		mission.attributes = params[:mission]
 		if mission.check_for_volunteers?
 			mission.check_and_save
 		else
@@ -44,6 +52,14 @@ class MissionsController < ApplicationController
 		end
     if params[:new_skill] && mission.valid?
       mission.add_mission_skill
+    end
+    respond_to do |format|
+      format.html
+      format.json {
+        render :json => mission.as_json(:include => :mission_skills).merge({
+          :errors => mission.errors
+        })
+      }
     end
 	end
 
