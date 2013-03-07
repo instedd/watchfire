@@ -1,3 +1,10 @@
+GIT
+  remote: https://github.com/jeffp/enumerated_attribute.git
+  revision: 84221b872f7f71152994b212520c833742a263e3
+  specs:
+    enumerated_attribute (0.3.0.beta1)
+      meta_programming (>= 0.2.1)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -69,8 +76,6 @@ GEM
       devise (>= 2.1.2)
       railties (~> 3.0)
     diff-lcs (1.2.1)
-    enumerated_attribute (0.2.16)
-      meta_programming (>= 0.2.1)
     erubis (2.7.0)
     execjs (1.4.0)
       multi_json (~> 1.0)
@@ -213,7 +218,7 @@ DEPENDENCIES
   delayed_job
   devise (~> 2.2.3)
   devise_invitable
-  enumerated_attribute
+  enumerated_attribute!
   faker
   foreman
   geokit-rails3
