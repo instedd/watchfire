@@ -32,6 +32,7 @@ group :development, :test do
   gem 'faker'
   gem 'mocha', :require => false
   gem 'timecop'
+  gem 'debugger'
   gem 'pry'
   gem 'pry-debugger'
   gem 'capistrano'

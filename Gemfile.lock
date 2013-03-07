@@ -48,14 +48,14 @@ GEM
     coffee-script-source (1.6.1)
     columnize (0.3.6)
     daemons (1.1.4)
-    debugger (1.2.4)
+    debugger (1.4.0)
       columnize (>= 0.3.1)
       debugger-linecache (~> 1.1.1)
-      debugger-ruby_core_source (~> 1.1.7)
+      debugger-ruby_core_source (~> 1.2.0)
     debugger-linecache (1.1.2)
       debugger-ruby_core_source (>= 1.1.1)
-    debugger-ruby_core_source (1.1.8)
-    decent_exposure (2.0.1)
+    debugger-ruby_core_source (1.2.0)
+    decent_exposure (2.1.0)
     delayed_job (2.1.4)
       activesupport (~> 3.0)
       daemons
@@ -131,8 +131,8 @@ GEM
       coderay (~> 1.0.5)
       method_source (~> 0.8)
       slop (~> 3.4)
-    pry-debugger (0.2.1)
-      debugger (~> 1.2.0)
+    pry-debugger (0.2.2)
+      debugger (~> 1.3)
       pry (~> 0.9.10)
     rack (1.4.5)
     rack-cache (1.2)
@@ -208,6 +208,7 @@ DEPENDENCIES
   breadcrumbs_on_rails
   capistrano
   coffee-rails (~> 3.2.1)
+  debugger
   decent_exposure
   delayed_job
   devise (~> 2.2.3)
