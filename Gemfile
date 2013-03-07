@@ -3,7 +3,7 @@ source 'http://rubygems.org'
 gem 'rails', '3.2.12'
 
 gem 'mysql2'
-gem 'jquery-rails'
+gem 'jquery-rails', '~> 2.1.4'
 gem 'haml-rails'
 gem 'enumerated_attribute', :git => "https://github.com/jeffp/enumerated_attribute.git"
 gem 'delayed_job'
