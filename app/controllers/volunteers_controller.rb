@@ -86,7 +86,7 @@ class VolunteersController < ApplicationController
     volunteer.destroy
 
     respond_to do |format|
-      format.html { redirect_to(back) }
+      format.html { redirect_to volunteers_url }
       format.xml  { head :ok }
     end
   end
