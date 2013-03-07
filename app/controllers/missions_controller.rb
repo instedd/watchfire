@@ -24,7 +24,7 @@ class MissionsController < ApplicationController
 		mission.user = current_user
     mission.organization = current_organization
 		mission.check_and_save
-		render 'update.js'
+		render 'update', :formats => :js
 	end
 
 	def update
