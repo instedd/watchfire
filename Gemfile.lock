@@ -59,14 +59,14 @@ GEM
     delayed_job (2.1.4)
       activesupport (~> 3.0)
       daemons
-    devise (2.0.4)
+    devise (2.1.2)
       bcrypt-ruby (~> 3.0)
-      orm_adapter (~> 0.0.3)
+      orm_adapter (~> 0.1)
       railties (~> 3.1)
-      warden (~> 1.1.1)
-    devise_invitable (1.0.3)
+      warden (~> 1.2.1)
+    devise_invitable (1.1.6)
       actionmailer (~> 3.0)
-      devise (>= 2.0.0)
+      devise (>= 2.1.2)
       railties (~> 3.0)
     diff-lcs (1.2.1)
     enumerated_attribute (0.2.16)
@@ -125,7 +125,7 @@ GEM
     nuntium_api (0.19)
       json
       rest-client
-    orm_adapter (0.0.7)
+    orm_adapter (0.4.0)
     polyglot (0.3.3)
     pry (0.9.12)
       coderay (~> 1.0.5)
@@ -198,7 +198,7 @@ GEM
     verboice (0.6.0)
       json
       rest-client
-    warden (1.1.1)
+    warden (1.2.1)
       rack (>= 1.0)
 
 PLATFORMS
@@ -210,7 +210,7 @@ DEPENDENCIES
   coffee-rails (~> 3.2.1)
   decent_exposure
   delayed_job
-  devise (= 2.0.4)
+  devise (= 2.1.2)
   devise_invitable
   enumerated_attribute
   faker
