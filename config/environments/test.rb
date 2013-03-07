@@ -36,11 +36,6 @@ Watchfire::Application.configure do
   # Print deprecation notices to the stderr
   config.active_support.deprecation = :stderr
 
-  # http://blog.angelbob.com/posts/315-RSpec-not-clearing-database-when-you-use-machinist---published-rails
-  Machinist.configure do |config|
-    config.cache_objects = false
-  end
-
   # Configure static asset server for tests with Cache-Control for performance
   config.serve_static_assets = true
   config.static_cache_control = "public, max-age=3600"
