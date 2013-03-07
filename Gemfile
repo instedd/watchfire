@@ -26,7 +26,7 @@ gem 'rest-client'
 gem 'nuntium_api', '~> 0.19', :require => 'nuntium'
 gem 'geokit-rails3'
 gem 'verboice', "0.6.0"
-gem 'devise', "1.4.9"
+gem 'devise', "2.0.4"
 gem 'devise_invitable'
 gem 'breadcrumbs_on_rails'
 gem 'kaminari'
