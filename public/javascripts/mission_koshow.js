@@ -137,6 +137,16 @@ function MissionViewModel() {
         }
         return result;
     });
+    self.visibleSkills = ko.computed(function() {
+        var req_skills = self.mission_skills();
+        var result = 0;
+        for (var i = 0; i < req_skills.length; i++) {
+            if (!req_skills[i]._destroy()) {
+                result++;
+            }
+        }
+        return result;
+    });
 
     // behavior methods
     self.addMissionSkill = function() {
@@ -200,6 +210,7 @@ function MissionViewModel() {
         });
     }
 
+    // save & load code
     var submitData = ko.computed(function() {
         var location = self.latlng();
         var mission_skills = $.map(self.mission_skills(), function(ms) {
@@ -295,41 +306,69 @@ function MissionViewModel() {
     }
 
     function mergeMissionSkills(to_merge) {
-        var current = self.mission_skills();
-        var i = 0, j = 0;
-        while (i < current.length) {
-            var cur_skill = current[i];
-            if (cur_skill._destroy()) {
-                // don't destroy if the item is in to_merge
-                if (j < to_merge.length && to_merge[j].id == cur_skill.id()) {
-                    // just skip it... it should be destroyed in the next submit
-                    i++;
-                    j++;
-                } else {
-                    current.splice(i, 1);
-                    self.mission_skills.splice(i, 1);
-                }
-            } else {
-                i++;
-                if (j < to_merge.length) {
-                    var new_skill = to_merge[j];
-                    j++;
-                    if (cur_skill.id() == null) {
-                        cur_skill.id(new_skill.id);
-                    } else if (cur_skill.id() != new_skill.id) {
-                        cur_skill.id(new_skill.id);
-                        cur_skill.req_vols(new_skill.req_vols);
-                        cur_skill.skill_id(new_skill.skill_id);
-                    }
+        // for each to_merge skill:
+        // - exists in current
+        //   - current it destroyed -> skip, should be deleted next submit
+        //   - current is not destroyed -> should update, but won't since that would overwrite some user changes
+        // - doesn't exists in current 
+        //   - there is some current with null id -> match up and save the id to current
+        //   - no current with null id -> add to current with _destroy: true so it gets deleted in the next submit
+        //
+        // for the remaining current skills:
+        // - if it has null id -> leave it there so next submit it gets added
+        // - it has a non null id -> delete it from the collection, the skill doesn't actually exist
+        //
+
+        function buildArrayIndex(ary) {
+            var result = {};
+            for (var i = 0; i < ary.length; i++) {
+                var id = ary[i].id();
+                if (id != null) {
+                    result[id] = i;
                 }
             }
+            return result;
         }
-        while (j < to_merge.length) {
-            var req_skill = to_merge[j];
-            var new_skill = new MissionSkill(req_skill.id, 
-                    req_skill.req_vols, req_skill.skill_id);
+
+        var current = self.mission_skills();
+        var currentIndex = buildArrayIndex(current);
+        var skillsNotInCurrent = [];
+
+        for (var i = 0; i < to_merge.length; i++) {
+            var new_skill = to_merge[i];
+            if (new_skill.id in currentIndex) {
+                delete currentIndex[new_skill.id];
+            } else {
+                skillsNotInCurrent.push(new_skill);
+            }
+        }
+
+        i = 0;
+        while (i < current.length) {
+            var cur_skill = current[i];
+            if (cur_skill.id() == null) {
+                // this is an added skill
+                // if possible match it up with skillsNotInCurrent, otherwise just leave it there so it gets added on next submit
+                var new_skill = skillsNotInCurrent.shift();
+                if (new_skill) {
+                    cur_skill.id(new_skill.id);
+                }
+                i++;
+            } else if (cur_skill.id() in currentIndex) {
+                // current skill is still in the index, so it wasn't present in to_merge
+                // it's no longer valid and should be deleted
+                self.mission_skills.splice(i, 1);
+            } else {
+                // current skill was already in to_merge, so skip
+                i++;
+            }
+        }
+        for (i = 0; i < skillsNotInCurrent.length; i++) {
+            // remaining skills from to_merge should be added with _destroy so they get deleted next submit
+            new_skill = skillsNotInCurrent[i];
+            new_skill = new MissionSkill(new_skill.id, new_skill.req_vols, new_skill.skill_id);
+            new_skill._destroy(true);
             self.mission_skills.push(new_skill);
-            j++;
         }
     }
 }

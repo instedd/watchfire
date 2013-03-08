@@ -6,7 +6,6 @@
 #mission_title
   %h1(data-bind="text: title")
   %h2
-    %span(data-bind="text: status")
     %span(data-bind="text: id")
     %span(data-bind="visible: dirty") DIRTY
     %span(data-bind="visible: saving") SAVING
@@ -24,14 +23,13 @@
       = label_tag "Recruitees"
       %div(data-bind="foreach: mission_skills")
         .mission_skill(data-bind="visible: !_destroy()")
-          %span(data-bind="text: id")
           %span.ux-nstep.w06
             = text_field_tag :req_vols, '', :size => "2", :class => 'req_vols', 
               "data-min" => "1", "data-bind" => "value: req_vols"
           %span
             = select_tag :skill_id, nil, :class => "ux-dropdown w30 skill_id", 
               'data-bind' => "options: $root.activeSkills, optionsText: 'pluralized', optionsValue: 'id', value: skill_id"
-          %button.cremove(data-bind="click: $root.removeMissionSkill, visible: $root.mission_skills().length > 1")
+          %button.cremove(data-bind="click: $root.removeMissionSkill, visible: $root.visibleSkills() > 1")
           %br
       %button.cadd(data-bind="click: addMissionSkill, visible: activeSkills.length > 1") Recruit for another skill
       %br
