@@ -31,17 +31,17 @@ var onMissionPage = function() {
 			mapTypeId: google.maps.MapTypeId.ROADMAP
 		};
 
-		event_disabled_image = new google.maps.MarkerImage('/images/icons/event_disabled.png',
+		event_disabled_image = new google.maps.MarkerImage("<%= asset_path('icons/event_disabled.png') %>",
 			new google.maps.Size(30, 27),
 			new google.maps.Point(0,0),
 			new google.maps.Point(15, 13));
 
-		event_image = new google.maps.MarkerImage('/images/icons/event.png',
+		event_image = new google.maps.MarkerImage("<%= asset_path('icons/event.png') %>",
 			new google.maps.Size(30, 27),
 			new google.maps.Point(0,0),
 			new google.maps.Point(15, 13));
 
-		volunteer_image = new google.maps.MarkerImage('/images/icons/volunteer.png',
+		volunteer_image = new google.maps.MarkerImage("<%= asset_path('icons/volunteer.png') %>",
 			new google.maps.Size(24, 24),
 			new google.maps.Point(0,0),
 			new google.maps.Point(12, 12));
