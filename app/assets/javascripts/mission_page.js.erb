@@ -129,7 +129,7 @@ var onMissionPage = function() {
 		return value.match(/^[1-9]\d*$/);
 	}
 
-	function init_events() {
+	window.init_events = function() {
 		$('.req_vols, #mission_reason, .skill_id, #mission_name').change(function(){
 			checkSubmit();
 		});
@@ -185,7 +185,7 @@ var onMissionPage = function() {
 		});
 	}
 
-	function init_candidate_events() {
+	window.init_candidate_events = function() {
 		$('.candidate td').click(function(){
 			open_volunteer_info_window($(this).parents('.candidate'));
 		});
@@ -201,7 +201,7 @@ var onMissionPage = function() {
 		$("span.time").timeago();
 	}
 
-	function setMapCircle(distance, avoidFit) {
+	window.setMapCircle = function(distance, avoidFit) {
 	  distance = distance || 0;
 	  if (circleHasMap) {
 	    outerCircle.setOptions({
@@ -278,7 +278,7 @@ var onMissionPage = function() {
 		});
 	}
 
-	function refresh_disable_inputs() {
+	window.refresh_disable_inputs = function() {
 		start_refreshing();
 		$('#left_panel').addClass('grey');
 		remove_map_events();
@@ -286,14 +286,14 @@ var onMissionPage = function() {
 		mission_marker.setIcon(event_image);
 	}
 
-	function stop_refresh_enable_inputs() {
+	window.stop_refresh_enable_inputs = function() {
 		stop_refreshing();
 		$('#left_panel').removeClass('grey');
 		stop_circle_beat();
 		mission_marker.setIcon(event_disabled_image);
 	}
 
-	function check_running() {
+	window.check_running = function() {
 		var status = $('#status_field').val();
 		if (status == 'running') {
 			refresh_disable_inputs();
@@ -345,12 +345,12 @@ var onMissionPage = function() {
 		volunteer_marker.setVisible(false);
 	}
 
-	function close_info_window() {
+	window.close_info_window = function() {
 		info_window.close();
 		volunteer_marker.setVisible(false);
 	}
 
-	function hide_or_show_candidate_lists() {
+	window.hide_or_show_candidate_lists = function() {
 		$('.listitem').each(function(){
 			var container = $(this);
 			var hide = $('.count', container).html() != '0';
