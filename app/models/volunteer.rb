@@ -9,6 +9,7 @@ class Volunteer < ActiveRecord::Base
   has_many :skills_volunteers
   has_many :skills, :through => :skills_volunteers
 
+  has_many :channels
   has_many :sms_channels, :dependent => :destroy, :inverse_of => :volunteer
   has_many :voice_channels, :dependent => :destroy, :inverse_of => :volunteer
 
