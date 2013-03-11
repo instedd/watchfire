@@ -25,6 +25,7 @@ Watchfire::Application.routes.draw do
 			get 'export'
 			post 'check_all'
 			post 'uncheck_all'
+      get 'koshow'
     end
     collection do
       get 'konew'

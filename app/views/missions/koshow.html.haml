@@ -4,11 +4,10 @@
   = javascript_include_tag 'mission_koshow'
   = javascript_include_tag 'jquery.timeago'
 #mission_title
-  %h1(data-bind="text: title")
-  %h2
-    %span(data-bind="text: id")
-    %span(data-bind="visible: dirty") DIRTY
-    %span(data-bind="visible: saving") SAVING
+  %h1
+    %span(data-bind="text: title")
+    %img(src="/images/icons/synchronizing.gif" data-bind="visible: saving" style="float:right")
+    %img(src="/images/icons/dirty.png" data-bind="visible: !saving() && dirty()" style="float:right")
 %br
 .left
   #left_panel.box.w60
@@ -53,16 +52,87 @@
     .hidden
       #info_window_content
     #mission_distance
+      .box.plain(data-bind="visible: farthest, css: isRunning() ? 'green' : 'grey'")
+        %span#distance_label(data-bind="text: distanceLegend")
+        %span#distance_value(data-bind="text: farthest")
+        mi
+        
 .right
   .box.w30
     #mission_status.sbox.grey.StateDisplay
+      #progress.values
+        .L
+          %span(data-bind="html: confirmedText")
+        .R
+          %span(data-bind="html: neededText")
+        %br{:clear => "all"}
+        .M
+          %span.Fill(data-bind="style: progressStyle")
+      %button(data-bind="text: buttonText, css: buttonCss, click: startStop")
     #mission_message.event-desc
+      %p
+        = check_box_tag :use_custom_text, 1, false,
+          "data-bind" => "checked: use_custom_text"
+        = label_tag :use_custom_text, 'Use Custom Text'
+      %p We will call and text the recruitees below with the following message:
+      %div(data-bind="visible: use_custom_text()")
+        = text_area_tag :custom_text, '', :rows => 3, :style => 'width:98%'
+        %p.tgrey
+          %em.left= I18n.t :voice_message_options
+          .clear
+      %div(data-bind="visible: !use_custom_text()")
+        %p.tgrey
+          %em Hello, this is the Red Cross. There is
+          %span(data-bind="text: reason_with_default")
+          %em located at
+          %span(data-bind="text: address_with_default")
+          %em . Can you respond?
+          %em= I18n.t :voice_message_options
     %hr.shadow
     #scroll
+      %div(data-bind="if: candidates().length > 0")
+        %div(data-bind="if: confirmed_candidates().length > 0")
+          #confirmed_list.listitem.ux-collapsible(data-bind="template: { name: 'candidates_list', data: { title: 'Confirmed', candidates: confirmed_candidates } }")
+          %hr
+        %div(data-bind="if: pending_candidates().length > 0")
+          #check_candidates.right(data-bind="visible: !isRunningOrFinished()")
+            %a.link_to_form{:href => "#"} Enable All
+            |
+            %a.link_to_form{:href => "#"} Pause All
+          #pending_list.listitem.ux-collapsible(data-bind="template: { name: 'candidates_list', data: { title: 'Pending', candidates: pending_candidates } }")
+          %hr
+        %div(data-bind="if: unresponsive_candidates().length > 0")
+          #unresponsive_list.listitem.ux-collapsible(data-bind="template: { name: 'candidates_list', data: { title: 'No answer', candidates: unresponsive_candidates } }")
+          %hr
+        %div(data-bind="if: denied_candidates().length > 0")
+          #denied_list.listitem.ux-collapsible(data-bind="template: { name: 'candidates_list', data: { title: 'Denied', candidates: denied_candidates } }")
+      %div(data-bind="if: candidates().length == 0")
+        %p.empty-event(data-bind="if: id") No volunteers with the selected skills are available near the event location
+        %p.empty-event(data-bind="ifnot: id") This event has not been initialized, complete all the fields and start recruiting
 .clear
 %br
 %hr
-#mission_actions.bottom-actions
+#mission_actions.bottom-actions(data-bind="visible: id()")
+  %button.fimport Download recruiting results
+  %button.fdelete{'data-confirm' => 'Are you sure?'} Delete this event
+
+%script(type="text/html" id="candidates_list")
+  %span
+    %a.arrow
+      %span.count(data-bind="text: candidates().length")
+      %span(data-bind="text: title")
+  %table.ux-content
+    %tbody(data-bind="foreach: candidates")
+      %tr.candidate(data-bind="css: active ? '' : 'blocked'")
+        %td
+          %span.avoid(data-bind="visible: isPending && !$root.isFinished()")
+            = check_box_tag :active, 1, false, { 'data-bind' => 'checked: active' }
+          %span(data-bind="text: volunteer.name")
+        %td
+          %div(data-bind="html: volunteer.sms_numbers")
+          %br
+          %div(data-bind="html: volunteer.voice_numbers")
+          %span(data-bind="text: answered_at, visible: answered_at")
 
 :javascript
   var DefaultSkill = { id: null, name: 'Volunteer', pluralized: 'Volunteers' };
@@ -71,5 +141,5 @@
       :name => s.name, 
       :pluralized => s.pluralized } 
   }.to_json};
-
+  var MissionData = #{mission_json.to_json};
 

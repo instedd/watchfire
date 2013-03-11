@@ -1,6 +1,35 @@
 class MissionsController < ApplicationController
 	before_filter :authenticate_user!
-  before_filter :add_missions_breadcrumb, :only => [:index, :new, :konew, :show]
+  before_filter :add_missions_breadcrumb, :only => [:index, :new, :konew, :show, :koshow]
+
+  expose(:mission_json) {
+    mission.as_json(:include => {
+      :mission_skills => { 
+        :only => [:id, :req_vols, :skill_id, :priority] 
+      },
+      :candidates => { 
+        :only => [:active, :answered_at, :answered_from, :status, :voice_status],
+        :include => {
+          :volunteer => { 
+            :only => [:name, :lat, :lng],
+            :include => {
+              :sms_channels => { :only => :address },
+              :voice_channels => { :only => :address }
+            }
+          }
+        }
+      }
+    }).
+    deep_merge({ 
+      :errors => mission.errors, 
+      "mission" => { 
+        "farthest" => mission.farthest,
+        "total_req_vols" => mission.total_req_vols,
+        "confirmed_count" => mission.candidate_count(:confirmed),
+        "progress" => mission.progress
+      }
+    })
+  }
 
   def show
     respond_to do |format|
@@ -8,7 +37,7 @@ class MissionsController < ApplicationController
         add_breadcrumb mission.name, mission_path(mission)
       }
       format.json { 
-        render :json => mission.as_json(:include => :mission_skills) 
+        render :json => mission_json
       }
     end
   end
@@ -27,6 +56,10 @@ class MissionsController < ApplicationController
 		render 'koshow'
 	end
 
+  def koshow
+    add_breadcrumb mission.name, mission_path(mission)
+  end
+
 	def index
 	end
 
@@ -37,9 +70,7 @@ class MissionsController < ApplicationController
     respond_to do |format|
       format.html { render 'update.js' }
       format.json {
-        render :json => mission.as_json(:include => :mission_skills).merge({
-          :errors => mission.errors
-        })
+        render :json => mission_json
       }
     end
 	end
@@ -56,9 +87,7 @@ class MissionsController < ApplicationController
     respond_to do |format|
       format.html
       format.json {
-        render :json => mission.as_json(:include => :mission_skills).merge({
-          :errors => mission.errors
-        })
+        render :json => mission_json
       }
     end
 	end
