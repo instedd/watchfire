@@ -19,7 +19,7 @@
 	%br
 	= f.label :address
 	%br
-	%span.small-text Enter an address to find recruits nearby or you can right-click in the map to indicate a location
+	%span.small-text Enter an address to find recruitees nearby or you can right-click in the map to indicate a location
 	= f.text_field :address, :class => "w42 ux-text", :readonly => !mission.created?, :placeholder => "Enter the address, e.g '1710 Trousdale, Burlingame'"
 	%button#search_address.fsearch{:disabled => !mission.created?, :class => !mission.created? ? "disabled" : "" } Find recruitees nearby
 	%br
