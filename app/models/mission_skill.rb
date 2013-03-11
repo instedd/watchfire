@@ -16,8 +16,8 @@ class MissionSkill < ActiveRecord::Base
 
 	  unless skill.nil?
 	    volunteers_for_mission = volunteers_for_mission.
-        joins('INNER JOIN skills_volunteers sv ON sv.volunteer_id = volunteers.id').
-        where('sv.skill_id' => self.skill_id)
+        joins(:skills_volunteers).
+        where('skills_volunteers.skill_id = ?', self.skill_id)
 	  end
 
     volunteers_for_mission = volunteers_for_mission.select { |v|

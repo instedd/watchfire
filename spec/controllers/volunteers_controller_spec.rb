@@ -151,7 +151,7 @@ describe VolunteersController do
     it "redirects to the volunteers list" do
       volunteer = Volunteer.create! valid_attributes
       delete :destroy, :id => volunteer.id.to_s
-      response.should redirect_to('/') # referer
+      response.should redirect_to(volunteers_url)
     end
   end
 

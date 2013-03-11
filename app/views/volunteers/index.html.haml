@@ -1,6 +1,3 @@
-- content_for :head do
-  = javascript_include_tag 'volunteer_index'
-
 .left
   %h1
     = "#{@volunteers_count} volunteers"
@@ -64,3 +61,6 @@
           %a.tgrey.ux-collapse-trigger{:href => "#"} Cancel
           %button.grey Next
         %br.clear
+
+:javascript
+  onVolunteerIndex();

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130301171333) do
+ActiveRecord::Schema.define(:version => 20130308141110) do
 
   create_table "calls", :force => true do |t|
     t.string   "session_id"
@@ -56,6 +56,7 @@ ActiveRecord::Schema.define(:version => 20130301171333) do
     t.string   "locked_by"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "queue"
   end
 
   add_index "delayed_jobs", ["priority", "run_at"], :name => "delayed_jobs_priority"
@@ -152,6 +153,7 @@ ActiveRecord::Schema.define(:version => 20130301171333) do
     t.datetime "confirmation_sent_at"
     t.string   "unconfirmed_email"
     t.integer  "current_organization_id"
+    t.datetime "invitation_accepted_at"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true

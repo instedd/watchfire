@@ -1,6 +1,3 @@
-- content_for :head do
-  = javascript_include_tag 'volunteers_import'
-
 %h1
   = pluralize @view_model.size, 'Volunteer'
   - if @view_model.has_conflicts?
@@ -39,3 +36,6 @@
   .bottom-actions
     %button.white Import
     = link_to 'Cancel', volunteers_path, :class => "tgrey"
+
+:javascript
+  onVolunteerImport();

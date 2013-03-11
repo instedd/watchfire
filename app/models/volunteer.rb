@@ -6,11 +6,13 @@ class Volunteer < ActiveRecord::Base
 
   has_many :candidates, :dependent => :destroy
   has_many :missions, :through => :candidates
-  has_and_belongs_to_many :skills
+  has_many :skills_volunteers
+  has_many :skills, :through => :skills_volunteers
 
+  has_many :channels
   has_many :sms_channels, :dependent => :destroy, :inverse_of => :volunteer
   has_many :voice_channels, :dependent => :destroy, :inverse_of => :volunteer
-  
+
   serialize :shifts
 
   validates_presence_of :organization
@@ -50,11 +52,11 @@ class Volunteer < ActiveRecord::Base
   def voice_numbers
     self.voice_channels.reject{|c|c.marked_for_destruction?}.map(&:address).join(', ')
   end
-  
+
   def voice_numbers=(numbers)
     self.voice_channels = numbers.split(',').map{|number| VoiceChannel.new(:address => number.strip)}
   end
-  
+
   def has_voice_number?(number)
     voice_channels.reject { |c| c.marked_for_destruction? }.map(&:address).include?(number)
   end
@@ -62,7 +64,7 @@ class Volunteer < ActiveRecord::Base
   def sms_numbers
     self.sms_channels.reject{|c|c.marked_for_destruction?}.map(&:address).join(', ')
   end
-  
+
   def sms_numbers=(numbers)
     self.sms_channels = numbers.split(',').map{|number| SmsChannel.new(:address => number.strip)}
   end

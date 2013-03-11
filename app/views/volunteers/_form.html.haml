@@ -1,5 +1,4 @@
 - content_for :head do
-  = javascript_include_tag "volunteer_page"
   = javascript_include_tag 'http://maps.googleapis.com/maps/api/js?sensor=false'
 
 .left.w60
@@ -58,7 +57,10 @@
 %ul.hidden#volunteer_voice_numbers
   - volunteer.voice_channels.each do |voice_channel|
     %li= voice_channel.address
-    
+
 %ul.hidden#volunteer_sms_numbers
   - volunteer.sms_channels.each do |sms_channel|
     %li= sms_channel.address
+
+:javascript
+  onVolunteerPage();

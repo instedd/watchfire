@@ -3,12 +3,12 @@
   %head
     %title Watchfire
     = stylesheet_link_tag platform_url('theme/stylesheets/theme.css')
-    = stylesheet_link_tag :all
-    = javascript_include_tag :defaults
+    = stylesheet_link_tag 'application'
+    = javascript_include_tag 'application'
     = javascript_include_tag platform_url('theme/javascripts/theme.js')
     = csrf_meta_tag
     = yield :head
-    %link{:href => "/images/icons/favicon.png", :rel => "icon", :type => "image/png"}
+    %link{:href => asset_path('icons/favicon.png'), :rel => "icon", :type => "image/png"}
   %body.smallfooter
     = flash_message
     #wrapper

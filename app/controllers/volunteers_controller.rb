@@ -15,7 +15,7 @@ class VolunteersController < ApplicationController
 
     @volunteers = volunteers.order("#{@order} #{@direction}")
     if Channel::ADDRESS_REGEX.match(@q)
-      @volunteers = @volunteers.joins(:sms_channels, :voice_channels).where("channels.address like ?", "%#{@q}%")
+      @volunteers = @volunteers.joins(:channels).where("channels.address like ?", "%#{@q}%")
     else
       @volunteers = @volunteers.where("name like ? OR address like ?", "%#{@q}%", "%#{@q}%") unless @q.blank?
     end
@@ -86,7 +86,7 @@ class VolunteersController < ApplicationController
     volunteer.destroy
 
     respond_to do |format|
-      format.html { redirect_to(back) }
+      format.html { redirect_to volunteers_url }
       format.xml  { head :ok }
     end
   end

@@ -1,7 +1,5 @@
 - content_for :head do
 	= javascript_include_tag 'http://maps.googleapis.com/maps/api/js?sensor=false'
-	= javascript_include_tag 'mission_page'
-	= javascript_include_tag 'jquery.timeago'
 #mission_title
 	= render :partial => 'title', :locals => { :mission => mission }
 %br
@@ -28,3 +26,6 @@
 %hr
 #mission_actions.bottom-actions
 	= render :partial => 'actions', :locals => {:mission => mission}
+
+:javascript
+	onMissionPage();

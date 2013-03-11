@@ -92,5 +92,5 @@ def _lng
 end
 
 def _guid
-  (1..10).map{ ('a'..'z').to_a.rand }.join
+  (1..10).map{ ('a'..'z').to_a.sample }.join
 end

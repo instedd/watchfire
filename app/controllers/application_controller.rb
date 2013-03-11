@@ -1,6 +1,4 @@
 class ApplicationController < ActionController::Base
-  include BreadcrumbsOnRails::ControllerMixin
-
   protect_from_forgery
 
   expose(:current_organization) { current_user.try(:current_organization) }
