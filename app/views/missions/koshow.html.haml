@@ -10,13 +10,13 @@
     %img(src="/images/icons/dirty.png" data-bind="visible: !saving() && dirty()" style="float:right")
 %br
 .left
-  #left_panel.box.w60
+  #left_panel.box.w60(data-bind="css: { grey: isRunningOrFinished }")
     #form_container
       = label_tag :name, "Event name"
       %br
       = text_field_tag :name, '', :class => "ux-text w58", :size => "2", 
         :placeholder => "Enter the name of this event, e.g. 'Fire on Rangeland'", 
-        'data-bind' => 'value: name'
+        'data-bind' => 'value: name, attr: { readonly: isRunningOrFinished }'
       %br
       %br
       = label_tag "Recruitees"
@@ -24,28 +24,30 @@
         .mission_skill(data-bind="visible: !_destroy()")
           %span.ux-nstep.w06
             = text_field_tag :req_vols, '', :size => "2", :class => 'req_vols', 
-              "data-min" => "1", "data-bind" => "value: req_vols"
+              "data-min" => "1", 
+              "data-bind" => "value: req_vols, attr: { readonly: $root.isRunningOrFinished() }"
           %span
             = select_tag :skill_id, nil, :class => "ux-dropdown w30 skill_id", 
-              'data-bind' => "options: $root.activeSkills, optionsText: 'pluralized', optionsValue: 'id', value: skill_id"
-          %button.cremove(data-bind="click: $root.removeMissionSkill, visible: $root.visibleSkills() > 1")
+              'data-bind' => "options: $root.activeSkills, optionsText: 'pluralized', optionsValue: 'id', value: skill_id, enable: $root.isCreated()"
+          %button.cremove(data-bind="click: $root.removeMissionSkill, visible: $root.visibleSkills() > 1 && $root.isCreated()")
           %br
-      %button.cadd(data-bind="click: addMissionSkill, visible: activeSkills.length > 1") Recruit for another skill
+      %div(data-bind="if: activeSkills.length > 1 && isCreated()")
+        %button.cadd(data-bind="click: addMissionSkill") Recruit for another skill
       %br
       = label_tag :reason, "Description"
       %br
       = text_area_tag :reason, '', :class => "w54 ux-wajbar", 
         :maxlength => "200", :size => "", 
         :placeholder => "Enter the description, e.g 'a single house fire'", 
-        'data-bind' => 'value: reason'
+        'data-bind' => 'value: reason, attr: { readonly: isRunningOrFinished }'
       %br
       = label_tag :address
       %br
       %span.small-text Enter an address to find recruits nearby or you can right-click in the map to indicate a location
       = text_field_tag :address, '', :class => "w42 ux-text", 
         :placeholder => "Enter the address, e.g '1710 Trousdale, Burlingame'", 
-        "data-bind" => "value: address"
-      %button#search_address.fsearch(data-bind="click: findRecruitees") Find recruitees nearby
+        "data-bind" => "value: address, attr: { readonly: !isCreated() }"
+      %button#search_address.fsearch(data-bind="click: findRecruitees, enable: isCreated, css: isCreated() ? '' : 'disabled'") Find recruitees nearby
       %br
       %br
     #map_canvas.map
@@ -72,11 +74,12 @@
     #mission_message.event-desc
       %p
         = check_box_tag :use_custom_text, 1, false,
-          "data-bind" => "checked: use_custom_text"
+          "data-bind" => "checked: use_custom_text, enable: !isRunningOrFinished()"
         = label_tag :use_custom_text, 'Use Custom Text'
       %p We will call and text the recruitees below with the following message:
       %div(data-bind="visible: use_custom_text()")
-        = text_area_tag :custom_text, '', :rows => 3, :style => 'width:98%'
+        = text_area_tag :custom_text, '', :rows => 3, :style => 'width:98%',
+          "data-bind" => "value: custom_text, enable: !isRunningOrFinished()"
         %p.tgrey
           %em.left= I18n.t :voice_message_options
           .clear
@@ -96,9 +99,9 @@
           %hr
         %div(data-bind="if: pending_candidates().length > 0")
           #check_candidates.right(data-bind="visible: !isRunningOrFinished()")
-            %a.link_to_form{:href => "#"} Enable All
+            %a.link_to_form(data-bind="click: enableAll") Enable All
             |
-            %a.link_to_form{:href => "#"} Pause All
+            %a.link_to_form(data-bind="click: disableAll") Pause All
           #pending_list.listitem.ux-collapsible(data-bind="template: { name: 'candidates_list', data: { title: 'Pending', candidates: pending_candidates } }")
           %hr
         %div(data-bind="if: unresponsive_candidates().length > 0")
@@ -107,8 +110,8 @@
         %div(data-bind="if: denied_candidates().length > 0")
           #denied_list.listitem.ux-collapsible(data-bind="template: { name: 'candidates_list', data: { title: 'Denied', candidates: denied_candidates } }")
       %div(data-bind="if: candidates().length == 0")
-        %p.empty-event(data-bind="if: id") No volunteers with the selected skills are available near the event location
-        %p.empty-event(data-bind="ifnot: id") This event has not been initialized, complete all the fields and start recruiting
+        %p.empty-event(data-bind="visible: id()") No volunteers with the selected skills are available near the event location
+        %p.empty-event(data-bind="visible: !id()") This event has not been initialized, complete all the fields and start recruiting
 .clear
 %br
 %hr

@@ -121,3 +121,8 @@ span.time {
   display: inline-block;
   margin-top: 5px;
 }
+
+/* line 93, ../../app/stylesheets/screen.sass */
+.link_to_form {
+  cursor: default;
+}

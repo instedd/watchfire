@@ -29,9 +29,6 @@ function MapView(element) {
         )
     };
 
-    var circle = new google.maps.Circle({ clickable: false });
-    var outerCircle = new google.maps.Circle({ clickable: false });
-
     var map = new google.maps.Map(element, myOptions);
     map.setCenter(initialLocation);
 
@@ -39,27 +36,29 @@ function MapView(element) {
         map: map,
         icon: icons.eventDisabled
     });
+    var circle = new google.maps.Circle({ map: map, clickable: false });
+    var outerCircle = new google.maps.Circle({ map: map, clickable: false });
 
-    var info_window = new google.maps.InfoWindow({
+    var infoWindow = new google.maps.InfoWindow({
         content: document.getElementById("info_window_content")
     });
+    google.maps.event.addListener(infoWindow, 'closeclick', onInfoWindowClosed);
+    function onInfoWindowClosed() {
+        volunteerMarker.setVisible(false);
+    }
     var volunteerMarker = new google.maps.Marker({
         map: map,
         icon: icons.volunteer
     });
 
-    init_map_events();
-
     var listener;
-
-    function init_map_events() {
+    self.enableMarkerDrag = function() {
         missionMarker.setDraggable(true);
-        listener = google.maps.event.addListener(map, 'rightclick', changeMarker); //removing right click also disables zoom, so I store it to be removed later
+        //removing right click also disables zoom, so I store it to be removed later
+        listener = google.maps.event.addListener(map, 'rightclick', changeMarker);
         google.maps.event.addListener(missionMarker, 'dragend', changeMarker);
-        //google.maps.event.addListener(info_window, 'closeclick', on_info_window_closed);
     }
-
-    function remove_map_events() {
+    self.disableMarkerDrag = function() {
         google.maps.event.removeListener(listener);
         google.maps.event.clearInstanceListeners(missionMarker);
         missionMarker.setDraggable(false);
@@ -83,6 +82,28 @@ function MapView(element) {
         }
     };
 
+    self.setRecruitRadius = function(radius, dontFitBounds) {
+      radius = radius || 0;
+      outerCircle.setOptions({
+          center: missionMarker.getPosition(),
+          radius: radius * 1609,
+          clickable: false,
+          strokeWeight: 4,
+          strokeColor: '#FFFFFF',
+          fillOpacity: outerCircle.fillOpacity != null ? outerCircle.fillOpacity : 0.5,
+          fillColor: '#000000'
+      });
+
+      circle.setOptions({
+          center: missionMarker.getPosition(),
+          radius: radius * 1609,
+          strokeWeight: 2,
+          strokeColor: circle.strokeColor != null ? circle.strokeColor : '#999999',
+          fillOpacity: 0.0
+      });
+
+      if (!dontFitBounds && radius > 0) map.fitBounds(circle.getBounds());
+    };
 }
 
 function MissionSkill(id, req_vols, skill_id) {
@@ -122,6 +143,7 @@ function MissionViewModel() {
     $.each(self.activeSkills, function(index, skill) {
         self.skillMap[skill.id] = skill;
     });
+    self.urls = {};
 
     // mission hidden fields
     self.id = ko.observable();
@@ -195,6 +217,9 @@ function MissionViewModel() {
         } else {
             return 'Will call volunteers up to';
         }
+    });
+    self.isCreated = ko.computed(function() {
+        return self.status() == 'created';
     });
     self.isRunning = ko.computed(function() {
         return self.status() == 'running';
@@ -272,24 +297,58 @@ function MissionViewModel() {
 
     // behavior methods
     self.addMissionSkill = function() {
-        self.mission_skills.push(new MissionSkill(null, 1, null));
+        if (self.status() == 'created') {
+            self.mission_skills.push(new MissionSkill(null, 1, null));
+        }
     };
     self.removeMissionSkill = function(skill) {
-        if (skill.id) {
-            skill._destroy(true);
-        } else {
-            self.mission_skills.remove(skill);
+        if (self.status() == 'created') {
+            if (skill.id) {
+                skill._destroy(true);
+            } else {
+                self.mission_skills.remove(skill);
+            }
         }
     };
     self.findRecruitees = function() {
+        // nothing to do here for now
+        // just unfocusing the address field will trigger a data submit
     };
     self.startStop = function() {
-        // FIXME
+        if (!self.id()) {
+            return;
+        }
+        switch (self.status()) {
+            case 'created':
+            case 'paused':
+                immediateSubmit('start');
+                break;
+            case 'running':
+                immediateSubmit('stop');
+                break;
+            default:
+                // create a form to the open action adding the CSRF parameter
+                var form = $("<form method='post' action='" + self.urls.open + "'>").
+                    appendTo(document.body);
+                var csrfName = $('meta[name=csrf-param]').attr('content');
+                var csrfValue = $('meta[name=csrf-value]').attr('content');
+                $('<input type="hidden">').attr('name', csrfName).
+                    attr('value', csrfValue).appendTo(form);
+                form.submit();
+                break;
+        }
+    };
+    self.enableAll = function() {
+        immediateSubmit('enableAll');
+    };
+    self.disableAll = function() {
+        immediateSubmit('disableAll');
     };
 
     // initialization
     self.addMissionSkill();
     self.mapView = new MapView();
+    self.mapView.enableMarkerDrag();
 
     self.latlng.subscribe(function(newValue) {
         self.mapView.setMissionLocation(newValue);
@@ -298,6 +357,18 @@ function MissionViewModel() {
         self.latlng(location);
         reverseGeocode(location);
     };
+    self.isRunningOrFinished.subscribe(function(runningOrFinished) {
+        if (runningOrFinished) {
+            $('.TaskBox').addClass('readonly');
+            self.mapView.disableMarkerDrag();
+        } else {
+            $('.TaskBox').removeClass('readonly');
+            self.mapView.enableMarkerDrag();
+        }
+    });
+    self.farthest.subscribe(function(newRadius) {
+        self.mapView.setRecruitRadius(newRadius);
+    });
 
     // geocoding and reverse-geocoding
     var geocoder = new google.maps.Geocoder();
@@ -340,22 +411,19 @@ function MissionViewModel() {
         });
 
         return {
-            name: self.name(),
-            address: self.address(),
-            reason: self.reason(),
+            name: self.name() || '',
+            address: self.address() || '',
+            reason: self.reason() || '',
+            use_custom_text: self.use_custom_text(),
+            custom_text: self.custom_text() || '',
             lat: location && location.lat(),
             lng: location && location.lng(),
             mission_skills_attributes: mission_skills
         };
-    }).extend({ throttle: 1 });
-
-    self.submitData = submitData;
+    });
 
     self.dirty = ko.observable(false);
     self.saving = ko.observable(false);
-
-    var submitTimeout = null;
-    var pendingSubmit = null;
 
     var merging = false;
     // this function is to stop data submits if we have to change the model
@@ -363,71 +431,125 @@ function MissionViewModel() {
     // new submit
     function startForcedUpdate() {
         merging = true;
-        // reset flag in a timeout because submitData is throttled
+        // reset flag in a timeout because submitData maybe throttled
         setTimeout(function() { merging = false; }, 20);
     }
     submitData.subscribe(function(newValue) {
-        // enqueue a data submit unless we're in the middle of a forced model
-        // change
+        // enqueue a data submit unless we're in the middle of a programmatic
+        // model change
         if (merging) {
             return;
         }
-        delayedSubmit(newValue);
-    });
-    
-    function delayedSubmit(data) {
         self.dirty(true);
+        delayedSubmit();
+    });
+
+    var submitTimeout = null;
+    var pendingSubmit = null;
+    var submitQueue = [];
+
+    function submitPrologue(type) {
+        type = type || 'update';
+        if (submitQueue[0] != type && (!pendingSubmit || 
+                pendingSubmit.submitType != type)) {
+            submitQueue.unshift(type);
+        }
         if (submitTimeout) {
             clearTimeout(submitTimeout);
-        }
-        submitTimeout = setTimeout(function() {
-            submitIfNotPending(data);
-        }, 500);
-    }
-    function submitIfNotPending(data) {
-        if (pendingSubmit) {
-            submitTimeout = setTimeout(function() {
-                submitIfNotPending(submitData())
-            }, 100);
-            return;
-        } else {
             submitTimeout = null;
         }
+    }
+    function delayedSubmit(type) {
+        submitPrologue(type);
+        submitTimeout = setTimeout(function() {
+            submitTimeout = null;
+            checkQueue();
+        }, 500);
+    }
+    function immediateSubmit(type) {
+        submitPrologue(type);
+        checkQueue();
+    }
+    function checkQueue() {
+        // avoid double submit; ie. wait for the previous submit to
+        // complete
+        if (submitQueue.length > 0 && pendingSubmit == null) {
+            runQueue();
+        }
+    }
+    function runQueue() {
         // really submit
-        console.log('Submitting data');
-        self.saving(true);
-        pendingSubmit = $.ajax({
-            type: self.id() ? 'PUT' : 'POST',
+        var type = submitQueue.pop();
+        var options = {};
+
+        switch (type) {
+            case 'update':
+                options = {
+                    type: self.id() ? 'PUT' : 'POST',
+                    url: self.urls.update,
+                    data: { mission: submitData() }
+                };
+                break;
+            case 'start':
+                options = { type: 'POST', url: self.urls.start };
+                break;
+            case 'stop':
+                options = { type: 'POST', url: self.urls.stop };
+                break;
+            case 'enableAll':
+                options = { type: 'POST', url: self.urls.check_all };
+                break;
+            case 'disableAll':
+                options = { type: 'POST', url: self.urls.uncheck_all };
+                break;
+        }
+        options = $.extend({
             dataType: 'json',
-            url: '/missions' + (self.id() ? '/' + self.id() : ''),
-            data: {
-                mission: data 
-            }, 
-            success: function(result) {
-                console.log('Submit successful');
+            data: {},
+            success: onSubmitSuccess,
+            error: onSubmitError
+        }, options);
 
-                // update local values
-                startForcedUpdate();
-                self.id(result.mission.id);
-                self.status(result.mission.status);
-                mergeMissionSkills(result.mission.mission_skills);
-                loadCandidates(result.mission.candidates);
+        if (!options.url) {
+            console.warn('No URL to submit');
+            checkQueue();
+            return;
+        }
+        console.log('Submitting data: ' + type);
+        self.saving(true);
+        pendingSubmit = $.ajax(options);
+        if (type != 'update') {
+            pendingSubmit.submitType = type;
+        }
+    }
 
-                // process error messages
-                self.errors(result.errors);
+    function onSubmitSuccess(result) {
+        console.log('Submit successful');
 
-                pendingSubmit = null;
-                if (!submitTimeout) {
-                    self.dirty(false);
-                }
-                self.saving(false);
-            },
-            error: function(xhr, options, err) {
-                console.error('Mission submit error', err);
-                pendingSubmit = null;
-                self.saving(false);
-            }
-        });
+        // update local values
+        startForcedUpdate();
+        mergeData(result.mission);
+        mergeMissionSkills(result.mission.mission_skills);
+        loadCandidates(result.mission.candidates);
+        self.urls = result.urls;
+
+        // process error messages
+        self.errors(result.errors);
+
+        if (submitQueue.length == 0) {
+            self.dirty(false);
+        }
+
+        pendingSubmit = null;
+        self.saving(false);
+        checkQueue();
+    }
+    function onSubmitError(xhr, options, err) {
+        console.error('Mission submit error', err);
+
+        pendingSubmit = null;
+        self.saving(false);
+        checkQueue();
     }
 
     function mergeMissionSkills(to_merge) {
@@ -504,6 +626,13 @@ function MissionViewModel() {
         }
     }
 
+    function mergeData(data) {
+        self.id(data.id);
+        self.status(data.status);
+        self.farthest(data.farthest);
+        self.confirmed_count(data.confirmed_count);
+    }
+
     function loadCandidates(candidates) {
         candidates.sort(function(a, b) {
             return a.volunteer.name.localeCompare(b.volunteer.name);
@@ -523,8 +652,8 @@ function MissionViewModel() {
     self.loadMissionData = function(data) {
         startForcedUpdate();
 
-        self.id(data.id);
-        self.status(data.status);
+        // this fields are only updated when loading the mission data for the
+        // first time
         self.name(data.name);
         self.reason(data.reason);
         self.address(data.address, true);
@@ -533,9 +662,11 @@ function MissionViewModel() {
         } else {
             self.latlng(new google.maps.LatLng(data.lat, data.lng));
         }
-        self.farthest(data.farthest);
-        self.confirmed_count(data.confirmed_count);
+        self.use_custom_text(data.use_custom_text);
+        self.custom_text(data.custom_text);
 
+        // initially set the mission skills; will partially update the info on
+        // ajax updates
         self.mission_skills.removeAll();
         for (var i = 0; i < data.mission_skills.length; i++) {
             var req_skill = data.mission_skills[i];
@@ -543,6 +674,7 @@ function MissionViewModel() {
                         req_skill.req_vols, req_skill.skill_id));
         }
 
+        mergeData(data);
         loadCandidates(data.candidates);
     };
 
@@ -553,6 +685,7 @@ $(function() {
     model = new MissionViewModel();
     if (MissionData && MissionData.mission) {
         model.loadMissionData(MissionData.mission);
+        model.urls = MissionData.urls;
     }
     ko.applyBindings(model);
 });

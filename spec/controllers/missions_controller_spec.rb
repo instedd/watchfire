@@ -108,9 +108,11 @@ describe MissionsController do
     end
 
     it "updates attributes" do
-      controller.stubs(:mission => @mission)
-      @mission.expects(:attributes=).with({'foo' => 'bar'})
-      put :update, :id => @mission.id.to_s, :mission => {'foo' => 'bar'}, :format => 'js'
+      pending "this is done automatically by decent_exposure" do
+        controller.stubs(:mission => @mission)
+        @mission.expects(:attributes=).with({'foo' => 'bar'})
+        put :update, :id => @mission.id.to_s, :mission => {'foo' => 'bar'}, :format => 'js'
+      end
     end
   end
 

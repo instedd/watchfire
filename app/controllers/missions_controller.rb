@@ -27,6 +27,16 @@ class MissionsController < ApplicationController
         "total_req_vols" => mission.total_req_vols,
         "confirmed_count" => mission.candidate_count(:confirmed),
         "progress" => mission.progress
+      },
+      :urls => mission.new_record? ? {
+        :update => missions_path 
+      } : {
+        :update => mission_path(mission),
+        :start => start_mission_path(mission),
+        :stop => stop_mission_path(mission),
+        :open => open_mission_path(mission),
+        :check_all => check_all_mission_path(mission),
+        :uncheck_all => uncheck_all_mission_path(mission)
       }
     })
   }
@@ -85,7 +95,7 @@ class MissionsController < ApplicationController
       mission.add_mission_skill
     end
     respond_to do |format|
-      format.html
+      format.js
       format.json {
         render :json => mission_json
       }
@@ -94,10 +104,22 @@ class MissionsController < ApplicationController
 
 	def start
 	  mission.call_volunteers
+    respond_to do |format|
+      format.js
+      format.json {
+        render :json => mission_json
+      }
+    end
 	end
 
 	def stop
 	  mission.stop_calling_volunteers
+    respond_to do |format|
+      format.js
+      format.json {
+        render :json => mission_json
+      }
+    end
   end
 
   def refresh
@@ -133,12 +155,26 @@ class MissionsController < ApplicationController
 
   def check_all
     mission.enable_all_pending
-    render 'update_pending'
+    respond_to do |format|
+      format.js {
+        render 'update_pending'
+      }
+      format.json {
+        render :json => mission_json
+      }
+    end
   end
 
   def uncheck_all
     mission.disable_all_pending
-    render 'update_pending'
+    respond_to do |format|
+      format.js {
+        render 'update_pending'
+      }
+      format.json {
+        render :json => mission_json
+      }
+    end
   end
 
 	private
