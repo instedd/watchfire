@@ -8,10 +8,10 @@ class MissionsController < ApplicationController
         :only => [:id, :req_vols, :skill_id, :priority] 
       },
       :candidates => { 
-        :only => [:active, :answered_at, :answered_from, :status, :voice_status],
+        :only => [:id, :active, :answered_at, :answered_from, :status, :voice_status],
         :include => {
           :volunteer => { 
-            :only => [:name, :lat, :lng],
+            :only => [:id, :name, :lat, :lng],
             :include => {
               :sms_channels => { :only => :address },
               :voice_channels => { :only => :address }
@@ -36,7 +36,8 @@ class MissionsController < ApplicationController
         :stop => stop_mission_path(mission),
         :open => open_mission_path(mission),
         :check_all => check_all_mission_path(mission),
-        :uncheck_all => uncheck_all_mission_path(mission)
+        :uncheck_all => uncheck_all_mission_path(mission),
+        :export => export_mission_path(mission)
       }
     })
   }

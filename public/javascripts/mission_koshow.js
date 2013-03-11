@@ -1,3 +1,44 @@
+ko.extenders.trim = function(target) {
+    var result = ko.computed({
+        read: target,
+        write: function(newValue) {
+            var current = target(),
+                valueToWrite = (newValue || '').trim();
+            if (valueToWrite !== current) {
+                target(valueToWrite);
+            } else if (newValue !== current) {
+                target.notifySubscribers(valueToWrite);
+            }
+        }
+    });
+    result(target());
+    return result;
+};
+
+ko.extenders.integer = function(target, minValue, maxValue) {
+    var result = ko.computed({
+        read: target,
+        write: function(newValue) {
+            var current = target(), valueToWrite;
+            valueToWrite = parseInt(+newValue);
+            if (minValue != null) {
+                valueToWrite = Math.max(minValue, valueToWrite);
+            }
+            if (maxValue != null) {
+                valueToWrite = Math.min(maxValue, valueToWrite);
+            }
+            if (valueToWrite !== current) {
+                target(valueToWrite);
+            } else if (newValue !== current) {
+                target.notifySubscribers(valueToWrite);
+            }
+        }
+    });
+    result(target());
+    return result;
+};
+
+
 function MapView(element) {
     var self = this;
     element = element || document.getElementById('map_canvas');
@@ -50,6 +91,12 @@ function MapView(element) {
         map: map,
         icon: icons.volunteer
     });
+    self.showVolunteerData = function(location, data) {
+        infoWindow.setContent(data);
+        volunteerMarker.setPosition(location);
+        volunteerMarker.setVisible(true);
+        infoWindow.open(map, volunteerMarker);
+    };
 
     var listener;
     self.enableMarkerDrag = function() {
@@ -83,38 +130,62 @@ function MapView(element) {
     };
 
     self.setRecruitRadius = function(radius, dontFitBounds) {
-      radius = radius || 0;
-      outerCircle.setOptions({
-          center: missionMarker.getPosition(),
-          radius: radius * 1609,
-          clickable: false,
-          strokeWeight: 4,
-          strokeColor: '#FFFFFF',
-          fillOpacity: outerCircle.fillOpacity != null ? outerCircle.fillOpacity : 0.5,
-          fillColor: '#000000'
-      });
+        radius = radius || 0;
+        outerCircle.setOptions({
+            center: missionMarker.getPosition(),
+            radius: radius * 1609,
+            clickable: false,
+            strokeWeight: 4,
+            strokeColor: '#FFFFFF',
+            fillOpacity: outerCircle.fillOpacity != null ? outerCircle.fillOpacity : 0.5,
+            fillColor: '#000000'
+        });
 
-      circle.setOptions({
-          center: missionMarker.getPosition(),
-          radius: radius * 1609,
-          strokeWeight: 2,
-          strokeColor: circle.strokeColor != null ? circle.strokeColor : '#999999',
-          fillOpacity: 0.0
-      });
+        circle.setOptions({
+            center: missionMarker.getPosition(),
+            radius: radius * 1609,
+            strokeWeight: 2,
+            strokeColor: circle.strokeColor != null ? circle.strokeColor : '#999999',
+            fillOpacity: 0.0
+        });
 
-      if (!dontFitBounds && radius > 0) map.fitBounds(circle.getBounds());
+        if (!dontFitBounds && radius > 0) map.fitBounds(circle.getBounds());
+    };
+
+    var beatInterval = 500;
+    var beatTimeout = null;
+    var alternance = false;
+    self.startBeating = function() {
+        clearTimeout(beatTimeout);
+
+        function beat() {
+            alternance = !alternance;
+            outerCircle.setOptions({ strokeColor: alternance ? '#999999' : '#ff6600' });
+            beatTimeout = setTimeout(beat, beatInterval);
+        }
+        outerCircle.setOptions({ fillOpacity: 0.3 });
+        missionMarker.setIcon(icons.eventEnabled);
+        beat();
+    };
+    self.stopBeating = function() {
+        outerCircle.setOptions({ fillOpacity: 0.5, strokeColor: '#999999' });
+        missionMarker.setIcon(icons.eventDisabled);
+
+        clearTimeout(beatTimeout);
+        beatTimeout = null;
     };
 }
 
 function MissionSkill(id, req_vols, skill_id) {
     var self = this;
     self.id = ko.observable(id);
-    self.req_vols = ko.observable(req_vols);
+    self.req_vols = ko.observable(req_vols).extend({ integer: 1 });
     self.skill_id = ko.observable(skill_id);
     self._destroy = ko.observable(false);
 }
 
 function CandidateView(data) {
+    // data is a candidate object from the JSON view
     var self = this;
     self._data = data;
     for (var prop in data) {
@@ -122,16 +193,24 @@ function CandidateView(data) {
     }
 
     self.isPending = data.status == 'pending';
-    function buildNumbers(collection, spanClass) {
+    self.active = ko.observable(data.active);
+
+    function buildNumbers(collection, spanClass, disabledClass) {
         var result = [];
+        var active = self.active();
         for (var i = 0; i < collection.length; i++) {
             result.push($('<span>').text(collection[i].address).
-                    addClass(spanClass).wrap('<p>').parent().html());
+                    addClass(active ? spanClass : disabledClass).
+                    wrap('<p>').parent().html());
         }
         return result.join('<br>');
     }
-    self.volunteer.sms_numbers = buildNumbers(data.volunteer.sms_channels, 'mobile');
-    self.volunteer.voice_numbers = buildNumbers(data.volunteer.voice_channels, 'phone');
+    self.volunteer.sms_numbers = ko.computed(function() {
+        return buildNumbers(data.volunteer.sms_channels, 'mobile', 'gmobile');
+    });
+    self.volunteer.voice_numbers = ko.computed(function() {
+        return buildNumbers(data.volunteer.voice_channels, 'phone', 'gphone');
+    });
 }
 
 function MissionViewModel() {
@@ -150,15 +229,15 @@ function MissionViewModel() {
     self.errors = ko.observable({});
 
     // mission editable fields
-    self.name = ko.observable('');
-    self.reason = ko.observable('');
+    self.name = ko.observable('').extend({ trim: true });
+    self.reason = ko.observable('').extend({ trim: true });
     self.mission_skills = ko.observableArray();
     self.latlng = ko.observable(null);
     self.status = ko.observable('created');
     self.farthest = ko.observable(0);
     self.confirmed_count = ko.observable(0);
     self.use_custom_text = ko.observable(false);
-    self.custom_text = ko.observable(null);
+    self.custom_text = ko.observable(null).extend({ trim: true });
 
     self.candidates = ko.observableArray();
     self.confirmed_candidates = ko.observableArray();
@@ -180,11 +259,18 @@ function MissionViewModel() {
     });
 
     // computed fields
+    self.limited_reason = ko.computed(function() {
+        var reason = self.reason();
+        if (reason && reason.length > 200) {
+            reason = reason.substr(0, 197) + '...';
+        }
+        return reason;
+    });
     self.title = ko.computed(function() {
         var result = 'New Event';
         var req_skills = self.mission_skills();
         var name = self.name();
-        var reason = self.reason();
+        var reason = self.limited_reason();
         if (name) {
             result = name;
             req_skills = $.map($.grep(req_skills, function(req_skill) {
@@ -279,7 +365,7 @@ function MissionViewModel() {
         return { 'width': progress + '%' };
     });
     self.reason_with_default = ko.computed(function() {
-        var reason = self.reason();
+        var reason = self.limited_reason();
         if (reason) {
             return reason;
         } else {
@@ -327,14 +413,10 @@ function MissionViewModel() {
                 immediateSubmit('stop');
                 break;
             default:
-                // create a form to the open action adding the CSRF parameter
-                var form = $("<form method='post' action='" + self.urls.open + "'>").
-                    appendTo(document.body);
-                var csrfName = $('meta[name=csrf-param]').attr('content');
-                var csrfValue = $('meta[name=csrf-value]').attr('content');
-                $('<input type="hidden">').attr('name', csrfName).
-                    attr('value', csrfValue).appendTo(form);
-                form.submit();
+                if (self.urls.open) {
+                    var form = createForm('POST', self.urls.open);
+                    form.submit();
+                }
                 break;
         }
     };
@@ -343,6 +425,36 @@ function MissionViewModel() {
     };
     self.disableAll = function() {
         immediateSubmit('disableAll');
+    };
+    self.toggleCandidate = function(candidate) {
+        // FIXME: avoid hard-coding the URL
+        $.ajax({
+            type: 'PUT',
+            url: '/candidates/' + candidate.id,
+            dataType: 'json',
+            data: { candidate: { active: candidate.active() }}
+        });
+        return true;
+    };
+    self.showCandidate = function(candidate) {
+        var volunteer = candidate.volunteer;
+        var location = new google.maps.LatLng(volunteer.lat, volunteer.lng);
+
+        // FIXME: avoid hard-coding the URL
+        $.get('/volunteers/' + volunteer.id, function(data) {
+            self.mapView.showVolunteerData(location, data);
+        });
+    };
+    self.exportData = function() {
+        if (self.urls.export) {
+            window.location.href = self.urls.export;
+        }
+    };
+    self.deleteMission = function() {
+        if (self.id() && confirm('Are you sure?')) {
+            var form = createForm('DELETE', self.urls.update);
+            form.submit();
+        }
     };
 
     // initialization
@@ -360,10 +472,24 @@ function MissionViewModel() {
     self.isRunningOrFinished.subscribe(function(runningOrFinished) {
         if (runningOrFinished) {
             $('.TaskBox').addClass('readonly');
-            self.mapView.disableMarkerDrag();
         } else {
             $('.TaskBox').removeClass('readonly');
+        }
+    });
+    self.isRunning.subscribe(function(running) {
+        if (running) {
+            self.mapView.startBeating();
+            startRefresh();
+        } else {
+            self.mapView.stopBeating();
+            stopRefresh();
+        }
+    });
+    self.isCreated.subscribe(function(created) {
+        if (created) {
             self.mapView.enableMarkerDrag();
+        } else {
+            self.mapView.disableMarkerDrag();
         }
     });
     self.farthest.subscribe(function(newRadius) {
@@ -450,8 +576,12 @@ function MissionViewModel() {
 
     function submitPrologue(type) {
         type = type || 'update';
-        if (submitQueue[0] != type && (!pendingSubmit || 
-                pendingSubmit.submitType != type)) {
+        if (submitQueue[0] != type && (type == 'update' ||
+                !pendingSubmit || pendingSubmit.submitType != type)) {
+            // queue submission if different from the last queued event and
+            // from the current pending one (unless it's an update, which is
+            // allowed since the user might have changed the form data since
+            // last submit)
             submitQueue.unshift(type);
         }
         if (submitTimeout) {
@@ -502,6 +632,9 @@ function MissionViewModel() {
             case 'disableAll':
                 options = { type: 'POST', url: self.urls.uncheck_all };
                 break;
+            case 'refresh':
+                options = { type: 'GET', url: self.urls.update };
+                break;
         }
         options = $.extend({
             dataType: 'json',
@@ -518,9 +651,7 @@ function MissionViewModel() {
         console.log('Submitting data: ' + type);
         self.saving(true);
         pendingSubmit = $.ajax(options);
-        if (type != 'update') {
-            pendingSubmit.submitType = type;
-        }
+        pendingSubmit.submitType = type;
     }
 
     function onSubmitSuccess(result) {
@@ -540,6 +671,9 @@ function MissionViewModel() {
             self.dirty(false);
         }
 
+        if (pendingSubmit.submitType == 'refresh') {
+            queueNextRefresh();
+        }
         pendingSubmit = null;
         self.saving(false);
         checkQueue();
@@ -550,6 +684,24 @@ function MissionViewModel() {
         pendingSubmit = null;
         self.saving(false);
         checkQueue();
+    }
+
+    function createForm(method, target) {
+        // create a form adding the CSRF parameter
+        var form = $("<form>").attr('action', target).appendTo(document.body);
+        method = (method || 'POST').toUpperCase();
+        if (method == 'GET' || method == 'POST') {
+            form.attr('method', method);
+        } else {
+            form.attr('method', 'POST');
+            $('<input type="hidden" name="_method">').attr('value', method).
+                appendTo(form);
+        }
+        var csrfName = $('meta[name=csrf-param]').attr('content');
+        var csrfValue = $('meta[name=csrf-token]').attr('content');
+        $('<input type="hidden">').attr('name', csrfName).
+            attr('value', csrfValue).appendTo(form);
+        return form;
     }
 
     function mergeMissionSkills(to_merge) {
@@ -678,6 +830,28 @@ function MissionViewModel() {
         loadCandidates(data.candidates);
     };
 
+    var refreshing = false;
+    var refreshTimeout = null;
+    var refreshInterval = 5000;
+    function queueNextRefresh() {
+        if (refreshing && !refreshTimeout) {
+            refreshTimeout = setTimeout(function() {
+                refreshTimeout = null;
+                immediateSubmit('refresh');
+            }, refreshInterval);
+        }
+    }
+    function startRefresh() {
+        refreshing = true;
+        clearTimeout(refreshTimeout);
+        refreshTimeout = null;
+        queueNextRefresh();
+    }
+    function stopRefresh() {
+        clearTimeout(refreshTimeout);
+        refreshTimeout = null;
+        refreshing = false;
+    }
 }
 
 var model;

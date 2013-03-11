@@ -43,7 +43,7 @@
       %br
       = label_tag :address
       %br
-      %span.small-text Enter an address to find recruits nearby or you can right-click in the map to indicate a location
+      %span.small-text Enter an address to find recruitees nearby or you can right-click in the map to indicate a location
       = text_field_tag :address, '', :class => "w42 ux-text", 
         :placeholder => "Enter the address, e.g '1710 Trousdale, Burlingame'", 
         "data-bind" => "value: address, attr: { readonly: !isCreated() }"
@@ -116,8 +116,9 @@
 %br
 %hr
 #mission_actions.bottom-actions(data-bind="visible: id()")
-  %button.fimport Download recruiting results
-  %button.fdelete{'data-confirm' => 'Are you sure?'} Delete this event
+  %button.fimport(data-bind="click: exportData") Download recruiting results
+  %button.fdelete(data-bind="click: deleteMission") Delete this event
+
 
 %script(type="text/html" id="candidates_list")
   %span
@@ -126,10 +127,10 @@
       %span(data-bind="text: title")
   %table.ux-content
     %tbody(data-bind="foreach: candidates")
-      %tr.candidate(data-bind="css: active ? '' : 'blocked'")
+      %tr.candidate(data-bind="css: active() ? '' : 'blocked', click: $root.showCandidate")
         %td
           %span.avoid(data-bind="visible: isPending && !$root.isFinished()")
-            = check_box_tag :active, 1, false, { 'data-bind' => 'checked: active' }
+            %input(type="checkbox" data-bind="checked: active, enable: !$root.isRunning(), click: $root.toggleCandidate, clickBubble: false")
           %span(data-bind="text: volunteer.name")
         %td
           %div(data-bind="html: volunteer.sms_numbers")
