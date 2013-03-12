@@ -38,7 +38,7 @@
 
     .bottom-actions
       %button.white Save
-      = link_to 'Cancel', :back, :class => "tgrey"
+      = link_to 'Cancel', volunteers_path, :class => "tgrey"
       - unless volunteer.new_record?
         = link_to volunteer, :confirm => "Are you sure?", :method => :delete do
           %button.fdelete.right Delete this volunteer
