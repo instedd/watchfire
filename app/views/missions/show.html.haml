@@ -22,9 +22,11 @@
 .clear
 %br
 %hr
-#mission_actions.bottom-actions(data-bind="visible: id()")
+.bottom-actions(data-bind="visible: id()")
   %button.fimport(data-bind="click: exportData") Download recruiting results
   %button.fdelete(data-bind="click: deleteMission") Delete this event
+.bottom-actions(data-bind="visible: !id()")
+  = link_to 'Cancel', missions_path, :class => 'tgrey'
 
 
 :javascript
