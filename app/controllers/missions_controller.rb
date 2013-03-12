@@ -54,7 +54,6 @@ class MissionsController < ApplicationController
     respond_to do |format|
       format.html {
         add_breadcrumb mission.name, mission_path(mission)
-        render 'koshow'
       }
       format.json { 
         render :json => mission_json
@@ -66,7 +65,7 @@ class MissionsController < ApplicationController
 	  add_breadcrumb "New", :new_mission_path
     mission.add_mission_skill
 
-		render 'koshow'
+		render 'show'
 	end
 
 	def index
@@ -76,12 +75,7 @@ class MissionsController < ApplicationController
 		mission.user = current_user
     mission.organization = current_organization
 		mission.check_and_save
-    respond_to do |format|
-      format.html { render 'update.js' }
-      format.json {
-        render :json => mission_json
-      }
-    end
+    render :json => mission_json
 	end
 
 	def update
@@ -90,49 +84,27 @@ class MissionsController < ApplicationController
 		else
 			mission.save
 		end
-    respond_to do |format|
-      format.js
-      format.json {
-        render :json => mission_json
-      }
-    end
+    render :json => mission_json
 	end
 
 	def start
 	  mission.call_volunteers
-    respond_to do |format|
-      format.js
-      format.json {
-        render :json => mission_json
-      }
-    end
+    render :json => mission_json
 	end
 
 	def stop
 	  mission.stop_calling_volunteers
-    respond_to do |format|
-      format.js
-      format.json {
-        render :json => mission_json
-      }
-    end
-  end
-
-  def refresh
-    respond_to do |format|
-      format.html { render 'koshow' }
-      format.js
-    end
+    render :json => mission_json
   end
 
   def finish
     mission.finish
-    render 'koshow'
+    render 'show'
   end
 
   def open
     mission.open
-    render 'koshow'
+    render 'show'
   end
 
 	def destroy
@@ -145,32 +117,14 @@ class MissionsController < ApplicationController
 		send_data csv, :type => 'text/csv', :filename => "#{mission.name}_results.csv"
 	end
 
-	def update_message
-	  mission.update_attributes params[:mission]
-  end
-
   def check_all
     mission.enable_all_pending
-    respond_to do |format|
-      format.js {
-        render 'update_pending'
-      }
-      format.json {
-        render :json => mission_json
-      }
-    end
+    render :json => mission_json
   end
 
   def uncheck_all
     mission.disable_all_pending
-    respond_to do |format|
-      format.js {
-        render 'update_pending'
-      }
-      format.json {
-        render :json => mission_json
-      }
-    end
+    render :json => mission_json
   end
 
 	private

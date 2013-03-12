@@ -47,10 +47,6 @@ describe MissionsController do
       post("/missions/1/open").should route_to("missions#open", :id => "1")
     end
     
-    it "routes to #refresh" do
-      get("/missions/1/refresh").should route_to("missions#refresh", :id => "1")
-    end
-    
 		it "routes to #export" do
       get("/missions/1/export").should route_to("missions#export", :id => "1")
     end
