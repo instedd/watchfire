@@ -89,9 +89,7 @@ function MapView(element) {
     });
     var circle = new google.maps.Circle({ map: map, clickable: false });
 
-    var infoWindow = new google.maps.InfoWindow({
-        content: document.getElementById("info_window_content")
-    });
+    var infoWindow = new google.maps.InfoWindow();
     google.maps.event.addListener(infoWindow, 'closeclick', onInfoWindowClosed);
     function onInfoWindowClosed() {
         volunteerMarker.setVisible(false);
@@ -120,7 +118,6 @@ function MapView(element) {
         missionMarker.setDraggable(false);
     }
 
-    // Exported methods
     self.onMarkerChanged = null;
     function changeMarker(event) {
         var location = event.latLng;
@@ -177,7 +174,7 @@ function MapView(element) {
     };
 }
 
-function MissionSkill(id, req_vols, skill_id) {
+function MissionSkillViewModel(id, req_vols, skill_id) {
     var self = this;
     self.id = ko.observable(id);
     self.req_vols = ko.observable(req_vols).extend({ integer: 1 });
@@ -185,10 +182,9 @@ function MissionSkill(id, req_vols, skill_id) {
     self._destroy = ko.observable(false);
 }
 
-function CandidateView(data) {
+function CandidateViewModel(data) {
     // data is a candidate object from the JSON view
     var self = this;
-    self._data = data;
     for (var prop in data) {
         self[prop] = data[prop];
     }
@@ -233,18 +229,19 @@ function MissionViewModel() {
     // mission hidden fields
     self.id = ko.observable();
     self.errors = ko.observable({});
+    self.latlng = ko.observable(null);
+    self.status = ko.observable('created');
+    self.farthest = ko.observable(0);
+    self.confirmed_count = ko.observable(0);
 
     // mission editable fields
     self.name = ko.observable('').extend({ trim: true });
     self.reason = ko.observable('').extend({ trim: true });
     self.mission_skills = ko.observableArray();
-    self.latlng = ko.observable(null);
-    self.status = ko.observable('created');
-    self.farthest = ko.observable(0);
-    self.confirmed_count = ko.observable(0);
     self.use_custom_text = ko.observable(false);
     self.custom_text = ko.observable(null).extend({ trim: true });
 
+    // candidates lists
     self.candidates = ko.observableArray();
     self.confirmed_candidates = ko.observableArray();
     self.pending_candidates = ko.observableArray();
@@ -323,25 +320,26 @@ function MissionViewModel() {
         return self.status() == 'finished';
     });
     self.buttonText = ko.computed(function() {
-        var status = self.status();
-        if (status == 'created') {
-            return 'Start recruiting';
-        } else if (status == 'running') {
-            return 'Pause recruiting';
-        } else if (status == 'paused') {
-            return 'Resume recruiting';
-        } else {
-            return 'Open event';
+        switch (self.status()) {
+            case 'created':
+                return 'Start recruiting';
+            case 'running':
+                return 'Pause recruiting';
+            case 'paused':
+                return 'Resume recruiting';
+            default:
+                return 'Open event';
         }
     });
     self.buttonCss = ko.computed(function() {
-        var status = self.status();
-        if (status == 'created') {
-            return 'orange' + (self.id() ? '' : ' disabled');
-        } else if (status == 'running' || status == 'paused') {
-            return 'white';
-        } else {
-            return 'orange';
+        switch (self.status()) {
+            case 'created':
+                return 'orange' + (self.id() ? '' : ' disabled');
+            case 'running':
+            case 'paused':
+                return 'white';
+            default:
+                return 'orange';
         }
     });
     self.confirmedText = ko.computed(function() {
@@ -371,26 +369,16 @@ function MissionViewModel() {
         return { 'width': progress + '%' };
     });
     self.reason_with_default = ko.computed(function() {
-        var reason = self.limited_reason();
-        if (reason) {
-            return reason;
-        } else {
-            return 'a single house fire';
-        }
+        return self.limited_reason() || 'a single house fire';
     });
     self.address_with_default = ko.computed(function() {
-        var address = self.address();
-        if (address) {
-            return address;
-        } else {
-            return '1710 Trousdale, Burlingame';
-        }
+        return self.address() || '1710 Trousdale, Burlingame';
     });
 
     // behavior methods
     self.addMissionSkill = function() {
         if (self.status() == 'created') {
-            self.mission_skills.push(new MissionSkill(null, 1, null));
+            self.mission_skills.push(new MissionSkillViewModel(null, 1, null));
         }
     };
     self.removeMissionSkill = function(skill) {
@@ -468,6 +456,7 @@ function MissionViewModel() {
     self.mapView = new MapView();
     self.mapView.enableMarkerDrag();
 
+    // event binding with the map view (mostly)
     self.latlng.subscribe(function(newValue) {
         self.mapView.setMissionLocation(newValue);
     });
@@ -662,29 +651,25 @@ function MissionViewModel() {
             checkQueue();
             return;
         }
-        console.log('Submitting data: ' + type);
         self.saving(true);
         pendingSubmit = $.ajax(options);
         pendingSubmit.submitType = type;
     }
 
     function onSubmitSuccess(result) {
-        console.log('Submit successful');
-
-        // update local values
-        startForcedUpdate();
-        mergeData(result.mission);
-        mergeMissionSkills(result.mission.mission_skills);
-        loadCandidates(result.mission.candidates);
-        self.urls = result.urls;
+        // update local model view values
+        updateMissionData(result);
 
         // process error messages
         self.errors(result.errors);
+
+        // update breadcrumb only if the mission is created
         if (result.mission.id) {
             updateBreadCrumb(result.mission.name, result.urls.update);
         }
 
         if (submitQueue.length == 0) {
+            // queue is empty, so no more changes to submit
             self.dirty(false);
         }
 
@@ -704,7 +689,7 @@ function MissionViewModel() {
     }
 
     function createForm(method, target) {
-        // create a form adding the CSRF parameter
+        // create a valid rails form by adding the CSRF parameter
         var form = $("<form>").attr('action', target).appendTo(document.body);
         method = (method || 'POST').toUpperCase();
         if (method == 'GET' || method == 'POST') {
@@ -788,18 +773,11 @@ function MissionViewModel() {
             // remaining skills from to_merge should be added with _destroy so
             // they get deleted next submit
             new_skill = skillsNotInCurrent[i];
-            new_skill = new MissionSkill(new_skill.id, new_skill.req_vols, 
-                    new_skill.skill_id);
+            new_skill = new MissionSkillViewModel(new_skill.id, 
+                    new_skill.req_vols, new_skill.skill_id);
             new_skill._destroy(true);
             self.mission_skills.push(new_skill);
         }
-    }
-
-    function mergeData(data) {
-        self.id(data.id);
-        self.status(data.status);
-        self.farthest(data.farthest);
-        self.confirmed_count(data.confirmed_count);
     }
 
     function loadCandidates(candidates) {
@@ -810,7 +788,7 @@ function MissionViewModel() {
         var lists = { confirmed: [], pending: [], denied: [], unresponsive: [] };
         for (var i = 0; i < candidates.length; i++) {
             var candidate = candidates[i];
-            lists[candidate.status].push(new CandidateView(candidate));
+            lists[candidate.status].push(new CandidateViewModel(candidate));
         }
         self.confirmed_candidates(lists.confirmed);
         self.pending_candidates(lists.pending);
@@ -826,35 +804,55 @@ function MissionViewModel() {
         }
     }
 
-    self.loadMissionData = function(data) {
+    function updateMissionData(data, initialUpdate) {
         startForcedUpdate();
 
-        // this fields are only updated when loading the mission data for the
-        // first time
-        self.name(data.name);
-        self.reason(data.reason);
-        self.address(data.address, true);
-        if (data.lat == null || data.lng == null) {
-            self.latlng(null);
+        var mission = data.mission;
+
+        if (initialUpdate) {
+            // this fields are only updated when loading the mission data for the
+            // first time
+            self.name(mission.name);
+            self.reason(mission.reason);
+            self.address(mission.address, true);
+            if (mission.lat == null || mission.lng == null) {
+                self.latlng(null);
+            } else {
+                self.latlng(new google.maps.LatLng(mission.lat, mission.lng));
+            }
+            self.use_custom_text(mission.use_custom_text);
+            self.custom_text(mission.custom_text);
+
+            // initially set the mission skills; will partially update the info on
+            // ajax updates
+            self.mission_skills.removeAll();
+            for (var i = 0; i < mission.mission_skills.length; i++) {
+                var req_skill = mission.mission_skills[i];
+                self.mission_skills.push(new MissionSkillViewModel(req_skill.id, 
+                            req_skill.req_vols, req_skill.skill_id));
+            }
         } else {
-            self.latlng(new google.maps.LatLng(data.lat, data.lng));
-        }
-        self.use_custom_text(data.use_custom_text);
-        self.custom_text(data.custom_text);
-
-        // initially set the mission skills; will partially update the info on
-        // ajax updates
-        self.mission_skills.removeAll();
-        for (var i = 0; i < data.mission_skills.length; i++) {
-            var req_skill = data.mission_skills[i];
-            self.mission_skills.push(new MissionSkill(req_skill.id, 
-                        req_skill.req_vols, req_skill.skill_id));
+            mergeMissionSkills(mission.mission_skills);
         }
 
-        mergeData(data);
-        loadCandidates(data.candidates);
+        // update the non-user-editable data for the mission
+        self.id(mission.id);
+        self.status(mission.status);
+        self.farthest(mission.farthest);
+        self.confirmed_count(mission.confirmed_count);
+
+        // load the candidates lists
+        loadCandidates(mission.candidates);
+
+        self.urls = data.urls;
+    }
+
+    self.loadMissionData = function(data) {
+        // initial mission data loading
+        updateMissionData(data, true);
     };
 
+    // periodic refresh code
     var refreshing = false;
     var refreshTimeout = null;
     var refreshInterval = 5000;
@@ -883,8 +881,7 @@ var model;
 $(function() {
     model = new MissionViewModel();
     if (MissionData && MissionData.mission) {
-        model.loadMissionData(MissionData.mission);
-        model.urls = MissionData.urls;
+        model.loadMissionData(MissionData);
     }
     ko.applyBindings(model);
 

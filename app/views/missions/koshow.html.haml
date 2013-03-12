@@ -13,49 +13,37 @@
   #left_panel.box.w60(data-bind="css: { grey: isRunningOrFinished }")
     #form_container
       %div(data-bind="css: { field_with_errors: 'name' in errors() }")
-        = label_tag :name, "Event name"
+        %label(for="name") Event name
         %br
-        = text_field_tag :name, '', :class => "ux-text w58", :size => "2", 
-          :placeholder => "Enter the name of this event, e.g. 'Fire on Rangeland'", 
-          'data-bind' => 'value: name, attr: { readonly: isRunningOrFinished }'
+        %input#name.ux-text.w58(placeholder="Enter the name of this event, e.g. 'Fire on Rangeland'" data-bind="value: name, attr: { readonly: isRunningOrFinished }")
         %br
       %br
-      = label_tag "Recruitees"
+      %label Recruitees
       .mission_skills(data-bind="foreach: mission_skills")
         .mission_skill(data-bind="visible: !_destroy()")
           %span.ux-nstep.w06
-            = text_field_tag :req_vols, '', :size => "2", :class => 'req_vols', 
-              "data-min" => "1", 
-              "data-bind" => "value: req_vols, attr: { readonly: $root.isRunningOrFinished() }"
+            %input.req_vols(type="text" size="2" data-min="1" data-bind="value: req_vols, attr: { readonly: $root.isRunningOrFinished() }")
           %span
-            = select_tag :skill_id, nil, :class => "ux-dropdown w30 skill_id", 
-              'data-bind' => "options: $root.activeSkills, optionsText: 'pluralized', optionsValue: 'id', value: skill_id, enable: $root.isCreated()"
+            %select.ux-dropdown.w30.skill_id(data-bind="options: $root.activeSkills, optionsText: 'pluralized', optionsValue: 'id', value: skill_id, enable: $root.isCreated()")
           %button.cremove(data-bind="click: $root.removeMissionSkill, visible: $root.visibleSkills() > 1 && $root.isCreated()")
           %br
       %div(data-bind="if: activeSkills.length > 1 && isCreated()")
         %button.cadd(data-bind="click: addMissionSkill") Recruit for another skill
       %br
       %div(data-bind="css: { field_with_errors: 'reason' in errors() }")
-        = label_tag :reason, "Description"
+        %label(for="reason") Description
         %br
-        = text_area_tag :reason, '', :class => "w54 ux-wajbar", 
-          :maxlength => "200", :size => "", 
-          :placeholder => "Enter the description, e.g 'a single house fire'", 
-          'data-bind' => 'value: reason, attr: { readonly: isRunningOrFinished }'
+        %textarea#reason.w54.ux-wajbar(maxlength="200" size="" placeholder="Enter the description, e.g 'a single house fire'" data-bind="value: reason, attr: { readonly: isRunningOrFinished }")
         %br
       %div(data-bind="css: { field_with_errors: 'lat' in errors() || 'lng' in errors() || 'address' in errors() }")
-        = label_tag :address
+        %label(for="address") Address
         %br
         %span.small-text Enter an address to find recruitees nearby or you can right-click in the map to indicate a location
-        = text_field_tag :address, '', :class => "w42 ux-text", 
-          :placeholder => "Enter the address, e.g '1710 Trousdale, Burlingame'", 
-          "data-bind" => "value: address, attr: { readonly: !isCreated() }"
+        %input#address.w42.ux-text(placeholder="Enter the address, e.g '1710 Trousdale, Burlingame'" data-bind="value: address, attr: { readonly: !isCreated() }")
         %button#search_address.fsearch(data-bind="click: findRecruitees, enable: isCreated, css: isCreated() ? '' : 'disabled'") Find recruitees nearby
         %br
       %br
     #map_canvas.map
-    .hidden
-      #info_window_content
     #mission_distance
       .box.plain(data-bind="visible: farthest, css: isRunning() ? 'green' : 'grey'")
         %span#distance_label(data-bind="text: distanceLegend")
@@ -76,13 +64,11 @@
       %button(data-bind="text: buttonText, css: buttonCss, click: startStop")
     #mission_message.event-desc
       %p
-        = check_box_tag :use_custom_text, 1, false,
-          "data-bind" => "checked: use_custom_text, enable: !isRunningOrFinished()"
-        = label_tag :use_custom_text, 'Use Custom Text'
+        %input#use_custom_text(type="checkbox" data-bind="checked: use_custom_text, enable: !isRunningOrFinished()")
+        %label(for="use_custom_text") Use Custom Text
       %p We will call and text the recruitees below with the following message:
       %div(data-bind="visible: use_custom_text()")
-        = text_area_tag :custom_text, '', :rows => 3, :style => 'width:98%',
-          "data-bind" => "value: custom_text, enable: !isRunningOrFinished()"
+        %textarea(rows="3" style="width:98%" data-bind="value: custom_text, enable: !isRunningOrFinished()")
         %p.tgrey
           %em.left= I18n.t :voice_message_options
           .clear
@@ -91,8 +77,8 @@
           %em Hello, this is the Red Cross. There is
           %span(data-bind="text: reason_with_default")
           %em located at
-          %span(data-bind="text: address_with_default")
-          %em . Can you respond?
+          %span(data-bind="text: address_with_default")<
+          %em> . Can you respond?
           %em= I18n.t :voice_message_options
     %hr.shadow
     #scroll
