@@ -325,4 +325,13 @@ describe Mission do
   	  @mission.disable_all_pending
     end
   end
+
+  describe "add_mission_skill" do
+    it "should add one mission skill to the association" do
+      @mission = Mission.new
+      lambda do
+        @mission.add_mission_skill
+      end.should change(@mission.mission_skills, :size).by(1)
+    end
+  end
 end

@@ -31,7 +31,7 @@ class Mission < ActiveRecord::Base
 
   def add_mission_skill params = {}
     new_priority = (mission_skills.maximum('priority') || 0) + 1
-    mission_skills << mission_skills.build({ :priority => new_priority }.merge(params))
+    mission_skills.build({ :priority => new_priority }.merge(params))
   end
 
   def obtain_volunteers
