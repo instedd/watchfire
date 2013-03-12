@@ -48,12 +48,12 @@ describe Volunteer do
 			@volunteer.attributes = @valid_attributes
 			@volunteer.valid?.should be_true
 		end
-		
+
 		it "should be invalid with no channels" do
 			@volunteer.attributes = @valid_attributes.except(:sms_channels)
 			@volunteer.valid?.should be_false
 		end
-		
+
 		it "should be invalid without name" do
 			@volunteer.attributes = @valid_attributes.except(:name)
 			@volunteer.valid?.should be_false
@@ -67,6 +67,28 @@ describe Volunteer do
 
       skills = Skill.where(organization_id: @volunteer.organization_id)
       skills.map(&:name).sort.should eq(%w(one three two))
+    end
+  end
+
+  describe "channels" do
+    [[:sms_channels, :sms_numbers], [:voice_channels, :voice_numbers]].each do |type|
+      channel = type[0]
+      number = type[1]
+      it "should build #{channel} when adding #{number}" do
+        @volunteer.send("#{number}=".to_sym, '1234,5678')
+        @volunteer.send(channel).should have(2).items
+        @volunteer.send(channel).first.volunteer.should eq(@volunteer)
+        @volunteer.send(channel).first.address.should eq('1234')
+        @volunteer.send(channel).second.volunteer.should eq(@volunteer)
+        @volunteer.send(channel).second.address.should eq('5678')
+      end
+
+      it "should tell error when bad #{number}" do
+        @volunteer.attributes = @valid_attributes.except(:sms_channels, :voice_channels)
+        @volunteer.send("#{number}=".to_sym, 'qwerty')
+        @volunteer.valid?.should be_false
+        @volunteer.should have(1).error_on(channel)
+      end
     end
   end
 end
