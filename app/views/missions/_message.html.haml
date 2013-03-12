@@ -1,0 +1,18 @@
+%p
+  %input#use_custom_text(type="checkbox" data-bind="checked: use_custom_text, enable: !isRunningOrFinished()")
+  %label(for="use_custom_text") Use Custom Text
+%p We will call and text the recruitees below with the following message:
+%div(data-bind="visible: use_custom_text()")
+  %textarea(rows="3" style="width:98%" data-bind="value: custom_text, enable: !isRunningOrFinished()")
+  %p.tgrey
+    %em.left= I18n.t :voice_message_options
+    .clear
+%div(data-bind="visible: !use_custom_text()")
+  %p.tgrey
+    %em Hello, this is the Red Cross. There is
+    %span(data-bind="text: reason_with_default")
+    %em located at
+    %span(data-bind="text: address_with_default")<
+    %em> . Can you respond?
+    %em= I18n.t :voice_message_options
+

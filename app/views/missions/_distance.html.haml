@@ -1,0 +1,5 @@
+.box.plain(data-bind="visible: farthest, css: isRunning() ? 'green' : 'grey'")
+  %span#distance_label(data-bind="text: distanceLegend")
+  %span#distance_value(data-bind="text: farthest")
+  mi
+

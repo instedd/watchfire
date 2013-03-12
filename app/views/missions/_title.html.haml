@@ -1,0 +1,5 @@
+%h1
+  %span(data-bind="text: title")
+  %img(src="/images/icons/synchronizing.gif" data-bind="visible: saving" style="float:right")
+  %img(src="/images/icons/dirty.png" data-bind="visible: !saving() && dirty()" style="float:right")
+

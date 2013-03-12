@@ -1,106 +1,27 @@
 - content_for :head do
   = javascript_include_tag 'http://maps.googleapis.com/maps/api/js?sensor=false'
-  = javascript_include_tag 'knockout-2.2.1.debug'
-  = javascript_include_tag 'mission_koshow'
+  = javascript_include_tag 'knockout-2.2.1'
+  = javascript_include_tag 'mission_page'
   = javascript_include_tag 'jquery.timeago'
 #mission_title
-  %h1
-    %span(data-bind="text: title")
-    %img(src="/images/icons/synchronizing.gif" data-bind="visible: saving" style="float:right")
-    %img(src="/images/icons/dirty.png" data-bind="visible: !saving() && dirty()" style="float:right")
+  = render :partial => 'title'
 %br
 .left
   #left_panel.box.w60(data-bind="css: { grey: isRunningOrFinished }")
     #form_container
-      %div(data-bind="css: { field_with_errors: 'name' in errors() }")
-        %label(for="name") Event name
-        %br
-        %input#name.ux-text.w58(placeholder="Enter the name of this event, e.g. 'Fire on Rangeland'" data-bind="value: name, attr: { readonly: isRunningOrFinished }")
-        %br
-      %br
-      %label Recruitees
-      .mission_skills(data-bind="foreach: mission_skills")
-        .mission_skill(data-bind="visible: !_destroy()")
-          %span.ux-nstep.w06
-            %input.req_vols(type="text" size="2" data-min="1" data-bind="value: req_vols, attr: { readonly: $root.isRunningOrFinished() }")
-          %span
-            %select.ux-dropdown.w30.skill_id(data-bind="options: $root.activeSkills, optionsText: 'pluralized', optionsValue: 'id', value: skill_id, enable: $root.isCreated()")
-          %button.cremove(data-bind="click: $root.removeMissionSkill, visible: $root.visibleSkills() > 1 && $root.isCreated()")
-          %br
-      %div(data-bind="if: activeSkills.length > 1 && isCreated()")
-        %button.cadd(data-bind="click: addMissionSkill") Recruit for another skill
-      %br
-      %div(data-bind="css: { field_with_errors: 'reason' in errors() }")
-        %label(for="reason") Description
-        %br
-        %textarea#reason.w54.ux-wajbar(maxlength="200" size="" placeholder="Enter the description, e.g 'a single house fire'" data-bind="value: reason, attr: { readonly: isRunningOrFinished }")
-        %br
-      %div(data-bind="css: { field_with_errors: 'lat' in errors() || 'lng' in errors() || 'address' in errors() }")
-        %label(for="address") Address
-        %br
-        %span.small-text Enter an address to find recruitees nearby or you can right-click in the map to indicate a location
-        %input#address.w42.ux-text(placeholder="Enter the address, e.g '1710 Trousdale, Burlingame'" data-bind="value: address, attr: { readonly: !isCreated() }")
-        %button#search_address.fsearch(data-bind="click: findRecruitees, enable: isCreated, css: isCreated() ? '' : 'disabled'") Find recruitees nearby
-        %br
-      %br
+      = render :partial => 'form'
     #map_canvas.map
     #mission_distance
-      .box.plain(data-bind="visible: farthest, css: isRunning() ? 'green' : 'grey'")
-        %span#distance_label(data-bind="text: distanceLegend")
-        %span#distance_value(data-bind="text: farthest")
-        mi
-        
+      = render :partial => 'distance'  
 .right
   .box.w30
     #mission_status.sbox.grey.StateDisplay
-      #progress.values
-        .L
-          %span(data-bind="html: confirmedText")
-        .R
-          %span(data-bind="html: neededText")
-        %br{:clear => "all"}
-        .M
-          %span.Fill(data-bind="style: progressStyle")
-      %button(data-bind="text: buttonText, css: buttonCss, click: startStop")
+      = render :partial => 'status'
     #mission_message.event-desc
-      %p
-        %input#use_custom_text(type="checkbox" data-bind="checked: use_custom_text, enable: !isRunningOrFinished()")
-        %label(for="use_custom_text") Use Custom Text
-      %p We will call and text the recruitees below with the following message:
-      %div(data-bind="visible: use_custom_text()")
-        %textarea(rows="3" style="width:98%" data-bind="value: custom_text, enable: !isRunningOrFinished()")
-        %p.tgrey
-          %em.left= I18n.t :voice_message_options
-          .clear
-      %div(data-bind="visible: !use_custom_text()")
-        %p.tgrey
-          %em Hello, this is the Red Cross. There is
-          %span(data-bind="text: reason_with_default")
-          %em located at
-          %span(data-bind="text: address_with_default")<
-          %em> . Can you respond?
-          %em= I18n.t :voice_message_options
+      = render :partial => 'message'
     %hr.shadow
     #scroll
-      %div(data-bind="if: candidates().length > 0")
-        %div(data-bind="if: confirmed_candidates().length > 0")
-          #confirmed_list.listitem.ux-collapsible(data-bind="template: { name: 'candidates_list', data: { title: 'Confirmed', candidates: confirmed_candidates } }")
-          %hr
-        %div(data-bind="if: pending_candidates().length > 0")
-          #check_candidates.right(data-bind="visible: !isRunningOrFinished()")
-            %a.link_to_form(data-bind="click: enableAll") Enable All
-            |
-            %a.link_to_form(data-bind="click: disableAll") Pause All
-          #pending_list.listitem.ux-collapsible(data-bind="template: { name: 'candidates_list', data: { title: 'Pending', candidates: pending_candidates } }")
-          %hr
-        %div(data-bind="if: unresponsive_candidates().length > 0")
-          #unresponsive_list.listitem.ux-collapsible(data-bind="template: { name: 'candidates_list', data: { title: 'No answer', candidates: unresponsive_candidates } }")
-          %hr
-        %div(data-bind="if: denied_candidates().length > 0")
-          #denied_list.listitem.ux-collapsible(data-bind="template: { name: 'candidates_list', data: { title: 'Denied', candidates: denied_candidates } }")
-      %div(data-bind="if: candidates().length == 0")
-        %p.empty-event(data-bind="visible: id()") No volunteers with the selected skills are available near the event location
-        %p.empty-event(data-bind="visible: !id()") This event has not been initialized, complete all the fields and start recruiting
+      = render :partial => 'candidates'
 .clear
 %br
 %hr
@@ -108,25 +29,6 @@
   %button.fimport(data-bind="click: exportData") Download recruiting results
   %button.fdelete(data-bind="click: deleteMission") Delete this event
 
-
-%script(type="text/html" id="candidates_list")
-  %span
-    %a.arrow
-      %span.count(data-bind="text: candidates().length")
-      %span(data-bind="text: title")
-  %table.ux-content.candidates
-    %tbody(data-bind="foreach: candidates")
-      %tr.candidate(data-bind="css: active() ? '' : 'blocked', click: $root.showCandidate")
-        %td
-          %span.avoid(data-bind="visible: isPending && !$root.isFinished()")
-            %input(type="checkbox" data-bind="checked: active, enable: !$root.isRunning(), click: $root.toggleCandidate, clickBubble: false")
-          %span(data-bind="text: volunteer.name")
-        %td
-          %div(data-bind="html: volunteer.sms_numbers")
-          %br
-          %div(data-bind="html: volunteer.voice_numbers")
-          %div(data-bind="if: answered_at")
-            %span(data-bind="timeago: answered_at")
 
 :javascript
   var DefaultSkill = { id: null, name: 'Volunteer', pluralized: 'Volunteers' };

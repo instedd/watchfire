@@ -1,0 +1,10 @@
+#progress.values
+  .L
+    %span(data-bind="html: confirmedText")
+  .R
+    %span(data-bind="html: neededText")
+  %br{:clear => "all"}
+  .M
+    %span.Fill(data-bind="style: progressStyle")
+%button(data-bind="text: buttonText, css: buttonCss, click: startStop")
+
