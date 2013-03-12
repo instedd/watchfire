@@ -7,7 +7,6 @@ describe MissionsController do
   end
 
   after(:all) do
-    @organization.members.destroy_all
     @organization.destroy
     @user.destroy
   end

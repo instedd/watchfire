@@ -1,10 +1,10 @@
 class Organization < ActiveRecord::Base
-  has_many :members
+  has_many :members, :dependent => :destroy
   has_many :users, :through => :members
-  has_many :volunteers
-  has_many :missions
-  has_many :skills
-  has_many :invites
+  has_many :volunteers, :dependent => :destroy
+  has_many :missions, :dependent => :destroy
+  has_many :skills, :dependent => :destroy
+  has_many :invites, :dependent => :destroy
 
   validates_presence_of :name
   validates_uniqueness_of :name, :case_sensitive => false
