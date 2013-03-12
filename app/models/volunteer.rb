@@ -85,7 +85,7 @@ class Volunteer < ActiveRecord::Base
 
   def has_location
     if lat.blank? || lng.blank?
-      errors[:address] << "can't be blank"
+      errors[:address] << (address.blank? ? "can't be blank" : "is invalid")
     end
   end
 

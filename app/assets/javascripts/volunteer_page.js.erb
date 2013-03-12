@@ -165,6 +165,9 @@ var onVolunteerPage = function() {
   			volunteer_marker.setPosition(location);
   		} else {
   			alert("Location not found");
+  			$("#volunteer_lat").val('');
+  			$("#volunteer_lng").val('');
+            volunteer_marker.setPosition(null);
       	}
   	});
   }
