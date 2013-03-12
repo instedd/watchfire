@@ -29,3 +29,5 @@
 
   .bottom-actions
     %button.white #{@organization.new_record? ? 'Create' : 'Update'} Organization
+    = link_to 'Cancel', organizations_path, :class => 'tgrey'
+
