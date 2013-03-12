@@ -39,7 +39,7 @@ describe OrganizationsController do
 
       post :update, :id => organization.id, :organization => {:name => 'RedCross2'}
 
-      response.should redirect_to(organization_path(organization))
+      response.should redirect_to(organizations_path)
 
       organization.reload.name.should eq('RedCross2')
     end

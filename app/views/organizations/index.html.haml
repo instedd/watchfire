@@ -13,6 +13,8 @@
       %tr
         %td= link_to organization.name, select_organization_path(organization.id)
         %td
+          = form_tag edit_organization_path(organization), :method => :get do
+            %button.avoid.fedit
           = form_tag select_organization_path(organization.id), :method => :get do
             %button.avoid.farrow
 
