@@ -1,18 +1,10 @@
-= hidden_field_tag :status, mission.status, :id => 'status_field'
 #progress.values
-	= render :partial => 'progress', :locals => {:mission => mission}
-- if mission.created?
-	- if mission.new_record?
-		%button.orange.disabled Start recruiting
-	- else
-		= form_tag start_mission_path(mission), :remote => true do
-			%button.orange Start recruiting
-- elsif mission.running?
-	= form_tag stop_mission_path(mission), :remote => true do
-		%button.white Pause recruiting
-- elsif mission.paused?
-	= form_tag start_mission_path(mission), :remote => true do
-		%button.white Resume recruiting
-- else
-	= form_tag open_mission_path(mission), :remote => false do
-		%button.orange Open event
+  .L
+    %span(data-bind="html: confirmedText")
+  .R
+    %span(data-bind="html: neededText")
+  %br{:clear => "all"}
+  .M
+    %span.Fill(data-bind="style: progressStyle")
+%button(data-bind="text: buttonText, css: buttonCss, click: startStop")
+

@@ -1,0 +1,40 @@
+%div(data-bind="if: candidates().length > 0")
+  %div(data-bind="if: confirmed_candidates().length > 0")
+    #confirmed_list.listitem.ux-collapsible(data-bind="template: { name: 'candidates_list', data: { title: 'Confirmed', candidates: confirmed_candidates } }")
+    %hr
+  %div(data-bind="if: pending_candidates().length > 0")
+    #check_candidates.right(data-bind="visible: !isRunningOrFinished()")
+      %a.link_to_form(data-bind="click: enableAll") Enable All
+      |
+      %a.link_to_form(data-bind="click: disableAll") Pause All
+    #pending_list.listitem.ux-collapsible(data-bind="template: { name: 'candidates_list', data: { title: 'Pending', candidates: pending_candidates } }")
+    %hr
+  %div(data-bind="if: unresponsive_candidates().length > 0")
+    #unresponsive_list.listitem.ux-collapsible(data-bind="template: { name: 'candidates_list', data: { title: 'No answer', candidates: unresponsive_candidates } }")
+    %hr
+  %div(data-bind="if: denied_candidates().length > 0")
+    #denied_list.listitem.ux-collapsible(data-bind="template: { name: 'candidates_list', data: { title: 'Denied', candidates: denied_candidates } }")
+%div(data-bind="if: candidates().length == 0")
+  %p.empty-event(data-bind="visible: id()") No volunteers with the selected skills are available near the event location
+  %p.empty-event(data-bind="visible: !id()") This event has not been initialized, complete all the fields and start recruiting
+
+
+%script(type="text/html" id="candidates_list")
+  %span
+    %a.arrow
+      %span.count(data-bind="text: candidates().length")
+      %span(data-bind="text: title")
+  %table.ux-content.candidates
+    %tbody(data-bind="foreach: candidates")
+      %tr.candidate(data-bind="css: active() ? '' : 'blocked', click: $root.showCandidate")
+        %td
+          %span.avoid(data-bind="visible: isPending && !$root.isFinished()")
+            %input(type="checkbox" data-bind="checked: active, enable: !$root.isRunning(), click: $root.toggleCandidate, clickBubble: false")
+          %span(data-bind="text: volunteer.name")
+        %td
+          %div(data-bind="html: volunteer.sms_numbers")
+          %br
+          %div(data-bind="html: volunteer.voice_numbers")
+          %div(data-bind="if: answered_at")
+            %span(data-bind="timeago: answered_at")
+

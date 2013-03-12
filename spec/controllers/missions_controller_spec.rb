@@ -15,6 +15,7 @@ describe MissionsController do
   before(:each) do
     @mission = Mission.make! :user => @user, :organization => @organization
     sign_in @user
+    @mission_json = { "mission" => { "id" => 1, "name" => "foo" } }
   end
 
   describe "show" do
@@ -66,14 +67,16 @@ describe MissionsController do
       mission = mock('mission')
       controller.stubs(:mission => mission)
       mission.expects(:check_and_save)
+      controller.stubs(:mission_json)
       mission.stubs(:user=)
       mission.stubs(:organization=)
       post :create, :mission => @valid_attributes
     end
 
-    it "renders update" do
+    it "renders mission json" do
+      controller.expects(:mission_json).returns(@mission_json)
       post :create, :mission => @valid_attributes
-      response.should render_template('update')
+      response.body.should eq(@mission_json.to_json)
     end
 
     it "assigns mission to current user" do
@@ -92,25 +95,19 @@ describe MissionsController do
       controller.stubs(:mission => @mission)
       @mission.expects(:check_for_volunteers?).returns(true)
       @mission.expects(:check_and_save)
-      put :update, :id => @mission.id.to_s, :mission => {}, :format => 'js'
+      put :update, :id => @mission.id.to_s, :mission => {}
     end
 
     it "only saves if there is no need to check for volunteers" do
       controller.stubs(:mission => @mission)
       @mission.expects(:check_for_volunteers?).returns(false)
       @mission.expects(:save)
-      put :update, :id => @mission.id.to_s, :mission => {}, :format => 'js'
+      put :update, :id => @mission.id.to_s, :mission => {}
     end
 
     it "assigns mission" do
-      put :update, :id => @mission.id.to_s, :mission => {}, :format => 'js'
+      put :update, :id => @mission.id.to_s, :mission => {}
       controller.mission.should eq(@mission)
-    end
-
-    it "updates attributes" do
-      controller.stubs(:mission => @mission)
-      @mission.expects(:attributes=).with({'foo' => 'bar'})
-      put :update, :id => @mission.id.to_s, :mission => {'foo' => 'bar'}, :format => 'js'
     end
   end
 
@@ -118,7 +115,7 @@ describe MissionsController do
     it "should call volunteers" do
       controller.stubs(:mission => @mission)
       @mission.expects(:call_volunteers)
-      post :start, :id => @mission.id, :format => 'js'
+      post :start, :id => @mission.id
       controller.mission.should eq(@mission)
     end
   end
@@ -127,25 +124,8 @@ describe MissionsController do
     it "should stop calling volunteers" do
       controller.stubs(:mission => @mission)
       @mission.expects(:stop_calling_volunteers)
-      post :stop, :id => @mission.id, :format => 'js'
+      post :stop, :id => @mission.id
       controller.mission.should eq(@mission)
-    end
-  end
-
-  describe "refresh" do
-    it "should assign mission" do
-      get :refresh, :id => @mission.id.to_s
-      controller.mission.should eq(@mission)
-    end
-
-    it "should render refresh with js" do
-      get :refresh, :id => @mission.id.to_s, :format => 'js'
-      response.should render_template('refresh')
-    end
-
-    it "should render show with html" do
-      get :refresh, :id => @mission.id.to_s, :format => 'html'
-      response.should render_template('show')
     end
   end
 
@@ -191,12 +171,13 @@ describe MissionsController do
 	  it "should enable all pending in mission" do
       controller.stubs(:mission => @mission)
 	    @mission.expects(:enable_all_pending)
-	    post :check_all, :id => @mission.id.to_s, :format => 'js'
+	    post :check_all, :id => @mission.id.to_s
     end
 
-    it "renders update_pending" do
-      post :check_all, :id => @mission.id.to_s, :format => 'js'
-      response.should render_template('update_pending')
+    it "renders mission json" do
+      controller.stubs(:mission_json).returns(@mission_json)
+      post :check_all, :id => @mission.id.to_s
+      response.body.should eq(@mission_json.to_json)
     end
   end
 
@@ -204,12 +185,13 @@ describe MissionsController do
 	  it "should disable all pending in mission" do
       controller.stubs(:mission => @mission)
 	    @mission.expects(:disable_all_pending)
-	    post :uncheck_all, :id => @mission.id.to_s, :format => 'js'
+	    post :uncheck_all, :id => @mission.id.to_s
     end
 
     it "renders update_pending" do
-      post :uncheck_all, :id => @mission.id.to_s, :format => 'js'
-      response.should render_template('update_pending')
+      controller.stubs(:mission_json).returns(@mission_json)
+      post :uncheck_all, :id => @mission.id.to_s
+      response.body.should eq(@mission_json.to_json)
     end
   end
 end

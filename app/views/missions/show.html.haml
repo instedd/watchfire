@@ -1,31 +1,39 @@
 - content_for :head do
-	= javascript_include_tag 'http://maps.googleapis.com/maps/api/js?sensor=false'
+  = javascript_include_tag 'http://maps.googleapis.com/maps/api/js?sensor=false'
 #mission_title
-	= render :partial => 'title', :locals => { :mission => mission }
+  = render :partial => 'title'
 %br
 .left
-	#left_panel.box.w60
-		#form_container
-			= render :partial => 'form', :locals => { :mission => mission }
-		#map_canvas.map
-		.hidden
-			#info_window_content
-		#mission_distance
-			= render :partial => 'distance', :locals => { :distance => mission.farthest, :mission => mission }
+  #left_panel.box.w60(data-bind="css: { grey: isRunningOrFinished }")
+    #form_container
+      = render :partial => 'form'
+    #map_canvas.map
+    #mission_distance
+      = render :partial => 'distance'  
 .right
-	.box.w30
-		#mission_status.sbox.grey.StateDisplay
-			= render :partial => 'status', :locals => {:mission => mission}
-		#mission_message.event-desc
-			= render :partial => 'message', :locals => {:mission => mission}
-		%hr.shadow
-		#scroll
-			= render :partial => 'volunteers', :locals => {:mission => mission}
+  .box.w30
+    #mission_status.sbox.grey.StateDisplay
+      = render :partial => 'status'
+    #mission_message.event-desc
+      = render :partial => 'message'
+    %hr.shadow
+    #scroll
+      = render :partial => 'candidates'
 .clear
 %br
 %hr
-#mission_actions.bottom-actions
-	= render :partial => 'actions', :locals => {:mission => mission}
+#mission_actions.bottom-actions(data-bind="visible: id()")
+  %button.fimport(data-bind="click: exportData") Download recruiting results
+  %button.fdelete(data-bind="click: deleteMission") Delete this event
+
 
 :javascript
-	onMissionPage();
+  var DefaultSkill = { id: null, name: 'Volunteer', pluralized: 'Volunteers' };
+  var ActiveSkills = #{skills.actives.sort_by(&:name).map { |s| 
+    { :id => s.id, 
+      :name => s.name, 
+      :pluralized => s.pluralized } 
+  }.to_json};
+  var MissionData = #{mission_json.to_json};
+
+  onMissionPage();

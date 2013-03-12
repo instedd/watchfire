@@ -4,6 +4,7 @@ class CandidatesController < ApplicationController
 
 	def update
 		candidate.update_attributes(params[:candidate])
+    render :nothing => true
 	end
 end
 

@@ -21,10 +21,5 @@ describe CandidatesController do
       put :update, :id => @candidate.id.to_s, :format => 'js'
       controller.mission.should eq(@candidate.mission)
     end
-
-    it "renders update template" do
-      put :update, :id => @candidate.id.to_s, :format => 'js'
-      response.should render_template('update')
-    end
   end
 end

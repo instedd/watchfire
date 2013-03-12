@@ -1,5 +1,5 @@
 %h1
-	- if mission.new_record?
-		New Event
-	- else
-		= mission.title
+  %span(data-bind="text: title")
+  = image_tag "icons/synchronizing.gif", 'data-bind' => "visible: saving", 'style' => "float:right"
+  = image_tag "icons/dirty.png", 'data-bind' => "visible: !saving() && dirty()", 'style' => "float:right"
+

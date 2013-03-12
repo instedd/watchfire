@@ -1,361 +1,912 @@
-var onMissionPage = function() {
-	var map;
-	var mission_marker;
-	var geocoder;
+function extendKnockout() {
+    ko.extenders.trim = function(target) {
+        var result = ko.computed({
+            read: target,
+            write: function(newValue) {
+                var current = target(),
+                    valueToWrite = (newValue || '').trim();
+                if (valueToWrite !== current) {
+                    target(valueToWrite);
+                } else if (newValue !== current) {
+                    target.notifySubscribers(valueToWrite);
+                }
+            }
+        });
+        result(target());
+        return result;
+    };
 
-	var circle;
-	var outerCircle;
+    ko.extenders.integer = function(target, minValue, maxValue) {
+        var result = ko.computed({
+            read: target,
+            write: function(newValue) {
+                var current = target(), valueToWrite;
+                valueToWrite = parseInt(+newValue);
+                if (minValue != null) {
+                    valueToWrite = Math.max(minValue, valueToWrite);
+                }
+                if (maxValue != null) {
+                    valueToWrite = Math.min(maxValue, valueToWrite);
+                }
+                if (valueToWrite !== current) {
+                    target(valueToWrite);
+                } else if (newValue !== current) {
+                    target.notifySubscribers(valueToWrite);
+                }
+            }
+        });
+        result(target());
+        return result;
+    };
 
-	var refreshing;
-	var beating;
-	var alternance;
-	var info_window;
-	var volunteer_marker;
-	var listener;
-	var event_image;
-	var event_disabled_image;
-	var volunteer_image;
-	var circleHasMap;
+    ko.bindingHandlers.timeago = {
+        init: function(element, valueAccessor) {
+            var value = valueAccessor();
+            $(element).attr('title', value).timeago();
+        },
+        update: function(element, valueAccessor) {
+            var value = valueAccessor();
+            $(element).attr('title', value);
+        }
+    };
+}
 
-	$(function(){
-		circleHasMap = false;
-		init_map();
-		init_events();
-		check_running();
-		hide_or_show_candidate_lists();
-	});
+function MapView(element) {
+    var self = this;
+    element = element || document.getElementById('map_canvas');
 
-	function init_map() {
-		var myOptions = {
-			zoom: 10,
-			mapTypeId: google.maps.MapTypeId.ROADMAP
-		};
+    var myOptions = {
+        zoom: 10,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+    var initialLocation = new google.maps.LatLng(37.520619, -122.342377);
 
-		event_disabled_image = new google.maps.MarkerImage("<%= asset_path('icons/event_disabled.png') %>",
-			new google.maps.Size(30, 27),
-			new google.maps.Point(0,0),
-			new google.maps.Point(15, 13));
+    var icons = {
+        eventDisabled: new google.maps.MarkerImage(
+            '<%= asset_path('icons/event_disabled.png') %>',
+            new google.maps.Size(30, 27),
+            new google.maps.Point(0,0),
+            new google.maps.Point(15, 13)
+        ),
+        eventEnabled: new google.maps.MarkerImage(
+            '<%= asset_path('icons/event.png') %>',
+            new google.maps.Size(30, 27),
+            new google.maps.Point(0,0),
+            new google.maps.Point(15, 13)
+        ),
+        volunteer: new google.maps.MarkerImage(
+            '<%= asset_path('icons/volunteer.png') %>',
+            new google.maps.Size(24, 24),
+            new google.maps.Point(0,0),
+            new google.maps.Point(12, 12)
+        )
+    };
 
-		event_image = new google.maps.MarkerImage("<%= asset_path('icons/event.png') %>",
-			new google.maps.Size(30, 27),
-			new google.maps.Point(0,0),
-			new google.maps.Point(15, 13));
+    var map = new google.maps.Map(element, myOptions);
+    map.setCenter(initialLocation);
 
-		volunteer_image = new google.maps.MarkerImage("<%= asset_path('icons/volunteer.png') %>",
-			new google.maps.Size(24, 24),
-			new google.maps.Point(0,0),
-			new google.maps.Point(12, 12));
+    var missionMarker = new google.maps.Marker({
+        map: map,
+        icon: icons.eventDisabled
+    });
+    var circle = new google.maps.Circle({ map: map, clickable: false });
 
-		circle = new google.maps.Circle({clickable:false});
-		outerCircle = new google.maps.Circle({clickable:false});
+    var infoWindow = new google.maps.InfoWindow();
+    google.maps.event.addListener(infoWindow, 'closeclick', onInfoWindowClosed);
+    function onInfoWindowClosed() {
+        volunteerMarker.setVisible(false);
+    }
+    var volunteerMarker = new google.maps.Marker({
+        map: map,
+        icon: icons.volunteer
+    });
+    self.showVolunteerData = function(location, data) {
+        infoWindow.setContent(data);
+        volunteerMarker.setPosition(location);
+        volunteerMarker.setVisible(true);
+        infoWindow.open(map, volunteerMarker);
+    };
 
-		var initialLocation = new google.maps.LatLng(37.520619, -122.342377);
-		map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
-		map.setCenter(initialLocation);
+    var listener;
+    self.enableMarkerDrag = function() {
+        missionMarker.setDraggable(true);
+        //removing right click also disables zoom, so I store it to be removed later
+        listener = google.maps.event.addListener(map, 'rightclick', changeMarker);
+        google.maps.event.addListener(missionMarker, 'dragend', changeMarker);
+    }
+    self.disableMarkerDrag = function() {
+        google.maps.event.removeListener(listener);
+        google.maps.event.clearInstanceListeners(missionMarker);
+        missionMarker.setDraggable(false);
+    }
 
-		mission_marker = new google.maps.Marker({
-			map: map,
-			icon: event_disabled_image
-		});
+    self.onMarkerChanged = null;
+    function changeMarker(event) {
+        var location = event.latLng;
+        map.setCenter(location);
+        missionMarker.setPosition(location);
+        if (self.onMarkerChanged) {
+            self.onMarkerChanged(location);
+        }
+    }
 
-		var loc = new google.maps.LatLng(parseFloat($("#mission_lat").val()), parseFloat($("#mission_lng").val()));
-		if(!isNaN(loc.lat()) && !isNaN(loc.lng())){
-			map.setCenter(loc);
-			mission_marker.setPosition(loc);
-			setMapCircle(parseFloat($('#distance_value').html()));
-		}
+    self.setMissionLocation = function(loc) {
+        if (loc && !isNaN(loc.lat()) && !isNaN(loc.lng())) {
+            map.setCenter(loc);
+            missionMarker.setPosition(loc);
+        }
+    };
 
-		geocoder = new google.maps.Geocoder();
+    self.setRecruitRadius = function(radius, dontFitBounds) {
+        radius = radius || 0;
+        circle.setOptions({
+            center: missionMarker.getPosition(),
+            radius: radius * 1609,
+            clickable: false,
+            strokeWeight: 4,
+            strokeColor: '#999999',
+            fillOpacity: circle.fillOpacity != null ? circle.fillOpacity : 0.5,
+            fillColor: '#000000'
+        });
 
-		info_window = new google.maps.InfoWindow({
-		    content: document.getElementById("info_window_content")
-		});
-		volunteer_marker = new google.maps.Marker({
-			map: map,
-			icon: volunteer_image
-		});
+        if (!dontFitBounds && radius > 0) map.fitBounds(circle.getBounds());
+    };
 
-		init_map_events();
-	}
+    var beatInterval = 500;
+    var beatTimeout = null;
+    var alternance = false;
+    self.startBeating = function() {
+        clearTimeout(beatTimeout);
 
-	function init_map_events() {
-		mission_marker.setDraggable(true);
-		listener = google.maps.event.addListener(map, 'rightclick', changeMarker); //removing right click also disables zoom, so I store it to be removed later
-		google.maps.event.addListener(mission_marker, 'dragend', changeMarker);
-		google.maps.event.addListener(info_window, 'closeclick', on_info_window_closed);
-	}
+        function beat() {
+            alternance = !alternance;
+            circle.setOptions({ strokeColor: alternance ? '#999999' : '#ff6600' });
+            beatTimeout = setTimeout(beat, beatInterval);
+        }
+        circle.setOptions({ fillOpacity: 0.3 });
+        missionMarker.setIcon(icons.eventEnabled);
+        beat();
+    };
+    self.stopBeating = function() {
+        circle.setOptions({ fillOpacity: 0.5, strokeColor: '#999999' });
+        missionMarker.setIcon(icons.eventDisabled);
 
-	function remove_map_events() {
-		google.maps.event.removeListener(listener);
-		google.maps.event.clearInstanceListeners(mission_marker);
-		mission_marker.setDraggable(false);
-	}
+        clearTimeout(beatTimeout);
+        beatTimeout = null;
+    };
+}
 
-	function changeMarker(event) {
-		var location = event.latLng;
-		$("#mission_lat").val(location.lat().toFixed(4));
-		$("#mission_lng").val(location.lng().toFixed(4));
-		map.setCenter(location);
-		mission_marker.setPosition(location);
-		reverseGeocode(location);
-	}
+function MissionSkillViewModel(id, req_vols, skill_id) {
+    var self = this;
+    self.id = ko.observable(id);
+    self.req_vols = ko.observable(req_vols).extend({ integer: 1 });
+    self.skill_id = ko.observable(skill_id);
+    self._destroy = ko.observable(false);
+}
 
-	function geocodeLocation(location) {
-		geocoder.geocode( { 'address': location }, function(results, status) {
-			if (status == google.maps.GeocoderStatus.OK) {
-				var location = results[0].geometry.location;
-				$("#mission_lat").val(location.lat().toFixed(4));
-				$("#mission_lng").val(location.lng().toFixed(4));
-				map.setCenter(location);
-				mission_marker.setPosition(location);
-				checkSubmit();
-			} else {
-				alert("Location not found");
-	    	}
-		});
-	}
+function CandidateViewModel(data) {
+    // data is a candidate object from the JSON view
+    var self = this;
+    for (var prop in data) {
+        self[prop] = data[prop];
+    }
 
-	function checkSubmit() {
-		var positive = isPositiveInt();
-		if(positive && $("#mission_lat").val().length > 0 && $("#mission_lng").val().length > 0) {
-			$('#mission_form').submit();
-		} else if(!positive){
-		}
-	}
+    self.isPending = data.status == 'pending';
+    self.active = ko.observable(data.active);
 
-	function isPositiveInt() {
-		// FIXME: for multiple skills
-		var value = $('.req_vols').val();
-		return value.match(/^[1-9]\d*$/);
-	}
+    var current_voice_number = data.last_call && data.last_call.voice_number;
+    function buildNumbers(collection, spanClass, disabledClass) {
+        var result = [];
+        for (var i = 0; i < collection.length; i++) {
+            var address = collection[i].address;
+            var active = self.active() || address == data.answered_from;
+            if (address == current_voice_number) {
+                address += ' (' + data.voice_status + ')';
+            }
+            result.push($('<span>').text(address).
+                    addClass(active ? spanClass : disabledClass).
+                    wrap('<p>').parent().html());
+        }
+        return result.join('<br>');
+    }
+    self.volunteer.sms_numbers = ko.computed(function() {
+        return buildNumbers(data.volunteer.sms_channels, 'mobile', 'gmobile');
+    });
+    self.volunteer.voice_numbers = ko.computed(function() {
+        return buildNumbers(data.volunteer.voice_channels, 'phone', 'gphone');
+    });
+}
 
-	window.init_events = function() {
-		$('.req_vols, #mission_reason, .skill_id, #mission_name').change(function(){
-			checkSubmit();
-		});
+function MissionViewModel() {
+    var self = this;
 
-		$("#mission_address").keypress(function(event){
-			if (event.keyCode == 13) {
-	      		var loc = $(this).val();
-				geocodeLocation(loc);
-				return false;
-	        } else {
-	          return true;
-	        }
-		});
+    // DefaultSkill and ActiveSkills are defined by the view
+    self.activeSkills = [DefaultSkill].concat(ActiveSkills || []);
+    self.skillMap = {};
+    $.each(self.activeSkills, function(index, skill) {
+        self.skillMap[skill.id] = skill;
+    });
+    self.urls = {};
 
-		$('#search_address').click(function(){
-			var loc = $("#mission_address").val();
-			geocodeLocation(loc);
-		});
+    // mission hidden fields
+    self.id = ko.observable();
+    self.errors = ko.observable({});
+    self.latlng = ko.observable(null);
+    self.status = ko.observable('created');
+    self.farthest = ko.observable(0);
+    self.confirmed_count = ko.observable(0);
 
-		init_candidate_events();
+    // mission editable fields
+    self.name = ko.observable('').extend({ trim: true });
+    self.reason = ko.observable('').extend({ trim: true });
+    self.mission_skills = ko.observableArray();
+    self.use_custom_text = ko.observable(false);
+    self.custom_text = ko.observable(null).extend({ trim: true });
 
-	    // Events for the message form
-		$('#mission_use_custom_text').click(function(e){
-		    $(this).parents("form").submit();
-		});
-		$('#message_form_link').click(function(e){
-		    $(this).parents("form").submit();
-		    return false;
-		});
-		$('#mission_custom_text').keypress(function(e){
-		    $('#message_form_link').removeClass('hidden');
-		    $('#saved_label').addClass('hidden');
-		});
+    // candidates lists
+    self.candidates = ko.observableArray();
+    self.confirmed_candidates = ko.observableArray();
+    self.pending_candidates = ko.observableArray();
+    self.unresponsive_candidates = ko.observableArray();
+    self.denied_candidates = ko.observableArray();
 
-		// Use links to submit forms
-		$(".link_to_form").click(function(e){
-		    $(this).parent("form").submit();
-		    return false;
-		});
+    // address is special due to geocoding: we don't want to geocode if the
+    // address comes from reverse geocoding or the server
+    var _address = ko.observable();
+    self.address = ko.computed({
+        read: _address,
+        write: function(newValue, stopGeocoding) {
+            _address(newValue);
+            if (!stopGeocoding) {
+                geocodeAddress(newValue);
+            }
+        }
+    });
 
-		$("#mission_form .cadd").click(function(e) {
-			e.preventDefault();
-			form = $('#mission_form');
-			form.append("<input type='hidden' name='new_skill' value='1'>");
-			form.submit();
-		});
-		$('#mission_form .cremove').click(function(e) {
-			e.preventDefault();
-			form = $('#mission_form');
-			name = $(this).data('name');
-			form.append("<input type='hidden' name='" + name + "' value='1'>");
-			form.submit();
-		});
-	}
+    // computed fields
+    self.limited_reason = ko.computed(function() {
+        var reason = self.reason();
+        if (reason && reason.length > 200) {
+            reason = reason.substr(0, 197) + '...';
+        }
+        return reason;
+    });
+    self.title = ko.computed(function() {
+        var result = 'New Event';
+        var req_skills = self.mission_skills();
+        var name = self.name();
+        var reason = self.limited_reason();
+        if (name) {
+            result = name;
+            req_skills = $.map($.grep(req_skills, function(req_skill) {
+                return !req_skill._destroy();
+            }), function(req_skill) {
+                var req_vols = req_skill.req_vols();
+                var skill = self.skillMap[req_skill.skill_id()] || DefaultSkill;
+                return req_vols + ' ' + skill[req_vols == 1 ? 'name' : 'pluralized'];
+            });
+            result = result + ': ' + req_skills.join(', ');
+            if (reason) {
+                result += ' (' + reason + ')';
+            }
+        }
+        return result;
+    });
+    self.visibleSkills = ko.computed(function() {
+        var req_skills = self.mission_skills();
+        var result = 0;
+        for (var i = 0; i < req_skills.length; i++) {
+            if (!req_skills[i]._destroy()) {
+                result++;
+            }
+        }
+        return result;
+    });
+    self.distanceLegend = ko.computed(function() {
+        if (self.status() == 'running') {
+            return 'Calling volunteers up to';
+        } else {
+            return 'Will call volunteers up to';
+        }
+    });
+    self.isCreated = ko.computed(function() {
+        return self.status() == 'created';
+    });
+    self.isRunning = ko.computed(function() {
+        return self.status() == 'running';
+    });
+    self.isRunningOrFinished = ko.computed(function() {
+        return self.status() == 'running' || self.status() == 'finished';
+    });
+    self.isFinished = ko.computed(function() {
+        return self.status() == 'finished';
+    });
+    self.buttonText = ko.computed(function() {
+        switch (self.status()) {
+            case 'created':
+                return 'Start recruiting';
+            case 'running':
+                return 'Pause recruiting';
+            case 'paused':
+                return 'Resume recruiting';
+            default:
+                return 'Open event';
+        }
+    });
+    self.buttonCss = ko.computed(function() {
+        switch (self.status()) {
+            case 'created':
+                return 'orange' + (self.id() ? '' : ' disabled');
+            case 'running':
+            case 'paused':
+                return 'white';
+            default:
+                return 'orange';
+        }
+    });
+    self.confirmedText = ko.computed(function() {
+        if (self.id() == null) {
+            return 'No recruitees<br>required yet';
+        } else {
+            var cc = self.confirmed_count();
+            return (cc > 0 ? cc : 'No volunteers') + '<br>confirmed';
+        }
+    });
+    self.total_req_vols = ko.computed(function() {
+        var req_skills = self.mission_skills();
+        var result = 0;
+        for (var i = 0; i < req_skills.length; i++) {
+            result += req_skills[i].req_vols();
+        }
+        return result;
+    });
+    self.neededText = ko.computed(function() {
+        if (self.id() != null) {
+            return self.total_req_vols() + '<br>needed';
+        }
+    });
+    self.progressStyle = ko.computed(function() {
+        var progress = Math.min((self.confirmed_count() / 
+                self.total_req_vols() * 100), 100);
+        return { 'width': progress + '%' };
+    });
+    self.reason_with_default = ko.computed(function() {
+        return self.limited_reason() || 'a single house fire';
+    });
+    self.address_with_default = ko.computed(function() {
+        return self.address() || '1710 Trousdale, Burlingame';
+    });
 
-	window.init_candidate_events = function() {
-		$('.candidate td').click(function(){
-			open_volunteer_info_window($(this).parents('.candidate'));
-		});
+    // behavior methods
+    self.addMissionSkill = function() {
+        if (self.status() == 'created') {
+            self.mission_skills.push(new MissionSkillViewModel(null, 1, null));
+        }
+    };
+    self.removeMissionSkill = function(skill) {
+        if (self.status() == 'created') {
+            if (skill.id) {
+                skill._destroy(true);
+            } else {
+                self.mission_skills.remove(skill);
+            }
+        }
+    };
+    self.findRecruitees = function() {
+        // nothing to do here for now
+        // just unfocusing the address field will trigger a data submit
+    };
+    self.startStop = function() {
+        if (!self.id()) {
+            return;
+        }
+        switch (self.status()) {
+            case 'created':
+            case 'paused':
+                immediateSubmit('start');
+                break;
+            case 'running':
+                immediateSubmit('stop');
+                break;
+            default:
+                if (self.urls.open) {
+                    var form = createForm('POST', self.urls.open);
+                    form.submit();
+                }
+                break;
+        }
+    };
+    self.enableAll = function() {
+        immediateSubmit('enableAll');
+    };
+    self.disableAll = function() {
+        immediateSubmit('disableAll');
+    };
+    self.toggleCandidate = function(candidate) {
+        // FIXME: avoid hard-coding the URL
+        $.ajax({
+            type: 'PUT',
+            url: '/candidates/' + candidate.id,
+            dataType: 'json',
+            data: { candidate: { active: candidate.active() }}
+        });
+        return true;
+    };
+    self.showCandidate = function(candidate) {
+        var volunteer = candidate.volunteer;
+        var location = new google.maps.LatLng(volunteer.lat, volunteer.lng);
 
-		$('.candidate .avoid').click(function(event){
-			event.stopImmediatePropagation();
-		});
+        // FIXME: avoid hard-coding the URL
+        $.get('/volunteers/' + volunteer.id, function(data) {
+            self.mapView.showVolunteerData(location, data);
+        });
+    };
+    self.exportData = function() {
+        if (self.urls.export) {
+            window.location.href = self.urls.export;
+        }
+    };
+    self.deleteMission = function() {
+        if (self.id() && confirm('Are you sure?')) {
+            var form = createForm('DELETE', self.urls.update);
+            form.submit();
+        }
+    };
 
-		$('.candidate input:checkbox').click(function() {
-			$(this).parent().submit();
-		});
+    // initialization
+    self.addMissionSkill();
+    self.mapView = new MapView();
+    self.mapView.enableMarkerDrag();
 
-		$("span.time").timeago();
-	}
+    // event binding with the map view (mostly)
+    self.latlng.subscribe(function(newValue) {
+        self.mapView.setMissionLocation(newValue);
+    });
+    self.mapView.onMarkerChanged = function(location) {
+        self.latlng(location);
+        reverseGeocode(location);
+    };
+    self.isRunningOrFinished.subscribe(function(runningOrFinished) {
+        if (runningOrFinished) {
+            $('.TaskBox').addClass('readonly');
+        } else {
+            $('.TaskBox').removeClass('readonly');
+        }
+    });
+    self.isRunning.subscribe(function(running) {
+        if (running) {
+            self.mapView.startBeating();
+            startRefresh();
+        } else {
+            self.mapView.stopBeating();
+            stopRefresh();
+        }
+    });
+    self.isCreated.subscribe(function(created) {
+        if (created) {
+            self.mapView.enableMarkerDrag();
+        } else {
+            self.mapView.disableMarkerDrag();
+        }
+    });
+    self.farthest.subscribe(function(newRadius) {
+        self.mapView.setRecruitRadius(newRadius);
+    });
 
-	window.setMapCircle = function(distance, avoidFit) {
-	  distance = distance || 0;
-	  if (circleHasMap) {
-	    outerCircle.setOptions({
-			  center: mission_marker.getPosition(),
-			  radius: distance * 1609,
-			  clickable: false,
-			  strokeWeight: 4,
-			  strokeColor: '#FFFFFF',
-			  fillOpacity: outerCircle.fillOpacity != null ? outerCircle.fillOpacity : 0.5,
-			  fillColor: '#000000'
-	    });
+    // geocoding and reverse-geocoding
+    var geocoder = new google.maps.Geocoder();
+    function geocodeAddress(address) {
+        geocoder.geocode({ 'address': address }, function(results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+                var location = results[0].geometry.location;
+                self.latlng(location);
+            } else {
+                alert("Location not found");
+            }
+        });
+    }
+    function reverseGeocode(location) {
+        geocoder.geocode({ 'latLng': location }, function(results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+                if (results[0]) {
+                    // save address, but prevent further geocoding
+                    self.address(results[0].formatted_address, true);
+                }
+            } else {
+                alert("Reverse Geocoding failed");
+                self.address('');
+            }
+        });
+    }
 
-		  circle.setOptions({
-			  center: mission_marker.getPosition(),
-			  radius: distance * 1609,
-			  strokeWeight: 2,
-			  strokeColor: circle.strokeColor != null ? circle.strokeColor : '#999999',
-	      fillOpacity: 0.0
-		  });
-	  } else {
-	    outerCircle.setOptions({
-			  center: mission_marker.getPosition(),
-			  map: map,
-			  radius: distance * 1609,
-			  clickable: false,
-			  strokeWeight: 4,
-			  strokeColor: '#FFFFFF',
-			  fillOpacity: outerCircle.fillOpacity != null ? outerCircle.fillOpacity : 0.5,
-			  fillColor: '#000000'
-	    });
+    // save & load code
+    var submitData = ko.computed(function() {
+        var location = self.latlng();
+        var prio = 1;
+        var mission_skills = $.map(self.mission_skills(), function(ms) {
+            var result = { 
+                req_vols: ms.req_vols(), 
+                skill_id: ms.skill_id() || '',
+                priority: prio
+            };
+            if (ms.id()) {
+                result.id = ms.id();
+                if (ms._destroy()) {
+                    result._destroy = true;
+                }
+            }
+            if (!ms._destroy()) {
+                prio++;
+            }
+            return result;
+        });
 
-		  circle.setOptions({
-			  center: mission_marker.getPosition(),
-			  map: map,
-			  radius: distance * 1609,
-			  strokeWeight: 2,
-			  strokeColor: circle.strokeColor != null ? circle.strokeColor : '#999999',
-	      fillOpacity: 0.0
-		  });
+        return {
+            name: self.name() || '',
+            address: self.address() || '',
+            reason: self.reason() || '',
+            use_custom_text: self.use_custom_text(),
+            custom_text: self.custom_text() || '',
+            lat: location && location.lat(),
+            lng: location && location.lng(),
+            mission_skills_attributes: mission_skills
+        };
+    });
 
-	    circleHasMap = true;
-	  }
-		if (!avoidFit && distance > 0) map.fitBounds(circle.getBounds());
-	}
+    self.dirty = ko.observable(false);
+    self.saving = ko.observable(false);
 
-	function reverseGeocode(loc) {
-		geocoder.geocode({'latLng': loc}, function(results, status) {
-			if (status == google.maps.GeocoderStatus.OK) {
-				if (results[0]) {
-					$("#mission_address").val(results[0].formatted_address);
-				}
-			} else {
-				alert("Reverse Geocoding failed");
-				$("#mission_address").val('');
-			}
-			checkSubmit();
-		});
-	}
+    var merging = false;
+    // this function is to stop data submits if we have to change the model
+    // programmatically, which would in turn recompute submitData and enqueue a
+    // new submit
+    function startForcedUpdate() {
+        merging = true;
+        // reset flag in a timeout because submitData maybe throttled
+        setTimeout(function() { merging = false; }, 20);
+    }
+    submitData.subscribe(function(newValue) {
+        // enqueue a data submit unless we're in the middle of a programmatic
+        // model change
+        if (merging) {
+            return;
+        }
+        self.dirty(true);
+        delayedSubmit();
+    });
 
-	function start_refreshing() {
-		refreshing = true;
-		refresh();
-	}
+    var submitTimeout = null;
+    var pendingSubmit = null;
+    var submitQueue = [];
 
-	function stop_refreshing()  {
-		refreshing = false;
-	}
+    function submitPrologue(type) {
+        type = type || 'update';
+        if (submitQueue[0] != type && (type == 'update' ||
+                !pendingSubmit || pendingSubmit.submitType != type)) {
+            // queue submission if different from the last queued event and
+            // from the current pending one (unless it's an update, which is
+            // allowed since the user might have changed the form data since
+            // last submit)
+            submitQueue.unshift(type);
+        }
+        if (submitTimeout) {
+            clearTimeout(submitTimeout);
+            submitTimeout = null;
+        }
+    }
+    function delayedSubmit(type) {
+        submitPrologue(type);
+        submitTimeout = setTimeout(function() {
+            submitTimeout = null;
+            checkQueue();
+        }, 500);
+    }
+    function immediateSubmit(type) {
+        submitPrologue(type);
+        checkQueue();
+    }
+    function checkQueue() {
+        // avoid double submit; ie. wait for the previous submit to
+        // complete
+        if (submitQueue.length > 0 && pendingSubmit == null) {
+            runQueue();
+        }
+    }
+    function runQueue() {
+        // really submit
+        var type = submitQueue.pop();
+        var options = {};
 
-	function refresh() {
-		if (!refreshing) return;
+        switch (type) {
+            case 'update':
+                options = {
+                    type: self.id() ? 'PUT' : 'POST',
+                    url: self.urls.update,
+                    data: { mission: submitData() }
+                };
+                break;
+            case 'start':
+                options = { type: 'POST', url: self.urls.start };
+                break;
+            case 'stop':
+                options = { type: 'POST', url: self.urls.stop };
+                break;
+            case 'enableAll':
+                options = { type: 'POST', url: self.urls.check_all };
+                break;
+            case 'disableAll':
+                options = { type: 'POST', url: self.urls.uncheck_all };
+                break;
+            case 'refresh':
+                options = { type: 'GET', url: self.urls.update };
+                break;
+        }
+        options = $.extend({
+            dataType: 'json',
+            data: {},
+            success: onSubmitSuccess,
+            error: onSubmitError
+        }, options);
 
-		$.getScript($('#refresh_url').val(), function(data, textStatus){
-			setTimeout(refresh, 5000);
-		});
-	}
+        if (!options.url) {
+            console.warn('No URL to submit');
+            checkQueue();
+            return;
+        }
+        self.saving(true);
+        pendingSubmit = $.ajax(options);
+        pendingSubmit.submitType = type;
+    }
 
-	window.refresh_disable_inputs = function() {
-		start_refreshing();
-		$('#left_panel').addClass('grey');
-		remove_map_events();
-		make_circle_beat();
-		mission_marker.setIcon(event_image);
-	}
+    function onSubmitSuccess(result) {
+        // update local model view values
+        updateMissionData(result);
 
-	window.stop_refresh_enable_inputs = function() {
-		stop_refreshing();
-		$('#left_panel').removeClass('grey');
-		stop_circle_beat();
-		mission_marker.setIcon(event_disabled_image);
-	}
+        // process error messages
+        self.errors(result.errors);
 
-	window.check_running = function() {
-		var status = $('#status_field').val();
-		if (status == 'running') {
-			refresh_disable_inputs();
-		} else if (status == 'paused' || status == 'finished') {
-			remove_map_events();
-			if (status == 'finished') {
-				$('#left_panel').addClass('grey');
-			}
-		}
-	}
+        // update breadcrumb only if the mission is created
+        if (result.mission.id) {
+            updateBreadCrumb(result.mission.name, result.urls.update);
+        }
 
-	function make_circle_beat() {
-	  circle.setOptions({strokeColor: '#FF6600'});
-	  outerCircle.setOptions({fillOpacity: 0.3});
-		beating = true;
-		alternance = 0;
+        if (submitQueue.length == 0) {
+            // queue is empty, so no more changes to submit
+            self.dirty(false);
+        }
 
-		beat();
-	}
+        if (pendingSubmit.submitType == 'refresh') {
+            queueNextRefresh();
+        }
+        pendingSubmit = null;
+        self.saving(false);
+        checkQueue();
+    }
+    function onSubmitError(xhr, options, err) {
+        console.error('Mission submit error', err);
 
-	function stop_circle_beat()  {
-		beating = false;
-		circle.setOptions({strokeColor: '#999999'});
-	  outerCircle.setOptions({fillOpacity: 0.5});
-	}
+        pendingSubmit = null;
+        self.saving(false);
+        checkQueue();
+    }
 
-	function beat() {
-		if (!beating) return;
-	  alternance = 1 - alternance;
-	  circle.setOptions({strokeColor: alternance == 0 ? '#FF6600' : '#999999'});
-		setTimeout(beat, 500);
-	}
+    function createForm(method, target) {
+        // create a valid rails form by adding the CSRF parameter
+        var form = $("<form>").attr('action', target).appendTo(document.body);
+        method = (method || 'POST').toUpperCase();
+        if (method == 'GET' || method == 'POST') {
+            form.attr('method', method);
+        } else {
+            form.attr('method', 'POST');
+            $('<input type="hidden" name="_method">').attr('value', method).
+                appendTo(form);
+        }
+        var csrfName = $('meta[name=csrf-param]').attr('content');
+        var csrfValue = $('meta[name=csrf-token]').attr('content');
+        $('<input type="hidden">').attr('name', csrfName).
+            attr('value', csrfValue).appendTo(form);
+        return form;
+    }
 
-	function open_volunteer_info_window(volunteer) {
-		var url = volunteer.attr('data-url');
-		var lat = volunteer.attr('data-lat');
-		var lng = volunteer.attr('data-lng');
-		var location = new google.maps.LatLng(lat, lng);
+    function mergeMissionSkills(to_merge) {
+        // for each to_merge skill:
+        // - exists in current
+        //   - current it destroyed -> skip, should be deleted next submit
+        //   - current is not destroyed -> should update, but won't since that 
+        //      would overwrite some user changes
+        // - doesn't exists in current 
+        //   - there is some current with null id -> match up and save the id 
+        //      to current
+        //   - no current with null id -> add to current with _destroy: true 
+        //      so it gets deleted in the next submit
+        //
+        // for the remaining current skills:
+        // - if it has null id -> leave it there so next submit it gets added
+        // - it has a non null id -> delete it from the collection, the skill 
+        //      doesn't actually exist
+        //
 
-		$.get(url, function(data) {
-			$('#info_window_content').html(data);
-			volunteer_marker.setPosition(location);
-			volunteer_marker.setVisible(true);
-			info_window.open(map, volunteer_marker);
-		});
-	}
+        function buildArrayIndex(ary) {
+            var result = {};
+            for (var i = 0; i < ary.length; i++) {
+                var id = ary[i].id();
+                if (id != null) {
+                    result[id] = i;
+                }
+            }
+            return result;
+        }
 
-	function on_info_window_closed() {
-		volunteer_marker.setVisible(false);
-	}
+        var current = self.mission_skills();
+        var currentIndex = buildArrayIndex(current);
+        var skillsNotInCurrent = [];
 
-	window.close_info_window = function() {
-		info_window.close();
-		volunteer_marker.setVisible(false);
-	}
+        for (var i = 0; i < to_merge.length; i++) {
+            var new_skill = to_merge[i];
+            if (new_skill.id in currentIndex) {
+                delete currentIndex[new_skill.id];
+            } else {
+                skillsNotInCurrent.push(new_skill);
+            }
+        }
 
-	window.hide_or_show_candidate_lists = function() {
-		$('.listitem').each(function(){
-			var container = $(this);
-			var hide = $('.count', container).html() != '0';
-			container.toggle(hide);
-			container.next('hr').toggle(hide);
-		});
-	}
-};
+        i = 0;
+        while (i < current.length) {
+            var cur_skill = current[i];
+            if (cur_skill.id() == null) {
+                // this is an added skill
+                // if possible match it up with skillsNotInCurrent, otherwise
+                // just leave it there so it gets added on next submit
+                var new_skill = skillsNotInCurrent.shift();
+                if (new_skill) {
+                    cur_skill.id(new_skill.id);
+                }
+                i++;
+            } else if (cur_skill.id() in currentIndex) {
+                // current skill is still in the index, so it wasn't present in
+                // to_merge it's no longer valid and should be deleted
+                self.mission_skills.splice(i, 1);
+            } else {
+                // current skill was already in to_merge, so skip
+                i++;
+            }
+        }
+        for (i = 0; i < skillsNotInCurrent.length; i++) {
+            // remaining skills from to_merge should be added with _destroy so
+            // they get deleted next submit
+            new_skill = skillsNotInCurrent[i];
+            new_skill = new MissionSkillViewModel(new_skill.id, 
+                    new_skill.req_vols, new_skill.skill_id);
+            new_skill._destroy(true);
+            self.mission_skills.push(new_skill);
+        }
+    }
+
+    function loadCandidates(candidates) {
+        candidates.sort(function(a, b) {
+            return a.volunteer.name.localeCompare(b.volunteer.name);
+        });
+        self.candidates(candidates);
+        var lists = { confirmed: [], pending: [], denied: [], unresponsive: [] };
+        for (var i = 0; i < candidates.length; i++) {
+            var candidate = candidates[i];
+            lists[candidate.status].push(new CandidateViewModel(candidate));
+        }
+        self.confirmed_candidates(lists.confirmed);
+        self.pending_candidates(lists.pending);
+        self.denied_candidates(lists.denied);
+        self.unresponsive_candidates(lists.unresponsive);
+    }
+
+    function updateBreadCrumb(name, url) {
+        $('.BreadCrumb li').last().empty().append(
+                $('<a>').text(name).attr('href', url));
+        if (window.history && window.history.replaceState) {
+            window.history.replaceState({}, document.title, url);
+        }
+    }
+
+    function updateMissionData(data, initialUpdate) {
+        startForcedUpdate();
+
+        var mission = data.mission;
+
+        if (initialUpdate) {
+            // this fields are only updated when loading the mission data for the
+            // first time
+            self.name(mission.name);
+            self.reason(mission.reason);
+            self.address(mission.address, true);
+            if (mission.lat == null || mission.lng == null) {
+                self.latlng(null);
+            } else {
+                self.latlng(new google.maps.LatLng(mission.lat, mission.lng));
+            }
+            self.use_custom_text(mission.use_custom_text);
+            self.custom_text(mission.custom_text);
+
+            // initially set the mission skills; will partially update the info on
+            // ajax updates
+            self.mission_skills.removeAll();
+            for (var i = 0; i < mission.mission_skills.length; i++) {
+                var req_skill = mission.mission_skills[i];
+                self.mission_skills.push(new MissionSkillViewModel(req_skill.id, 
+                            req_skill.req_vols, req_skill.skill_id));
+            }
+        } else {
+            mergeMissionSkills(mission.mission_skills);
+        }
+
+        // update the non-user-editable data for the mission
+        self.id(mission.id);
+        self.status(mission.status);
+        self.farthest(mission.farthest);
+        self.confirmed_count(mission.confirmed_count);
+
+        // load the candidates lists
+        loadCandidates(mission.candidates);
+
+        self.urls = data.urls;
+    }
+
+    self.loadMissionData = function(data) {
+        // initial mission data loading
+        updateMissionData(data, true);
+    };
+
+    // periodic refresh code
+    var refreshing = false;
+    var refreshTimeout = null;
+    var refreshInterval = 5000;
+    function queueNextRefresh() {
+        if (refreshing && !refreshTimeout) {
+            refreshTimeout = setTimeout(function() {
+                refreshTimeout = null;
+                immediateSubmit('refresh');
+            }, refreshInterval);
+        }
+    }
+    function startRefresh() {
+        refreshing = true;
+        clearTimeout(refreshTimeout);
+        refreshTimeout = null;
+        queueNextRefresh();
+    }
+    function stopRefresh() {
+        clearTimeout(refreshTimeout);
+        refreshTimeout = null;
+        refreshing = false;
+    }
+}
+
+function onMissionPage() {
+    extendKnockout();
+
+    $(function() {
+        var model = new MissionViewModel();
+        if (MissionData && MissionData.mission) {
+            model.loadMissionData(MissionData);
+        }
+        ko.applyBindings(model);
+
+        // bind mission skills ux-nstep elements, since the elements are
+        // dynamically created, and instedd platform binds the click event
+        // specifically to the arrow buttons
+        function ux_nstep(button, step) {
+            var elt = $(button).prevAll('input')[0],
+                req_skill = ko.dataFor(elt),
+                currentValue;
+            if (req_skill && !$(elt).attr('readonly') && !$(elt).attr('disabled')) {
+                currentValue = req_skill.req_vols();
+                req_skill.req_vols(currentValue + step);
+            }
+        }
+        $('.mission_skills').delegate('.kdown', 'click', function(evt) {
+            ux_nstep(this, -1);
+        });
+        $('.mission_skills').delegate('.kup', 'click', function(evt) {
+            ux_nstep(this, +1);
+        });
+    });
+}
+

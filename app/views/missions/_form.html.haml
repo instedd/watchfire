@@ -1,26 +1,32 @@
-= form_for mission, :remote => true, :html => {:id => 'mission_form'} do |f|
-	= f.hidden_field :lat
-	= f.hidden_field :lng
-	= f.label :name, "Event name"
-	%br
-	= f.text_field :name, :class => "ux-text w58", :size => "2", :placeholder => "Enter the name of this event, e.g. 'Fire on Rangeland' ", :readonly => mission.running? || mission.finished?
-	%br
-	%br
-	= f.label "Recruitees"
-	- mission.mission_skills.each do |mission_skill|
-		= f.fields_for :mission_skills, mission_skill do |ms|
-			= render :partial => 'mission_skill', :locals => { :f => ms }
-	- unless !mission.created? || mission.new_record? || skills.actives.empty?
-		%button.cadd Recruit for another skill
-	%br
-	= f.label :reason, "Description"
-	%br
-	= f.text_area :reason, :class => "w54 ux-wajbar", :maxlength => "200", :size => "", :readonly => mission.running? || mission.finished?, :placeholder => "Enter the description, e.g 'a single house fire'"
-	%br
-	= f.label :address
-	%br
-	%span.small-text Enter an address to find recruitees nearby or you can right-click in the map to indicate a location
-	= f.text_field :address, :class => "w42 ux-text", :readonly => !mission.created?, :placeholder => "Enter the address, e.g '1710 Trousdale, Burlingame'"
-	%button#search_address.fsearch{:disabled => !mission.created?, :class => !mission.created? ? "disabled" : "" } Find recruitees nearby
-	%br
-	%br
+%div(data-bind="css: { field_with_errors: 'name' in errors() }")
+  %label(for="name") Event name
+  %br
+  %input#name.ux-text.w58(placeholder="Enter the name of this event, e.g. 'Fire on Rangeland'" data-bind="value: name, attr: { readonly: isRunningOrFinished }")
+  %br
+%br
+%label Recruitees
+.mission_skills(data-bind="foreach: mission_skills")
+  .mission_skill(data-bind="visible: !_destroy()")
+    %span.ux-nstep.w06
+      %input.req_vols(type="text" size="2" data-min="1" data-bind="value: req_vols, attr: { readonly: $root.isRunningOrFinished() }")
+    %span
+      %select.ux-dropdown.w30.skill_id(data-bind="options: $root.activeSkills, optionsText: 'pluralized', optionsValue: 'id', value: skill_id, enable: $root.isCreated()")
+    %button.cremove(data-bind="click: $root.removeMissionSkill, visible: $root.visibleSkills() > 1 && $root.isCreated()")
+    %br
+%div(data-bind="if: activeSkills.length > 1 && isCreated()")
+  %button.cadd(data-bind="click: addMissionSkill") Recruit for another skill
+%br
+%div(data-bind="css: { field_with_errors: 'reason' in errors() }")
+  %label(for="reason") Description
+  %br
+  %textarea#reason.w54.ux-wajbar(maxlength="200" size="" placeholder="Enter the description, e.g 'a single house fire'" data-bind="value: reason, attr: { readonly: isRunningOrFinished }")
+  %br
+%div(data-bind="css: { field_with_errors: 'lat' in errors() || 'lng' in errors() || 'address' in errors() }")
+  %label(for="address") Address
+  %br
+  %span.small-text Enter an address to find recruitees nearby or you can right-click in the map to indicate a location
+  %input#address.w42.ux-text(placeholder="Enter the address, e.g '1710 Trousdale, Burlingame'" data-bind="value: address, attr: { readonly: !isCreated() }")
+  %button#search_address.fsearch(data-bind="click: findRecruitees, enable: isCreated, css: isCreated() ? '' : 'disabled'") Find recruitees nearby
+  %br
+%br
+

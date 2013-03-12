@@ -1,7 +1,5 @@
-- if mission.farthest
-	.box.plain{:class => mission.running? ? "green" : "grey"}
-		%span#distance_label
-			= mission.status_running? ? 'Calling volunteers up to' : 'Will call volunteers up to'
-		%span#distance_value
-			= mission.farthest
-		mi
+.box.plain(data-bind="visible: farthest, css: isRunning() ? 'green' : 'grey'")
+  %span#distance_label(data-bind="text: distanceLegend")
+  %span#distance_value(data-bind="text: farthest")
+  mi
+
