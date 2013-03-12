@@ -13,7 +13,7 @@
 					%option{:value => ''} Show all
 		- if missions.all.present?
 			- missions.each do |mission|
-				%tr.mission.link{'data-url' => koshow_mission_path(mission), 'data-status' => mission.status}
+				%tr.mission.link{'data-url' => mission_path(mission), 'data-status' => mission.status}
 					%td{:class => mission.running? ? 'mactive' : 'mpaused'}
 						%span
 						= mission.title
@@ -28,7 +28,7 @@
 								.M
 									%span.Fill{:style => progress_percentage(mission)}
 						%button.farrow
-			%tr.link{'data-url' => konew_missions_path}
+			%tr.link{'data-url' => new_mission_path}
 				%td.add Create Event
 				%td
 					%button.cadd
@@ -41,7 +41,7 @@
 			- if current_organization
 				%div= image_tag 'http://theme.instedd.org/theme/images/icons/72/grey/fire.png'
 				%div.info You have no events yet
-				%a.add{:href => konew_missions_path}
+				%a.add{:href => new_mission_path}
 					Create Event
 					%button.cadd
 			- else

@@ -12,15 +12,16 @@
 .left
   #left_panel.box.w60(data-bind="css: { grey: isRunningOrFinished }")
     #form_container
-      = label_tag :name, "Event name"
-      %br
-      = text_field_tag :name, '', :class => "ux-text w58", :size => "2", 
-        :placeholder => "Enter the name of this event, e.g. 'Fire on Rangeland'", 
-        'data-bind' => 'value: name, attr: { readonly: isRunningOrFinished }'
-      %br
+      %div(data-bind="css: { field_with_errors: 'name' in errors() }")
+        = label_tag :name, "Event name"
+        %br
+        = text_field_tag :name, '', :class => "ux-text w58", :size => "2", 
+          :placeholder => "Enter the name of this event, e.g. 'Fire on Rangeland'", 
+          'data-bind' => 'value: name, attr: { readonly: isRunningOrFinished }'
+        %br
       %br
       = label_tag "Recruitees"
-      %div(data-bind="foreach: mission_skills")
+      .mission_skills(data-bind="foreach: mission_skills")
         .mission_skill(data-bind="visible: !_destroy()")
           %span.ux-nstep.w06
             = text_field_tag :req_vols, '', :size => "2", :class => 'req_vols', 
@@ -34,21 +35,23 @@
       %div(data-bind="if: activeSkills.length > 1 && isCreated()")
         %button.cadd(data-bind="click: addMissionSkill") Recruit for another skill
       %br
-      = label_tag :reason, "Description"
-      %br
-      = text_area_tag :reason, '', :class => "w54 ux-wajbar", 
-        :maxlength => "200", :size => "", 
-        :placeholder => "Enter the description, e.g 'a single house fire'", 
-        'data-bind' => 'value: reason, attr: { readonly: isRunningOrFinished }'
-      %br
-      = label_tag :address
-      %br
-      %span.small-text Enter an address to find recruitees nearby or you can right-click in the map to indicate a location
-      = text_field_tag :address, '', :class => "w42 ux-text", 
-        :placeholder => "Enter the address, e.g '1710 Trousdale, Burlingame'", 
-        "data-bind" => "value: address, attr: { readonly: !isCreated() }"
-      %button#search_address.fsearch(data-bind="click: findRecruitees, enable: isCreated, css: isCreated() ? '' : 'disabled'") Find recruitees nearby
-      %br
+      %div(data-bind="css: { field_with_errors: 'reason' in errors() }")
+        = label_tag :reason, "Description"
+        %br
+        = text_area_tag :reason, '', :class => "w54 ux-wajbar", 
+          :maxlength => "200", :size => "", 
+          :placeholder => "Enter the description, e.g 'a single house fire'", 
+          'data-bind' => 'value: reason, attr: { readonly: isRunningOrFinished }'
+        %br
+      %div(data-bind="css: { field_with_errors: 'lat' in errors() || 'lng' in errors() || 'address' in errors() }")
+        = label_tag :address
+        %br
+        %span.small-text Enter an address to find recruitees nearby or you can right-click in the map to indicate a location
+        = text_field_tag :address, '', :class => "w42 ux-text", 
+          :placeholder => "Enter the address, e.g '1710 Trousdale, Burlingame'", 
+          "data-bind" => "value: address, attr: { readonly: !isCreated() }"
+        %button#search_address.fsearch(data-bind="click: findRecruitees, enable: isCreated, css: isCreated() ? '' : 'disabled'") Find recruitees nearby
+        %br
       %br
     #map_canvas.map
     .hidden
@@ -125,7 +128,7 @@
     %a.arrow
       %span.count(data-bind="text: candidates().length")
       %span(data-bind="text: title")
-  %table.ux-content
+  %table.ux-content.candidates
     %tbody(data-bind="foreach: candidates")
       %tr.candidate(data-bind="css: active() ? '' : 'blocked', click: $root.showCandidate")
         %td
@@ -136,7 +139,8 @@
           %div(data-bind="html: volunteer.sms_numbers")
           %br
           %div(data-bind="html: volunteer.voice_numbers")
-          %span(data-bind="text: answered_at, visible: answered_at")
+          %div(data-bind="if: answered_at")
+            %span(data-bind="timeago: answered_at")
 
 :javascript
   var DefaultSkill = { id: null, name: 'Volunteer', pluralized: 'Volunteers' };

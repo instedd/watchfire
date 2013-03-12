@@ -38,6 +38,16 @@ ko.extenders.integer = function(target, minValue, maxValue) {
     return result;
 };
 
+ko.bindingHandlers.timeago = {
+    init: function(element, valueAccessor) {
+        var value = valueAccessor();
+        $(element).attr('title', value).timeago();
+    },
+    update: function(element, valueAccessor) {
+        var value = valueAccessor();
+        $(element).attr('title', value);
+    }
+};
 
 function MapView(element) {
     var self = this;
@@ -78,7 +88,6 @@ function MapView(element) {
         icon: icons.eventDisabled
     });
     var circle = new google.maps.Circle({ map: map, clickable: false });
-    var outerCircle = new google.maps.Circle({ map: map, clickable: false });
 
     var infoWindow = new google.maps.InfoWindow({
         content: document.getElementById("info_window_content")
@@ -131,22 +140,14 @@ function MapView(element) {
 
     self.setRecruitRadius = function(radius, dontFitBounds) {
         radius = radius || 0;
-        outerCircle.setOptions({
+        circle.setOptions({
             center: missionMarker.getPosition(),
             radius: radius * 1609,
             clickable: false,
             strokeWeight: 4,
-            strokeColor: '#FFFFFF',
-            fillOpacity: outerCircle.fillOpacity != null ? outerCircle.fillOpacity : 0.5,
+            strokeColor: '#999999',
+            fillOpacity: circle.fillOpacity != null ? circle.fillOpacity : 0.5,
             fillColor: '#000000'
-        });
-
-        circle.setOptions({
-            center: missionMarker.getPosition(),
-            radius: radius * 1609,
-            strokeWeight: 2,
-            strokeColor: circle.strokeColor != null ? circle.strokeColor : '#999999',
-            fillOpacity: 0.0
         });
 
         if (!dontFitBounds && radius > 0) map.fitBounds(circle.getBounds());
@@ -160,15 +161,15 @@ function MapView(element) {
 
         function beat() {
             alternance = !alternance;
-            outerCircle.setOptions({ strokeColor: alternance ? '#999999' : '#ff6600' });
+            circle.setOptions({ strokeColor: alternance ? '#999999' : '#ff6600' });
             beatTimeout = setTimeout(beat, beatInterval);
         }
-        outerCircle.setOptions({ fillOpacity: 0.3 });
+        circle.setOptions({ fillOpacity: 0.3 });
         missionMarker.setIcon(icons.eventEnabled);
         beat();
     };
     self.stopBeating = function() {
-        outerCircle.setOptions({ fillOpacity: 0.5, strokeColor: '#999999' });
+        circle.setOptions({ fillOpacity: 0.5, strokeColor: '#999999' });
         missionMarker.setIcon(icons.eventDisabled);
 
         clearTimeout(beatTimeout);
@@ -195,11 +196,16 @@ function CandidateView(data) {
     self.isPending = data.status == 'pending';
     self.active = ko.observable(data.active);
 
+    var current_voice_number = data.last_call && data.last_call.voice_number;
     function buildNumbers(collection, spanClass, disabledClass) {
         var result = [];
-        var active = self.active();
         for (var i = 0; i < collection.length; i++) {
-            result.push($('<span>').text(collection[i].address).
+            var address = collection[i].address;
+            var active = self.active() || address == data.answered_from;
+            if (address == current_voice_number) {
+                address += ' (' + data.voice_status + ')';
+            }
+            result.push($('<span>').text(address).
                     addClass(active ? spanClass : disabledClass).
                     wrap('<p>').parent().html());
         }
@@ -525,13 +531,21 @@ function MissionViewModel() {
     // save & load code
     var submitData = ko.computed(function() {
         var location = self.latlng();
+        var prio = 1;
         var mission_skills = $.map(self.mission_skills(), function(ms) {
-            var result = { req_vols: ms.req_vols(), skill_id: ms.skill_id() || '' };
+            var result = { 
+                req_vols: ms.req_vols(), 
+                skill_id: ms.skill_id() || '',
+                priority: prio
+            };
             if (ms.id()) {
                 result.id = ms.id();
                 if (ms._destroy()) {
                     result._destroy = true;
                 }
+            }
+            if (!ms._destroy()) {
+                prio++;
             }
             return result;
         });
@@ -666,6 +680,9 @@ function MissionViewModel() {
 
         // process error messages
         self.errors(result.errors);
+        if (result.mission.id) {
+            updateBreadCrumb(result.mission.name, result.urls.update);
+        }
 
         if (submitQueue.length == 0) {
             self.dirty(false);
@@ -801,6 +818,14 @@ function MissionViewModel() {
         self.unresponsive_candidates(lists.unresponsive);
     }
 
+    function updateBreadCrumb(name, url) {
+        $('.BreadCrumb li').last().empty().append(
+                $('<a>').text(name).attr('href', url));
+        if (window.history && window.history.replaceState) {
+            window.history.replaceState({}, document.title, url);
+        }
+    }
+
     self.loadMissionData = function(data) {
         startForcedUpdate();
 
@@ -862,5 +887,24 @@ $(function() {
         model.urls = MissionData.urls;
     }
     ko.applyBindings(model);
+
+    // bind mission skills ux-nstep elements, since the elements are
+    // dynamically created, and instedd platform binds the click event
+    // specifically to the arrow buttons
+    function ux_nstep(button, step) {
+        var elt = $(button).prevAll('input')[0],
+            req_skill = ko.dataFor(elt),
+            currentValue;
+        if (req_skill && !$(elt).attr('readonly') && !$(elt).attr('disabled')) {
+            currentValue = req_skill.req_vols();
+            req_skill.req_vols(currentValue + step);
+        }
+    }
+    $('.mission_skills').delegate('.kdown', 'click', function(evt) {
+        ux_nstep(this, -1);
+    });
+    $('.mission_skills').delegate('.kup', 'click', function(evt) {
+        ux_nstep(this, +1);
+    });
 });
 

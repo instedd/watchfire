@@ -1,13 +1,10 @@
 class MissionsController < ApplicationController
 	before_filter :authenticate_user!
-  before_filter :add_missions_breadcrumb, :only => [:index, :new, :konew, :show, :koshow]
+  before_filter :add_missions_breadcrumb, :only => [:index, :new, :show]
 
   expose(:mission_json) {
-    mission.as_json(:include => {
-      :mission_skills => { 
-        :only => [:id, :req_vols, :skill_id, :priority] 
-      },
-      :candidates => { 
+    candidates = mission.candidates_with_channels.map { |candidate| 
+      result = candidate.as_json(
         :only => [:id, :active, :answered_at, :answered_from, :status, :voice_status],
         :include => {
           :volunteer => { 
@@ -18,6 +15,16 @@ class MissionsController < ApplicationController
             }
           }
         }
+      )["candidate"]
+      if candidate.voice_status && candidate.status == :pending
+        result["last_call"] = candidate.last_call.as_json['call']
+      end
+      result
+    }
+
+    mission.as_json(:include => {
+      :mission_skills => { 
+        :only => [:id, :req_vols, :skill_id, :priority] 
       }
     }).
     deep_merge({ 
@@ -26,7 +33,8 @@ class MissionsController < ApplicationController
         "farthest" => mission.farthest,
         "total_req_vols" => mission.total_req_vols,
         "confirmed_count" => mission.candidate_count(:confirmed),
-        "progress" => mission.progress
+        "progress" => mission.progress,
+        "candidates" => candidates
       },
       :urls => mission.new_record? ? {
         :update => missions_path 
@@ -46,6 +54,7 @@ class MissionsController < ApplicationController
     respond_to do |format|
       format.html {
         add_breadcrumb mission.name, mission_path(mission)
+        render 'koshow'
       }
       format.json { 
         render :json => mission_json
@@ -57,19 +66,8 @@ class MissionsController < ApplicationController
 	  add_breadcrumb "New", :new_mission_path
     mission.add_mission_skill
 
-		render 'show'
-	end
-
-	def konew
-	  add_breadcrumb "New", :new_mission_path
-    mission.add_mission_skill
-
 		render 'koshow'
 	end
-
-  def koshow
-    add_breadcrumb mission.name, mission_path(mission)
-  end
 
 	def index
 	end
@@ -92,9 +90,6 @@ class MissionsController < ApplicationController
 		else
 			mission.save
 		end
-    if params[:new_skill] && mission.valid?
-      mission.add_mission_skill
-    end
     respond_to do |format|
       format.js
       format.json {
@@ -125,19 +120,19 @@ class MissionsController < ApplicationController
 
   def refresh
     respond_to do |format|
-      format.html { render 'show' }
+      format.html { render 'koshow' }
       format.js
     end
   end
 
   def finish
     mission.finish
-    render 'show'
+    render 'koshow'
   end
 
   def open
     mission.open
-    render 'show'
+    render 'koshow'
   end
 
 	def destroy
