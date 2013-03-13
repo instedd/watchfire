@@ -15,17 +15,17 @@
 .tablewrapp
   %table.GralTable.ButtonTable.w-pagination
     %tr
-      = sort_header 'Name', :name
-      = sort_header 'Address', :address
-      %th Voice Numbers
-      %th SMS Numbers
+      = sort_header 'Name', :name, :style => 'width: 25%'
+      = sort_header 'Address', :address, :style => 'width: 45%'
+      %th(style="width: 15%") Voice Numbers
+      %th(style="width: 15%" colspan="2") SMS Numbers
     - @volunteers.each do |volunteer|
       %tr.link{'data-url' => edit_volunteer_path(volunteer)}
         %td= volunteer.name
         %td= volunteer.address
         %td= volunteer.voice_numbers
+        %td= volunteer.sms_numbers
         %td
-          = volunteer.sms_numbers
           = form_tag volunteer_path(volunteer), :method => :delete, 'data-confirm' => 'Are you sure?' do
             %button.avoid.fdelete
           = form_tag edit_volunteer_path(volunteer), :method => :get do
