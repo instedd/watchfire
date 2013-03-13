@@ -4,6 +4,7 @@ function MissionSkillViewModel(id, req_vols, skill_id) {
     self.req_vols = ko.observable(req_vols).extend({ integer: 1 });
     self.skill_id = ko.observable(skill_id);
     self._destroy = ko.observable(false);
+    self.availableSkills = ko.observableArray();
 }
 
 function CandidateViewModel(data) {
@@ -44,9 +45,9 @@ function MissionViewModel() {
 
     // DefaultSkill and ActiveSkills are defined by the view
     self.activeSkills = [DefaultSkill].concat(ActiveSkills || []);
-    self.skillMap = {};
+    var skillMap = {};
     $.each(self.activeSkills, function(index, skill) {
-        self.skillMap[skill.id] = skill;
+        skillMap[skill.id] = skill;
     });
     self.urls = {};
 
@@ -104,7 +105,7 @@ function MissionViewModel() {
                 return !req_skill._destroy();
             }), function(req_skill) {
                 var req_vols = req_skill.req_vols();
-                var skill = self.skillMap[req_skill.skill_id()] || DefaultSkill;
+                var skill = skillMap[req_skill.skill_id()] || DefaultSkill;
                 return req_vols + ' ' + skill[req_vols == 1 ? 'name' : 'pluralized'];
             });
             result = result + ': ' + req_skills.join(', ');
@@ -123,6 +124,40 @@ function MissionViewModel() {
             }
         }
         return result;
+    });
+    self.availableSkills = ko.computed(function() {
+        var req_skills = self.mission_skills(),
+            taken = [],
+            available = [].concat(self.activeSkills),
+            i = 0;
+
+        for (i = 0; i < req_skills.length; i++) {
+            if (req_skills[i]._destroy()) continue;
+            var skill_id = req_skills[i].skill_id();
+            if (taken.indexOf(skill_id) < 0) {
+                taken.push(skill_id);
+            }
+        }
+        i = 0;
+        while (i < available.length) {
+            var skill_id = available[i].id;
+            if (taken.indexOf(skill_id) >= 0) {
+                available.splice(i, 1);
+            } else {
+                i++;
+            }
+        }
+        return available;
+    });
+    self.availableSkills.subscribe(function(available) {
+        var req_skills = self.mission_skills(), i = 0;
+
+        for (i = 0; i < req_skills.length; i++) {
+            if (req_skills[i]._destroy()) continue;
+            var current = skillMap[req_skills[i].skill_id()];
+            var req_available = (current ? [current] : []).concat(available);
+            req_skills[i].availableSkills(req_available);
+        }
     });
     self.distanceLegend = ko.computed(function() {
         if (self.status() == 'running') {
@@ -202,7 +237,10 @@ function MissionViewModel() {
     // behavior methods
     self.addMissionSkill = function() {
         if (self.status() == 'created') {
-            self.mission_skills.push(new MissionSkillViewModel(null, 1, null));
+            var available_skill = self.availableSkills()[0];
+            self.mission_skills.push(
+                    new MissionSkillViewModel(null, 1, 
+                        available_skill ? available_skill.id : null));
         }
     };
     self.removeMissionSkill = function(skill) {
