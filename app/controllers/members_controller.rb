@@ -17,6 +17,10 @@ class MembersController < ApplicationController
         redirect_to members_path, alert: "#{params[:email]} is already a member of #{current_organization.name}"
       when :already_invited
         redirect_to members_path, alert: "#{params[:email]} was already invited to #{current_organization.name}"
+      when :invalid_email
+        redirect_to members_path, alert: "#{params[:email]} is not a valid email address"
+      when :delivery_error
+        redirect_to members_path, alert: "There was an error sending an invitation to #{params[:email]}"
       end
     else
       redirect_to members_path, alert: "You can't invite users because are not an owner of #{current_organization.name}"

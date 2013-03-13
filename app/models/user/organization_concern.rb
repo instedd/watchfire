@@ -37,9 +37,18 @@ module User::OrganizationConcern
       if existing_invite
         :already_invited
       else
-        invite = organization.invites.create! email: user_email, token: Guid.new.to_s
-        UserMailer.invite_to_organization(self, organization, user_email, invite.token).deliver
-        :invited_new
+        invite = organization.invites.create email: user_email, token: Guid.new.to_s
+        if invite.valid?
+          begin
+            UserMailer.invite_to_organization(self, organization, user_email, invite.token).deliver
+            :invited_new
+          rescue
+            invite.destroy
+            :delivery_error
+          end
+        else
+          :invalid_email
+        end
       end
     end
   end

@@ -19,6 +19,7 @@ gem 'kaminari'
 gem 'decent_exposure'
 gem 'guid'
 gem 'foreman'
+gem 'valid_email'
 
 group :assets do
   gem 'sass-rails', "  ~> 3.2.3"

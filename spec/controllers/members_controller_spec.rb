@@ -43,12 +43,21 @@ describe MembersController do
     end
 
     it "rejects blank email" do
-      post :invite
+      lambda do
+        post :invite
+        response.should redirect_to(members_path)
+      end.should_not change {
+        Invite.where(organization_id: organization.id).all.size
+      }
+    end
 
-      response.should redirect_to(members_path)
-
-      invites = Invite.where(organization_id: organization.id).all
-      invites.length.should eq(0)
+    it "rejects an invalid email" do
+      lambda do
+        post :invite, :email => '123'
+        response.should redirect_to(members_path)
+      end.should_not change {
+        Invite.where(organization_id: organization.id).all.size
+      }
     end
   end
 
