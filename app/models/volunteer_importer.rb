@@ -50,7 +50,7 @@ class VolunteerImporter
   end
 
   def geocode location
-    @geocode_cache[location] = GoogleGeocoder.geocode(location) unless @geocode_cache[location]
+    @geocode_cache[location] = GoogleGeocoder3.geocode(location) unless @geocode_cache[location]
     @geocode_cache[location]
   end
 
