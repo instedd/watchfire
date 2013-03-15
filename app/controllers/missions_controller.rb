@@ -1,13 +1,13 @@
 class MissionsController < ApplicationController
-	before_filter :authenticate_user!
+  before_filter :authenticate_user!
   before_filter :add_missions_breadcrumb, :only => [:index, :new, :show]
 
   expose(:mission_json) {
-    candidates = mission.candidates_with_channels.map { |candidate| 
+    candidates = mission.candidates_with_channels.map { |candidate|
       result = candidate.as_json(
         :only => [:id, :active, :answered_at, :answered_from, :status, :voice_status],
         :include => {
-          :volunteer => { 
+          :volunteer => {
             :only => [:id, :name, :lat, :lng],
             :include => {
               :sms_channels => { :only => :address },
@@ -23,13 +23,13 @@ class MissionsController < ApplicationController
     }
 
     mission.as_json(:include => {
-      :mission_skills => { 
-        :only => [:id, :req_vols, :skill_id, :priority] 
+      :mission_skills => {
+        :only => [:id, :req_vols, :skill_id, :priority]
       }
     }).
-    deep_merge({ 
-      :errors => mission.errors, 
-      "mission" => { 
+    deep_merge({
+      :errors => mission.errors,
+      "mission" => {
         "farthest" => mission.farthest,
         "total_req_vols" => mission.total_req_vols,
         "confirmed_count" => mission.candidate_count(:confirmed),
@@ -37,7 +37,7 @@ class MissionsController < ApplicationController
         "candidates" => candidates
       },
       :urls => mission.new_record? ? {
-        :update => missions_path 
+        :update => missions_path
       } : {
         :update => mission_path(mission),
         :start => start_mission_path(mission),
@@ -55,45 +55,45 @@ class MissionsController < ApplicationController
       format.html {
         add_breadcrumb mission.name, mission_path(mission)
       }
-      format.json { 
+      format.json {
         render :json => mission_json
       }
     end
   end
 
-	def new
-	  add_breadcrumb "New", :new_mission_path
+  def new
+    add_breadcrumb "New", :new_mission_path
     mission.add_mission_skill
 
-		render 'show'
-	end
-
-	def index
-	end
-
-	def create
-		mission.user = current_user
-    mission.organization = current_organization
-		mission.check_and_save
-    render :json => mission_json
-	end
-
-	def update
-		if mission.check_for_volunteers?
-			mission.check_and_save
-		else
-			mission.save
-		end
-	  render :json => mission_json
+    render 'show'
   end
 
-	def start
-	  mission.call_volunteers
-    render :json => mission_json
-	end
+  def index
+  end
 
-	def stop
-	  mission.stop_calling_volunteers
+  def create
+    mission.user = current_user
+    mission.organization = current_organization
+    mission.check_and_save
+    render :json => mission_json
+  end
+
+  def update
+    if mission.check_for_volunteers?
+      mission.check_and_save
+    else
+      mission.save
+    end
+    render :json => mission_json
+  end
+
+  def start
+    mission.call_volunteers
+    render :json => mission_json
+  end
+
+  def stop
+    mission.stop_calling_volunteers
     render :json => mission_json
   end
 
@@ -107,15 +107,15 @@ class MissionsController < ApplicationController
     render 'show'
   end
 
-	def destroy
-		mission.destroy
-		redirect_to missions_url
-	end
+  def destroy
+    mission.destroy
+    redirect_to missions_url
+  end
 
-	def export
-		csv = VolunteerExporter.export mission
-		send_data csv, :type => 'text/csv', :filename => "#{mission.name}_results.csv"
-	end
+  def export
+    csv = VolunteerExporter.export mission
+    send_data csv, :type => 'text/csv', :filename => "#{mission.name}_results.csv"
+  end
 
   def check_all
     mission.enable_all_pending
@@ -127,7 +127,7 @@ class MissionsController < ApplicationController
     render :json => mission_json
   end
 
-	private
+  private
 
   def add_missions_breadcrumb
     add_breadcrumb "#{current_organization.name}", organizations_path if current_organization
