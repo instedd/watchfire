@@ -2,11 +2,33 @@
   = pluralize @view_model.size, 'Volunteer'
   - if @view_model.has_conflicts?
     %span.err-message= ", #{pluralize @view_model.conflicts, 'Conflict'}"
+.clear
+%p
+  %span
+    = radio_button_tag 'selection', 'all', class: 'default'
+    All
+  %span
+    = radio_button_tag 'selection', 'new'
+    New
+  %span
+    = radio_button_tag 'selection', 'existing'
+    Existing
+  %span
+    = radio_button_tag 'selection', 'error'
+    With Errors
+  %br
+  %span.small-text.new.desc
+    These are the new volunteers that will be imported
+  %span.small-text.existing.desc
+    These volunteers are already present in the application, their information will be updated
+  %span.small-text.error.desc
+    These volunteers have errors and won't be imported. You can fix the errors in the CSV and upload them again
 = form_for @view_model, :url => confirm_import_volunteers_path do |f|
   .tablewrapp
     %table.GralTable.ButtonTable
       %tr
         %th Name
+        %th Skills
         %th Address
         %th Voice numbers
         %th SMS numbers
@@ -22,7 +44,7 @@
           = c.hidden_field :skill_names
           - unless volunteer.new_record?
             = c.hidden_field :id
-        %tr.volunteer{:class => volunteer.valid? ? "" : "err-message"}
+        %tr.volunteer{:class => class_for(volunteer)}
           %td
             - if volunteer.valid?
               = c.check_box :selected
@@ -30,6 +52,7 @@
               %span.err-message.error_trigger
               .error_content= import_errors_for volunteer
             = volunteer.name
+          %td= volunteer.skill_names
           %td= volunteer.address
           %td= volunteer.voice_numbers
           %td= volunteer.sms_numbers

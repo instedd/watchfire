@@ -16,6 +16,12 @@ var onVolunteerImport = function() {
 				content: trigger.siblings('.error_content')
 			});
 		});
+
+		$('input[type=radio]').click(function(){
+			filter_by($(this).val());
+		});
+		$('input[type=radio].default').attr('checked', 'checked');
+		filter_by('all');
 	});
 
 	function init_events() {
@@ -32,6 +38,25 @@ var onVolunteerImport = function() {
 			$('.conflict').addClass('hidden');
 		} else if (status == 'conflict') {
 			$('.valid').addClass('hidden');
+		}
+	}
+
+	function filter_by(selection) {
+		$('.desc').hide();
+		if (selection == 'all') {
+			$('.volunteer').show();
+		} else if (selection == 'new') {
+			$('.volunteer').hide();
+			$('.volunteer.new').not('.error').show();
+			$('.desc.new').show();
+		} else if (selection == 'existing') {
+			$('.volunteer').hide();
+			$('.volunteer.existing').not('.error').show();
+			$('.desc.existing').show();
+		} else if (selection == 'error') {
+			$('.volunteer').hide();
+			$('.volunteer.error').show();
+			$('.desc.error').show();
 		}
 	}
 };

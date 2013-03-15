@@ -28,6 +28,7 @@ module User::OrganizationConcern
     existing_user = User.find_by_email user_email
     if existing_user
       if existing_user.join organization
+        UserMailer.notify_invitation_to_organization(self, organization, user_email).deliver
         :invited_existing
       else
         :already_member

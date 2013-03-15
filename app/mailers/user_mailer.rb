@@ -13,4 +13,13 @@ class UserMailer < Devise::Mailer
       subject: "#{inviter.display_name} invited you to join Watchfire in the #{organization.name} organization",
     })
   end
+
+  def notify_invitation_to_organization(inviter, organization, email)
+    @organization = organization
+    @email = email
+    mail({
+      to: email,
+      subject: "#{inviter.display_name} invited you join #{organization.name} organization in Watchfire",
+    })
+  end
 end
