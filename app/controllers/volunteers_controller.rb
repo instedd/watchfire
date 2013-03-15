@@ -49,7 +49,7 @@ class VolunteersController < ApplicationController
   def edit
     @volunteer = Volunteer.find(params[:id])
 
-    add_breadcrumb @volunteer.name, volunteer_path(@volunteer)
+    add_breadcrumb @volunteer.name, edit_volunteer_path(@volunteer)
   end
 
   # POST /volunteers
