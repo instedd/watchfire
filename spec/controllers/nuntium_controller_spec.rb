@@ -49,7 +49,7 @@ describe NuntiumController do
     end
     
     it "should fail with incorrect auth" do
-      @request.env['HTTP_AUTHORIZATION'] = http_auth 'foo', 'bar'
+      @request.env['HTTP_AUTHORIZATION'] = http_auth 'invalid_user', 'invalid_password'
       post 'receive'
       response.status.should be(401)
     end

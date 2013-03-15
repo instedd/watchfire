@@ -24,13 +24,18 @@ class VoiceJob < CandidateJob
     last_call = candidate.last_call
 
     if last_call
-      response = @verboice.call_state last_call.session_id
-      state = response['state']
-      unless state == "active" || state == "queued"
-        JobLogger.debug "VoiceJob: Candidate #{candidate_id} last call has finished => call him"
+      begin
+        response = @verboice.call_state last_call.session_id 
+        state = response['state']
+        unless state == "active" || state == "queued"
+          JobLogger.debug "VoiceJob: Candidate #{candidate_id} last call has finished => call him"
+          call candidate, last_call
+        else
+          JobLogger.debug "VoiceJob: Candidate #{candidate_id} has a pending call in Verboice => do not call him"
+        end
+      rescue Exception => e
+        JobLogger.debug "VoiceJob: Error getting call state for candidate #{candidate_id} => make a new call"
         call candidate, last_call
-      else
-        JobLogger.debug "VoiceJob: Candidate #{candidate_id} has a pending call in Verboice => do not call him"
       end
     else
       JobLogger.debug "VoiceJob: Candidate #{candidate_id} doesn't have any previous call => call him"

@@ -216,6 +216,21 @@ describe VoiceJob do
     end
   end
 
+  describe "verboice last call state fails" do
+    before(:each) do
+      @candidate = Candidate.make! :status => :pending
+      @last_call = Call.make! :candidate => @candidate
+      @voice_job = VoiceJob.new @candidate.id
+      @verboice.expects(:call_state).with(@last_call.session_id).raises(Exception, "Verboice Error")
+    end
+
+    it "should initiate a new call" do
+      @verboice.expects(:call)
+      
+      @voice_job.perform
+    end
+  end
+
   describe "with multiple voice numbers" do
     before(:each) do
       @volunteer = Volunteer.make! :voice_channels => [VoiceChannel.make, VoiceChannel.make]
