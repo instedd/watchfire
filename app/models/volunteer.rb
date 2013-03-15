@@ -17,7 +17,7 @@ class Volunteer < ActiveRecord::Base
 
   validates_presence_of :organization
   validates_presence_of :name
-  validates_uniqueness_of :name
+  validates_uniqueness_of :name, :scope => :organization_id
   validates_length_of :name, :maximum => 100
 
   validates_numericality_of :lat, :less_than_or_equal_to => 90, :greater_than_or_equal_to => -90, :if => Proc.new{|x| x.lat.present?}
