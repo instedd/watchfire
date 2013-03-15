@@ -1,5 +1,5 @@
 module VolunteersHelper
-  
+
   def sort_header name, order, options = nil
     selected = @order == order.to_s
     dir_class = @direction == 'DESC' ? 'down' : 'up'
@@ -12,7 +12,7 @@ module VolunteersHelper
       concat content_tag :span
     end
   end
-  
+
   def import_errors_for(object)
     if object.errors.any?
       content_tag :div, :class => "import_error_description error_description" do
@@ -22,9 +22,15 @@ module VolunteersHelper
       end
     end
   end
-  
+
+  def class_for(volunteer)
+    css_class = volunteer.new_record? ? 'new' : 'existing'
+    css_class << ' error err-message' unless volunteer.valid?
+    css_class
+  end
+
   private
-  
+
   def invert order
     case order
     when 'DESC'
@@ -33,5 +39,5 @@ module VolunteersHelper
       'DESC'
     end
   end
-  
+
 end
