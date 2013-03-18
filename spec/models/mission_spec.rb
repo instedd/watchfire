@@ -334,4 +334,41 @@ describe Mission do
       end.should change(@mission.mission_skills, :size).by(1)
     end
   end
+
+  describe "set candidates" do
+    before(:each) do
+      @mission = Mission.make!
+
+      @vol1 = Volunteer.make!
+      @vol2 = Volunteer.make!
+      @vol3 = Volunteer.make!
+    end
+
+    it "should set a list of candidates for the given volunteers" do
+      @mission.set_candidates [@vol1, @vol2]
+
+      @mission.candidates.size.should eq(2)
+      @mission.volunteers.should include(@vol1, @vol2)
+    end
+
+    it "should remove candidates not given in the new list" do
+      @mission.set_candidates [@vol1, @vol2]
+      @mission.set_candidates [@vol2, @vol3]
+      
+      @mission.candidates.size.should eq(2)
+      @mission.volunteers.should include(@vol2, @vol3)
+      @mission.volunteers.should_not include(@vol1)
+    end
+
+    it "should preserve the active status for existing volunteers" do
+      @mission.set_candidates [@vol1, @vol2]
+      @mission.candidates.where(:volunteer_id => @vol2.id).update_all(:active => false)
+
+      @mission.candidates.where(:active => false).count.should eq(1)
+
+      @mission.set_candidates [@vol2, @vol3]
+
+      @mission.candidates.where(:active => false).map(&:volunteer).should include(@vol2)
+    end
+  end
 end

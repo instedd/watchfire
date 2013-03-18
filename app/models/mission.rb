@@ -61,12 +61,18 @@ class Mission < ActiveRecord::Base
 		nil
 	end
 
-	def set_candidates(vols)
-		self.candidates.destroy_all
-		vols.each do |v|
-			self.candidates.create!(:volunteer_id => v.id)
-		end
-	end
+  def set_candidates(vols)
+    new_volunteers = Set.new vols.map(&:id)
+    self.candidates.each do |c|
+      if not new_volunteers.delete?(c.volunteer_id)
+        c.destroy
+      end
+    end
+    new_volunteers.each do |vid|
+      self.candidates.create!(:volunteer_id => vid)
+    end
+    self.candidates.reload
+  end
 
 	def farthest
 		@farthest = @farthest || (self.volunteers.geo_scope(:origin => self).order("distance DESC").first.distance.round(2) rescue nil)
