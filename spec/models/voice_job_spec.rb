@@ -274,6 +274,35 @@ describe VoiceJob do
       new_candidate = Candidate.find(@candidate.id)
       new_candidate.voice_retries.should eq(@candidate.voice_retries + 1)
     end
+
+    describe "verboice api raises" do
+      it "should call each number in order" do
+        @verboice.expects(:call).with(@voice_channels[0].address, :status_callback_url => @status_callback_url).
+          raises(Exception, "Verboice Error")
+
+        @voice_job = VoiceJob.new @candidate.id
+        @voice_job.perform
+
+        @verboice.expects(:call).with(@voice_channels[1].address, :status_callback_url => @status_callback_url).
+          raises(Exception, "Verboice Error")
+
+        @voice_job = VoiceJob.new @candidate.id
+        @voice_job.perform
+      end
+
+      it "should increment voice retries when calling the last number" do
+        @verboice.stubs(:call).raises(Exception, "Verboice Error")
+
+        lambda do
+          @voice_job = VoiceJob.new @candidate.id
+          @voice_job.perform
+          @voice_job = VoiceJob.new @candidate.id
+          @voice_job.perform
+        end.should change {
+          Candidate.find(@candidate.id).voice_retries
+        }.by(1)
+      end
+    end
   end
 
 end

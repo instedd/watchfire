@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130308141110) do
+ActiveRecord::Schema.define(:version => 20130318160133) do
 
   create_table "calls", :force => true do |t|
     t.string   "session_id"
@@ -31,10 +31,11 @@ ActiveRecord::Schema.define(:version => 20130308141110) do
     t.datetime "last_sms_att"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "active",         :default => true, :null => false
+    t.boolean  "active",            :default => true, :null => false
     t.string   "answered_from"
     t.datetime "answered_at"
     t.string   "voice_status"
+    t.string   "last_voice_number"
   end
 
   create_table "channels", :force => true do |t|
