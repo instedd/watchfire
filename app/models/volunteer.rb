@@ -55,7 +55,10 @@ class Volunteer < ActiveRecord::Base
   end
 
   def voice_numbers=(numbers)
-    self.voice_channels = numbers.split(',').map{|number| self.voice_channels.build(:address => number.strip)}
+    if numbers.is_a? String
+      numbers = numbers.split(',')
+    end
+    self.voice_channels = numbers.map{|number| self.voice_channels.build(:address => number.strip)}
   end
 
   def has_voice_number?(number)
@@ -67,7 +70,10 @@ class Volunteer < ActiveRecord::Base
   end
 
   def sms_numbers=(numbers)
-    self.sms_channels = numbers.split(',').map{|number| self.sms_channels.build(:address => number.strip)}
+    if numbers.is_a? String
+      numbers = numbers.split(',')
+    end
+    self.sms_channels = numbers.map{|number| self.sms_channels.build(:address => number.strip)}
   end
 
   def has_sms_number?(number)

@@ -4,6 +4,70 @@ var onVolunteerPage = function() {
   var volunteer_image;
   var geocoder;
 
+  $.fn.crudNumbersList = function() {
+    this.on('click', '.clist-remove', function(evt) {
+      evt.preventDefault();
+      $(this).parents('li').first().remove();
+      return false;
+    });
+
+    function addNumber(element) {
+      var list = element.parents('ul').first(),
+          name = list.data('field-name'),
+          value_field = list.find('.ux-text'),
+          value = value_field.val().trim();
+      if (validateNumber(value_field) && value != '') {
+        var new_li = $('<li>');
+        $('<input type="text">').addClass('ux-clist').attr('name', name).attr('value', value).appendTo(new_li);
+        $('<button type="button">').addClass('clist-remove').appendTo(new_li);
+        new_li.find('input').after('&nbsp;');
+        new_li.insertBefore(element.parents('li').first());
+        value_field.val('');
+      }
+      value_field.focus();
+    }
+
+    this.on('click', '.clist-add', function(evt) {
+      evt.preventDefault();
+      addNumber($(this));
+      return false;
+    });
+
+    this.on('keydown', '.ux-text', function(evt) {
+      if (evt.keyCode == 13) {
+        evt.preventDefault();
+        addNumber($(this));
+        return false;
+      }
+    });
+    this.on('keyup', '.ux-text', function(evt) {
+      validateNumber(this);
+    });
+
+    function validateNumber(field) {
+      var value = $(field).val().trim();
+      // keep synchronized with Ruby's validation regexp
+      if (/^\+?[\s\d\.\-\(\)]+$/.test(value)) {
+        $(field).removeClass('field_with_errors');
+        return true;
+      } else {
+        $(field).addClass('field_with_errors');
+        return false;
+      }
+    }
+
+    this.on('change', 'input.ux-clist', function(evt) {
+      validateNumber(this);
+      if ($(this).val().trim() == '') {
+        $(this).parents('li').first().remove();
+      }
+    });
+
+    this.find('input.ux-clist').each(function(index, field) {
+      validateNumber(field);
+    });
+  }
+
   $(function(){
   	$("#skills").superblyTagField({
   		  allowNewTags: true,
@@ -13,19 +77,7 @@ var onVolunteerPage = function() {
   		  tags: getHtmls($('#allSkills li'))
   	});
 
-  	$("#voice_numbers").superblyTagField({
-  		allowNewTags: true,
-  		showTagsNumber: 0,
-  		addItemOnBlur:true,
-  		preset: getHtmls($('#volunteer_voice_numbers li'))
-  	});
-
-  	$("#sms_numbers").superblyTagField({
-  		allowNewTags: true,
-  		showTagsNumber: 0,
-  		addItemOnBlur:true,
-  		preset: getHtmls($('#volunteer_sms_numbers li'))
-  	});
+    $('.clist').crudNumbersList();
 
     init_map();
 

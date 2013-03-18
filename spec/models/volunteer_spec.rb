@@ -82,8 +82,17 @@ describe Volunteer do
     [[:sms_channels, :sms_numbers], [:voice_channels, :voice_numbers]].each do |type|
       channel = type[0]
       number = type[1]
-      it "should build #{channel} when adding #{number}" do
+      it "should build #{channel} when assigning #{number} as string" do
         @volunteer.send("#{number}=".to_sym, '1234,5678')
+        @volunteer.send(channel).should have(2).items
+        @volunteer.send(channel).first.volunteer.should eq(@volunteer)
+        @volunteer.send(channel).first.address.should eq('1234')
+        @volunteer.send(channel).second.volunteer.should eq(@volunteer)
+        @volunteer.send(channel).second.address.should eq('5678')
+      end
+
+      it "should build #{channel} when assigning #{number} as array" do
+        @volunteer.send("#{number}=".to_sym, ['1234','5678'])
         @volunteer.send(channel).should have(2).items
         @volunteer.send(channel).first.volunteer.should eq(@volunteer)
         @volunteer.send(channel).first.address.should eq('1234')

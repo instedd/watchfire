@@ -11,13 +11,25 @@
     = f.text_field :name, :class => 'w60'
     %br
     %br
-    = label_tag 'Voice numbers'
-    = text_field_tag 'volunteer[voice_numbers]', nil, :id => 'voice_numbers', :class => 'w60'
+    = label_tag :new_voice_number, 'Voice Numbers'
+    %ul.clist.w30#volunteer_voice_numbers(data-field-name="volunteer[voice_numbers][]")
+      - volunteer.voice_channels.each do |voice_channel|
+        %li
+          = text_field_tag 'volunteer[voice_numbers][]', voice_channel.address, :class => 'ux-clist'
+          %button.clist-remove(type="button")
+      %li
+        %input.ux-text#new_voice_number(type="text" placeholder="New voice number")
+        %button.clist-add(type="button")
     %br
-    %br
-    = f.label :sms_number, 'SMS numbers'
-    = text_field_tag 'volunteer[sms_numbers]', nil, :id => 'sms_numbers', :class => 'w60'
-    %br
+    = label_tag :new_sms_number, 'SMS Numbers'
+    %ul.clist.w30#volunteer_sms_numbers(data-field-name="volunteer[sms_numbers][]")
+      - volunteer.sms_channels.each do |sms_channel|
+        %li
+          = text_field_tag 'volunteer[sms_numbers][]', sms_channel.address, :class => 'ux-clist'
+          %button.clist-remove(type="button")
+      %li
+        %input.ux-text#new_sms_number(type="text" placeholder="New SMS number")
+        %button.clist-add(type="button")
     %br
     = f.hidden_field :lat
     = f.hidden_field :lng
@@ -53,14 +65,6 @@
 %ul.hidden#volSkills
   - volunteer.skills.each do |s|
     %li= s.name
-
-%ul.hidden#volunteer_voice_numbers
-  - volunteer.voice_channels.each do |voice_channel|
-    %li= voice_channel.address
-
-%ul.hidden#volunteer_sms_numbers
-  - volunteer.sms_channels.each do |sms_channel|
-    %li= sms_channel.address
 
 :javascript
   onVolunteerPage();
