@@ -19,6 +19,8 @@ class MissionsController < ApplicationController
       if candidate.voice_status && candidate.status == :pending
         result["last_call"] = candidate.last_call.as_json['call']
       end
+      result["url"] = candidate_path(candidate)
+      result[:volunteer]["url"] = volunteer_path(candidate.volunteer)
       result
     }
 

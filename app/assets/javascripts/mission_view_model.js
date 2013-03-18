@@ -283,10 +283,9 @@ function MissionViewModel() {
         immediateSubmit('disableAll');
     };
     self.toggleCandidate = function(candidate) {
-        // FIXME: avoid hard-coding the URL
         $.ajax({
             type: 'PUT',
-            url: '/candidates/' + candidate.id,
+            url: candidate.url,
             dataType: 'json',
             data: { candidate: { active: candidate.active() }}
         });
@@ -296,8 +295,7 @@ function MissionViewModel() {
         var volunteer = candidate.volunteer;
         var location = new google.maps.LatLng(volunteer.lat, volunteer.lng);
 
-        // FIXME: avoid hard-coding the URL
-        $.get('/volunteers/' + volunteer.id, function(data) {
+        $.get(candidate.volunteer.url, function(data) {
             self.mapView.showVolunteerData(location, data);
         });
     };
