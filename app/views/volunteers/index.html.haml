@@ -13,12 +13,17 @@
 .clear
 
 .tablewrapp
-  %table.GralTable.ButtonTable.w-pagination
+  %table.GralTable.ButtonTable.w-pagination.volunteers-table
+    %col(style="width: 25%")
+    %col(style="width: 40%")
+    %col(style="width: 15%")
+    %col(style="width: 15%")
+    %col(style="width: 66px")
     %tr
-      = sort_header 'Name', :name, :style => 'width: 25%'
-      = sort_header 'Address', :address, :style => 'width: 45%'
-      %th(style="width: 15%") Voice Numbers
-      %th(style="width: 15%" colspan="2") SMS Numbers
+      = sort_header 'Name', :name
+      = sort_header 'Address', :address
+      %th Voice Numbers
+      %th(colspan="2") SMS Numbers
     - @volunteers.each do |volunteer|
       %tr.link{'data-url' => edit_volunteer_path(volunteer)}
         %td= volunteer.name
