@@ -1,7 +1,7 @@
 class VolunteersController < ApplicationController
 	before_filter :authenticate_user!
-	before_filter :store_referer, :only => [:new, :edit, :destroy]
-  before_filter :add_volunteers_breadcrumb, :only => [:index, :show, :new, :edit]
+  before_filter :add_volunteers_breadcrumb, :only => [:index, :new, :edit, :create, :update]
+  before_filter :default_numbers_params, :only => [:update, :create]
 
   # GET /volunteers
   # GET /volunteers.xml
@@ -47,9 +47,7 @@ class VolunteersController < ApplicationController
 
   # GET /volunteers/1/edit
   def edit
-    @volunteer = Volunteer.find(params[:id])
-
-    add_breadcrumb @volunteer.name, edit_volunteer_path(@volunteer)
+    add_breadcrumb volunteer.name, edit_volunteer_path(volunteer)
   end
 
   # POST /volunteers
@@ -57,10 +55,13 @@ class VolunteersController < ApplicationController
   def create
     respond_to do |format|
       if volunteer.save
-        format.html { redirect_to(back, :notice => "#{volunteer.name} was successfully created.") }
+        format.html { redirect_to(volunteers_path, :notice => "#{volunteer.name} was successfully created.") }
         format.xml  { render :xml => volunteer, :status => :created, :location => volunteer }
       else
-        format.html { render :action => "new" }
+        format.html { 
+          add_breadcrumb 'New', new_volunteer_path
+          render :action => "new" 
+        }
         format.xml  { render :xml => volunteer.errors, :status => :unprocessable_entity }
       end
     end
@@ -71,10 +72,13 @@ class VolunteersController < ApplicationController
   def update
     respond_to do |format|
       if volunteer.update_attributes(params[:volunteer])
-        format.html { redirect_to(back, :notice => "#{volunteer.name} was successfully updated.") }
+        format.html { redirect_to(volunteers_path, :notice => "#{volunteer.name} was successfully updated.") }
         format.xml  { head :ok }
       else
-        format.html { render :action => "edit" }
+        format.html { 
+          add_breadcrumb volunteer.name, edit_volunteer_path(volunteer)
+          render :action => "edit" 
+        }
         format.xml  { render :xml => volunteer.errors, :status => :unprocessable_entity }
       end
     end
@@ -121,16 +125,13 @@ class VolunteersController < ApplicationController
 
   private
 
-  def store_referer
-    session[:return_to] = request.referer
-  end
-
-  def back
-    session[:return_to] || volunteers_path
-  end
-
   def add_volunteers_breadcrumb
     add_breadcrumb "#{current_organization.name}", organizations_path if current_organization
     add_breadcrumb "Volunteers", :volunteers_path
+  end
+
+  def default_numbers_params
+    params[:volunteer][:sms_numbers] ||= []
+    params[:volunteer][:voice_numbers] ||= []
   end
 end

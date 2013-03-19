@@ -104,7 +104,19 @@ describe Volunteer do
         @volunteer.attributes = @valid_attributes.except(:sms_channels, :voice_channels)
         @volunteer.send("#{number}=".to_sym, 'qwerty')
         @volunteer.valid?.should be_false
-        @volunteer.should have(1).error_on(channel)
+        @volunteer.should have(1).error_on("#{channel.to_s}.address")
+      end
+
+      it "should not update sql until the volunteer is saved" do
+        @volunteer.attributes = @valid_attributes.except(:sms_channels, :voice_channels)
+        @volunteer.send("#{number}=".to_sym, '123')
+        @volunteer.save!
+
+        @volunteer.send("#{number}=".to_sym, '456')
+        @volunteer.reload
+
+        @volunteer.send(channel).should have(1).items
+        @volunteer.send(channel).first.address.should eq('123')
       end
     end
   end

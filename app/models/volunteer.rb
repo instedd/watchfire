@@ -10,8 +10,8 @@ class Volunteer < ActiveRecord::Base
   has_many :skills, :through => :skills_volunteers
 
   has_many :channels
-  has_many :sms_channels, :dependent => :destroy, :inverse_of => :volunteer
-  has_many :voice_channels, :dependent => :destroy, :inverse_of => :volunteer
+  has_many :sms_channels, :dependent => :destroy, :inverse_of => :volunteer, :autosave => true
+  has_many :voice_channels, :dependent => :destroy, :inverse_of => :volunteer, :autosave => true
 
   serialize :shifts
 
@@ -58,7 +58,12 @@ class Volunteer < ActiveRecord::Base
     if numbers.is_a? String
       numbers = numbers.split(',')
     end
-    self.voice_channels = numbers.map{|number| self.voice_channels.build(:address => number.strip)}
+    self.voice_channels.each do |vc|
+      vc.mark_for_destruction
+    end
+    numbers.each do |number| 
+      self.voice_channels.build(:address => number.strip)
+    end
   end
 
   def has_voice_number?(number)
@@ -73,7 +78,12 @@ class Volunteer < ActiveRecord::Base
     if numbers.is_a? String
       numbers = numbers.split(',')
     end
-    self.sms_channels = numbers.map{|number| self.sms_channels.build(:address => number.strip)}
+    self.sms_channels.each do |sc|
+      sc.mark_for_destruction
+    end
+    numbers.each do |number| 
+      self.sms_channels.build(:address => number.strip)
+    end
   end
 
   def has_sms_number?(number)

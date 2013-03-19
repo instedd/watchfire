@@ -56,7 +56,7 @@ describe VolunteersController do
     it "assigns the requested volunteer as @volunteer" do
       volunteer = Volunteer.create! valid_attributes
       get :edit, :id => volunteer.id.to_s
-      assigns(:volunteer).should eq(volunteer)
+      controller.volunteer.should eq(volunteer)
     end
   end
 
@@ -103,7 +103,8 @@ describe VolunteersController do
         volunteer = stub(:volunteer)
         controller.stubs(:volunteer => volunteer)
         volunteer.stubs(:id => 123)
-        volunteer.expects(:update_attributes).with({'these' => 'params'})
+        volunteer.expects(:update_attributes)
+        volunteer.stubs(:name).returns('')
         put :update, :id => volunteer.id, :volunteer => {'these' => 'params'}
       end
 

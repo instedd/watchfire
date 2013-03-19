@@ -12,7 +12,7 @@ var onVolunteerPage = function() {
     });
 
     function addNumber(element) {
-      var list = element.parents('ul').first(),
+      var list = $(element).parents('ul').first(),
           name = list.data('field-name'),
           value_field = list.find('.ux-text'),
           value = value_field.val().trim();
@@ -21,15 +21,15 @@ var onVolunteerPage = function() {
         $('<input type="text">').addClass('ux-clist').attr('name', name).attr('value', value).appendTo(new_li);
         $('<button type="button">').addClass('clist-remove').appendTo(new_li);
         new_li.find('input').after('&nbsp;');
-        new_li.insertBefore(element.parents('li').first());
+        new_li.insertBefore($(element).parents('li').first());
         value_field.val('');
       }
-      value_field.focus();
     }
 
     this.on('click', '.clist-add', function(evt) {
       evt.preventDefault();
       addNumber($(this));
+      $(this).prev('.ux-text').focus();
       return false;
     });
 
@@ -61,6 +61,14 @@ var onVolunteerPage = function() {
       if ($(this).val().trim() == '') {
         $(this).parents('li').first().remove();
       }
+    });
+
+    var self = this;
+    this.parents('form').first().on('submit', function(evt) {
+      self.find('input.ux-text').each(function(index, element) {
+        addNumber(element);
+      });
+      return true;
     });
 
     this.find('input.ux-clist').each(function(index, field) {
