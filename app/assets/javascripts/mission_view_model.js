@@ -22,7 +22,7 @@ function CandidateViewModel(data) {
         var result = [];
         for (var i = 0; i < collection.length; i++) {
             var address = collection[i].address;
-            var active = self.active() || address == data.answered_from;
+            var active = (self.active() && self.isPending) || address == data.answered_from;
             if (address == current_voice_number) {
                 address += ' (' + data.voice_status + ')';
             }

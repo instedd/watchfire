@@ -33,8 +33,13 @@
           %span(data-bind="text: volunteer.name")
         %td
           %div(data-bind="html: volunteer.sms_numbers")
+          <!-- ko if: volunteer.sms_numbers() && volunteer.voice_numbers() -->
           %br
+          <!-- /ko -->
           %div(data-bind="html: volunteer.voice_numbers")
+          <!-- ko if: answered_at -->
+          %br
           %div(data-bind="if: answered_at")
             %span(data-bind="timeago: answered_at")
+          <!-- /ko -->
 
