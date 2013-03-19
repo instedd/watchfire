@@ -12,15 +12,17 @@
     %br
     %br
     = label_tag :new_voice_number, 'Voice Numbers'
-    %ul.clist.w30#volunteer_voice_numbers(data-field-name="volunteer[voice_numbers][]")
+    %span.small (numbers will be called in order)
+    %ul.clist.sortable.w30#volunteer_voice_numbers(data-field-name="volunteer[voice_numbers][]")
       - volunteer.voice_channels.each do |voice_channel|
         - if !voice_channel.marked_for_destruction?
           %li
             = text_field_tag 'volunteer[voice_numbers][]', voice_channel.address, :class => 'ux-clist'
-            %button.clist-remove(type="button")
-      %li
+            %button.clist-remove(type="button")>
+            %span.handle.pprevious>
+      %li.fixed
         %input.ux-text#new_voice_number(type="text" placeholder="New voice number")
-        %button.clist-add(type="button")
+        %button.clist-add(type="button")>
     %br
     = label_tag :new_sms_number, 'SMS Numbers'
     %ul.clist.w30#volunteer_sms_numbers(data-field-name="volunteer[sms_numbers][]")
@@ -28,10 +30,10 @@
         - if !sms_channel.marked_for_destruction?
           %li
             = text_field_tag 'volunteer[sms_numbers][]', sms_channel.address, :class => 'ux-clist'
-            %button.clist-remove(type="button")
+            %button.clist-remove(type="button")>
       %li
         %input.ux-text#new_sms_number(type="text" placeholder="New SMS number")
-        %button.clist-add(type="button")
+        %button.clist-add(type="button")>
     %br
     = f.hidden_field :lat
     = f.hidden_field :lng

@@ -98,5 +98,21 @@ span.time
 .link_to_form
     cursor: default
 
-.clist .field_with_errors
-    color: #ff6600
+.clist
+    .field_with_errors
+        color: #ff6600
+
+.clist.sortable
+    .handle
+        margin: 0
+        padding: 0
+        vertical-align: middle !important
+        display: inline-block
+        cursor: default
+        background-position: 0 -90px
+        &:hover
+            background-position: 0 -30px
+
+.clist.sortable.w30
+    width: 324px !important
+

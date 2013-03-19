@@ -20,7 +20,9 @@ var onVolunteerPage = function() {
         var new_li = $('<li>');
         $('<input type="text">').addClass('ux-clist').attr('name', name).attr('value', value).appendTo(new_li);
         $('<button type="button">').addClass('clist-remove').appendTo(new_li);
-        new_li.find('input').after('&nbsp;');
+        if (list.hasClass('sortable')) {
+          $('<span>').addClass('handle pprevious').appendTo(new_li);
+        }
         new_li.insertBefore($(element).parents('li').first());
         value_field.val('');
       }
@@ -74,6 +76,7 @@ var onVolunteerPage = function() {
     this.find('input.ux-clist').each(function(index, field) {
       validateNumber(field);
     });
+    return this;
   }
 
   $(function(){
@@ -86,6 +89,8 @@ var onVolunteerPage = function() {
   	});
 
     $('.clist').crudNumbersList();
+
+    $('.sortable').sortable({ handle: '.handle', items: '> li:not(.fixed)' });
 
     init_map();
 
