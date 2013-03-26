@@ -1,3 +1,33 @@
-%b Create new channel
+%h1 Channels
+.tablewrapp
+  %table.GralTable.TwoColumn.CleanTable.ItemsTable
+    %tr
+      %th My Channels
+      %th
+        = select_tag :new_channel_kind, pigeon_channel_kinds_for_select, prompt: "Create new..."
+    - if pigeon_channels.all.present?
+      - pigeon_channels.each do |channel|
+        %tr.channel.link{'data-url' => channel_path(channel)}
+          %td
+            %span
+            = channel.name
+            %br
+            = channel.description
+          %td
+    - else
+      %tr
+        %td &nbsp;
+        %td &nbsp;
+  - if pigeon_channels.all.empty?
+    .channels_empty
+      - if current_organization
+        %div.info You have no channels yet
+      - else
+        %div.info To start using Watchfire you must create an Organization
+        %a.add{:href => new_organization_path}
+          Create Organization
+          %button.cadd
 
-= render 'pigeon/channels/new', url: channels_path, method: 'post'
+:javascript
+  onChannelsIndex()
+

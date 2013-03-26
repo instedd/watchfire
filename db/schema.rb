@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130318160133) do
+ActiveRecord::Schema.define(:version => 20130326140352) do
 
   create_table "calls", :force => true do |t|
     t.string   "session_id"
@@ -118,6 +118,18 @@ ActiveRecord::Schema.define(:version => 20130318160133) do
     t.integer  "sms_timeout",       :default => 5
     t.integer  "voice_timeout",     :default => 5
   end
+
+  create_table "pigeon_channels", :force => true do |t|
+    t.integer  "organization_id"
+    t.string   "name"
+    t.string   "description"
+    t.string   "type"
+    t.string   "pigeon_name"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
+  end
+
+  add_index "pigeon_channels", ["organization_id"], :name => "index_pigeon_channels_on_organization_id"
 
   create_table "skills", :force => true do |t|
     t.string   "name"

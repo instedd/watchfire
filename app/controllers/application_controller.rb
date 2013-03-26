@@ -14,4 +14,6 @@ class ApplicationController < ActionController::Base
   expose(:organization_owner?) { current_user && current_organization && current_user.owner_of?(current_organization) }
 
   expose(:skills) { current_organization ? current_organization.skills : Skill.none }
+
+  expose(:pigeon_channels) { current_organization ? current_organization.pigeon_channels : PigeonChannel.none }
 end

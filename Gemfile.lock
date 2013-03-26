@@ -5,6 +5,14 @@ GIT
     enumerated_attribute (0.3.0.beta1)
       meta_programming (>= 0.2.1)
 
+PATH
+  remote: ../pigeon
+  specs:
+    pigeon (0.0.1)
+      nuntium_api (~> 0.19)
+      rails (~> 3.2.12)
+      verboice (= 0.6.0)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -242,6 +250,7 @@ DEPENDENCIES
   mocha
   mysql2
   nuntium_api (~> 0.19)
+  pigeon!
   pry
   pry-debugger
   quiet_assets
