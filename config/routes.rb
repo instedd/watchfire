@@ -41,7 +41,8 @@ Watchfire::Application.routes.draw do
     end
   end
 
-  resources :channels
+  resources :channels, except: [:show] do
+  end
 
 	resources :candidates, :only => [:update]
 

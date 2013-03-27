@@ -1,11 +1,11 @@
 class PigeonChannel < ActiveRecord::Base
   belongs_to :organization
 
-  enum_attr :type, %w(^voice message)
+  enum_attr :channel_type, %w(^verboice nuntium)
 
-  attr_accessible :description, :name, :pigeon_name, :type
+  attr_accessible :description, :name
 
-  validates_presence_of :name
-  validates_presence_of :pigeon_name
-  validates_presence_of :type
+  validates_presence_of :organization, :name, :pigeon_name
+  validates_presence_of :channel_type
 end
+

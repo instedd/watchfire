@@ -1,19 +1,23 @@
 %h1 Channels
 .tablewrapp
-  %table.GralTable.TwoColumn.CleanTable.ItemsTable
+  %table.GralTable.TwoColumn.CleanTable
     %tr
       %th My Channels
       %th
         = select_tag :new_channel_kind, pigeon_channel_kinds_for_select, prompt: "Create new..."
     - if pigeon_channels.all.present?
       - pigeon_channels.each do |channel|
-        %tr.channel.link{'data-url' => channel_path(channel)}
+        %tr.channel.link{'data-url' => edit_channel_path(channel)}
           %td
-            %span
-            = channel.name
+            #{channel.name}
+            %span.label= channel_type_humanize(channel.channel_type)
             %br
-            = channel.description
+            %span.smallText= channel.description
           %td
+            = form_tag channel_path(channel), :method => :delete, 'data-confirm' => 'Are you sure?' do
+              %button.avoid.fdelete
+            = form_tag edit_channel_path(channel), :method => :get do
+              %button.avoid.farrow
     - else
       %tr
         %td &nbsp;

@@ -1,0 +1,13 @@
+%h1 Edit #{@channel_kind.display_name}
+
+= render partial: 'errors'
+
+= form_for @pigeon_channel, url: channel_path(@pigeon_channel) do |f|
+  = render partial: 'form', locals: { :f => f }
+
+  %br
+  .actions
+    = button_tag 'Update channel', :class => 'grey'
+    = link_to 'Back', channels_path, :class => 'grey'
+
+

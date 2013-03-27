@@ -123,7 +123,7 @@ ActiveRecord::Schema.define(:version => 20130326140352) do
     t.integer  "organization_id"
     t.string   "name"
     t.string   "description"
-    t.string   "type"
+    t.string   "channel_type"
     t.string   "pigeon_name"
     t.datetime "created_at",      :null => false
     t.datetime "updated_at",      :null => false

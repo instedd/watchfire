@@ -4,7 +4,7 @@ class CreatePigeonChannels < ActiveRecord::Migration
       t.references :organization
       t.string :name
       t.string :description
-      t.string :type
+      t.string :channel_type
       t.string :pigeon_name
 
       t.timestamps

@@ -15,5 +15,5 @@ class ApplicationController < ActionController::Base
 
   expose(:skills) { current_organization ? current_organization.skills : Skill.none }
 
-  expose(:pigeon_channels) { current_organization ? current_organization.pigeon_channels : PigeonChannel.none }
+  expose(:pigeon_channels) { current_organization ? current_organization.pigeon_channels.order('name') : PigeonChannel.none }
 end
