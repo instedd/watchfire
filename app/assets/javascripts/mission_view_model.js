@@ -503,7 +503,8 @@ function MissionViewModel() {
             dataType: 'json',
             data: {},
             success: onSubmitSuccess,
-            error: onSubmitError
+            error: onSubmitError,
+            cache: false
         }, options);
 
         if (!options.url) {
