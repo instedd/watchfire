@@ -1,9 +1,9 @@
-%h1 New #{@channel_kind.display_name}
+%h1 New #{@channel_schema.humanized_name}
 
 = render partial: 'errors'
 
 = form_for @pigeon_channel, url: channels_path do |f|
-  = hidden_field_tag :kind, @channel_kind.type_and_kind
+  = hidden_field_tag :kind, @channel_schema.type_kind
 
   = render partial: 'form', locals: { :f => f }
 

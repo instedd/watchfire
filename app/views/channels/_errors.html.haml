@@ -4,8 +4,8 @@
     %ul
       - @pigeon_channel.errors.full_messages.map do |msg|
         %li= msg
-      - @channel.errors.each do |name, message|
-        %li= "#{@channel_kind.form[name].try(:label) || name} #{message}"
+      - @channel.errors.full_messages.map do |msg|
+        %li= msg
   %br
 
 

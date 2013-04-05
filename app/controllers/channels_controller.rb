@@ -41,20 +41,24 @@ class ChannelsController < ApplicationController
   end
 
   def build_channel
-    @channel_kind = Pigeon::ChannelKind.from_type_and_kind(params[:kind])
-    not_found if @channel_kind.nil?
+    type, kind = params[:kind].split('/')
+    channel_type = Pigeon::Channel.find_type(type)
 
-    @channel = @channel_kind.build_channel
+    @channel = channel_type.new kind: kind
+    @channel.generate_name!
+    @channel_schema = @channel.schema
+    not_found if @channel_schema.nil?
+
     @pigeon_channel = PigeonChannel.new
-    @pigeon_channel.channel_type = @channel_kind.type
+    @pigeon_channel.channel_type = @channel.type
     @pigeon_channel.organization = current_organization
     @pigeon_channel.pigeon_name = @channel.name
   end
 
   def find_channel
     @pigeon_channel = PigeonChannel.find(params[:id])
-    @channel = Pigeon::Channel.from_type(@pigeon_channel.channel_type).find(@pigeon_channel.pigeon_name)
-    @channel_kind = @channel.channel_kind
+    @channel = Pigeon::Channel.find_type(@pigeon_channel.channel_type).find(@pigeon_channel.pigeon_name)
+    @channel_schema = @channel.schema
   end
 
   def save_channel
@@ -66,7 +70,7 @@ class ChannelsController < ApplicationController
         @channel.save!
       end
       true
-    rescue ActiveRecord::RecordInvalid
+    rescue ActiveRecord::RecordInvalid, Pigeon::ChannelInvalid
       false
     end
   end
