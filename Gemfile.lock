@@ -212,7 +212,7 @@ GEM
     valid_email (0.0.4)
       activemodel
       mail
-    verboice (0.6.0)
+    verboice (0.7.0)
       json
       rest-client
     warden (1.2.1)
@@ -254,4 +254,4 @@ DEPENDENCIES
   timecop
   uglifier (>= 1.0.3)
   valid_email
-  verboice (= 0.6.0)
+  verboice (= 0.7.0)
