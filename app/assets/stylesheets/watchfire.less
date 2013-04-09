@@ -1,0 +1,96 @@
+@charset "utf-8";
+/* ------------ Replace in Theme.css ------------------- */
+h1, h2, h3 { padding:0; margin:0 0 6px 0 }
+h1 { font-size:18px; font-weight:normal; color:#555555 }
+
+label { color:#555555 }
+
+.disabled .TaskBox div.M { background:#d0d0d0 }
+.disabled .TaskBox div.R { color:#d0d0d0 }
+
+.box.plain { padding:6px; margin:4px 0 0 0; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px; -webkit-box-shadow:none;-moz-box-shadow:none; box-shadow:none }
+.box.green { background:#eeffc9; color:#799823 }
+
+/* ------------ User Menu ------------------- */
+.avatar { width:65px; height:65px; text-align:center; margin:0 0 2px 0; padding:0 5px 0 0; border:none; display: table; position:relative }
+.avatar span { display:block; position:absolute; margin:0px auto; width:65px; height:65px; z-index:1; box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.2)inset; -moz-box-shadow:0px 0px 2px 1px rgba(0, 0, 0, 0.2)inset; -webkit-box-shadow: 0px 0px 2px 1px rgba(0, 0, 0, 0.2)inset; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px }
+.avatar img { border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px }
+
+.location { background:#555555 url(http://theme.instedd.org/theme/images/icons/16/white/location.png) no-repeat; color:#FFFFFF; padding:2px 3px 2px 16px; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px }
+#achannels { color:#555555 }
+
+.mobile { background: url(http://theme.instedd.org/theme/images/icons/18/black/mobile.png) no-repeat left; padding-left:20px }
+.message { background: url(http://theme.instedd.org/theme/images/icons/18/black/message.png) no-repeat left; padding-left:20px }
+.twitter { background: url(http://theme.instedd.org/theme/images/icons/18/black/twitter.png) no-repeat left; padding-left:20px }
+.phone { background: url(http://theme.instedd.org/theme/images/icons/18/black/phone.png) no-repeat left; padding-left:20px }
+
+.gmobile { background: url(http://theme.instedd.org/theme/images/icons/18/grey/mobile.png) no-repeat left; padding-left:20px }
+.gmessage { background: url(http://theme.instedd.org/theme/images/icons/18/grey/message.png) no-repeat left; padding-left:20px }
+.gtwitter { background: url(http://theme.instedd.org/theme/images/icons/18/grey/twitter.png) no-repeat left; padding-left:20px }
+.gphone { background: url(http://theme.instedd.org/theme/images/icons/18/grey/phone.png) no-repeat left; padding-left:20px }
+
+
+/* ------------ Power button ------------------- */
+button.power { background:url(http://theme.instedd.org/theme/images/buttons/other/power.png) no-repeat left top; width:50px; height:20px; border:none; display:inline-block; vertical-align:middle; cursor:pointer }
+button.power:hover { background:url(http://theme.instedd.org/theme/images/buttons/other/power.png) no-repeat left -30px }
+button.power:active { background:url(http://theme.instedd.org/theme/images/buttons/other/power.png) no-repeat left -60px }
+button.power.disabled { background:url(http://theme.instedd.org/theme/images/buttons/other/power.png) no-repeat left bottom }
+button.power.on { background:url(http://theme.instedd.org/theme/images/buttons/other/power.png) no-repeat right top; width:50px; height:20px; cursor:pointer }
+button.power.on:hover { background:url(http://theme.instedd.org/theme/images/buttons/other/power.png) no-repeat right -30px }
+button.power.on:active { background:url(http://theme.instedd.org/theme/images/buttons/other/power.png) no-repeat right -60px }
+button.power.on.disabled { background:url(http://theme.instedd.org/theme/images/buttons/other/power.png) no-repeat right bottom }
+
+
+/* ------------ Watchfire ------------------- */
+.LeftContent { width:620px; float:left }
+.RightContent { width:310px; float:right }
+.small-text { font-size:11px; color:#555555 }
+.event-desc { margin-bottom:10px }
+.event-desc p { margin:4px 0 5px 0 }
+.event-desc p em { color:#999999 }
+.empty-event { font-style:italic; color:#999999; text-align:center; padding:170px 40px 0 40px }
+#scroll { height:460px; width:289px; margin:-4px 0 -5px 0; overflow:auto; overflow-x:hidden; padding-right: 10px }
+
+@-moz-document url-prefix() { #scroll { height:475px } }
+
+table { width:100% }
+
+table td div { display:inline-block; vertical-align:middle }
+  
+.listitem table { font-size:12px; width: 100%; border-collapse:collapse }
+.listitem table td { padding:8px 5px; vertical-align:top; letter-spacing:-0.01em; border-top: 1px solid #eeeeee; }
+.listitem table tr:hover td { background:#d0d0d0 }
+.listitem table tr td:first-child { border-radius:3px 0 0 3px; -moz-border-radius:3px 0 0 3px; -webkit-border-radius:3px 0 0 3px; width:56% }
+.listitem table tr td:last-child { border-radius:0 3px 3px 0; -moz-border-radius:0 3px 3px 0; -webkit-border-radius:0 3px 3px 0; text-align:left }
+.listitem table td button { margin:0 auto }
+.listitem table tr.blocked td span{ color:#999999; text-decoration:line-through }
+ 
+.smalldescription { font-size:12px; color:#555555; margin-top:-5px; padding:0; display:block }
+.tgrey { color:#555555 } 
+
+.StateDisplay button { width:47% }
+
+.w42 { width:400px !important}
+
+.map { border:1px solid #dddddd }
+
+.bottom-actions { margin-top:10px } 
+.bottom-actions button { margin-right:10px } 
+.bottom-actions.registration { margin-top:20px } 
+ 
+/* --------  Events Table ------------ */ 
+
+.minactive, .Missions td.paused { color:#555555 }
+.mactive span { background:#9fc643; margin-right:5px; width:10px; height:10px; display:inline-block; border-radius:2px; -moz-border-radius:2px; -webkit-border-radius:2px }
+.mpaused span { background:#d0d0d0; margin-right:5px; width:10px; height:9px; border-top:1px solid #9c9c9c; display:inline-block; border-radius:2px; -moz-border-radius:2px; -webkit-border-radius:2px }
+.minactive span { background:#d0d0d0; margin-right:5px; width:10px; height:9px; border-top:1px solid #9c9c9c; display:inline-block; border-radius:2px; -moz-border-radius:2px; -webkit-border-radius:2px }
+
+/* --------  Invitation buble ------------ */ 
+
+#invitation_bubble { text-align:left; color:#000000 }
+#invitation_bubble h1 { font-size:20px; color:#000000 }
+#invitation_bubble p { margin:3px 0 12px 0; padding:0 5px }
+#invitation_bubble button { vertical-align:middle }
+#invitation_bubble .gusers { background:url(http://theme.instedd.org/theme/images/icons/48/gradient/users.png) no-repeat; width:48px; height:48px; margin-right:3px }
+
+

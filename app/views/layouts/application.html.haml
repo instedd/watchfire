@@ -2,7 +2,7 @@
 %html
   %head
     %title Watchfire
-    = stylesheet_link_tag platform_url('theme/stylesheets/theme.css')
+    //= stylesheet_link_tag platform_url('theme/stylesheets/theme.css')
     = stylesheet_link_tag 'application'
     = javascript_include_tag 'application'
     = javascript_include_tag platform_url('theme/javascripts/theme.js')
@@ -11,74 +11,74 @@
     %link{:href => asset_path('icons/favicon.png'), :rel => "icon", :type => "image/png"}
   %body.smallfooter
     = flash_message
-    #wrapper
-      #toolbar
-        %ul#instedd-pulldown
-        #NavMenu
-          %ul
-            - if user_signed_in?
-              = section 'Events', missions_path, :missions
-              = section 'Volunteers', volunteers_path, :volunteers
-              = section 'Members', members_path, :members
-              /= section 'Channels', channels_path, :channels
-        %ul.RightMenu
-          - if user_signed_in?
-            %li
-              #User
-                = current_user.display_name
-                - if current_user.current_organization
-                  %span{style: 'color:#555'} (#{current_user.current_organization.name})
-                %br
-                %br
-                .container
-                  %ul
-                    - if current_user.current_organization
-                      - other_organizations = current_user.organizations.sort_by(&:name) - [current_user.current_organization]
-                      - if other_organizations.present?
-                        - other_organizations.each do |organization|
-                          %li= link_to organization.name, select_organization_path(organization)
-                        %hr/
-                    %li= link_to 'My Account', edit_user_registration_path
-                  %hr/
-                  %ul
-                    %li= link_to 'Log Out', destroy_user_session_path
-            %li
-              %a.icon.fsettings{:href => edit_user_registration_path}
-      #header
-        .left
-          %a{:href => "/"}
-            %img{:src => "http://theme.instedd.org/theme/images/header/logos/watchfire.png"}/
-        - if user_signed_in?
-          .BreadCrumb= breadcrumb
-        .clear
-      #container
+    .wrapper
+      .navbar.top
+        .navbar-inner
+          .container-fluid
+            .row-fluid
+              .span2
+                <img src="/assets/theme/header/InSTEDDPlatform.png" vspace="7" title="InSTEDD Platform" >
+              .span8.acenter
+                %ul.NavMenu
+                  - if user_signed_in?
+                    = section 'Events', missions_path, :missions
+                    = section 'Volunteers', volunteers_path, :volunteers
+                    = section 'Members', members_path, :members
+                    /= section 'Channels', channels_path, :channels
+              .span2
+                - if user_signed_in?
+                  .btn-group
+                    %a.btn.btn-link.dropdown-toggle{"data-toggle" => "dropdown", href: "#"}
+                      = current_user.display_name
+                      - if current_user.current_organization
+                        %span{style: 'color:#555'} (#{current_user.current_organization.name})
+                    %ul.dropdown-menu
+                      - if current_user.current_organization
+                        - other_organizations = current_user.organizations.sort_by(&:name) - [current_user.current_organization]
+                        - if other_organizations.present?
+                          - other_organizations.each do |organization|
+                            %li= link_to organization.name, select_organization_path(organization)
+                          %li.divider
+                      %li= link_to 'My Account', edit_user_registration_path
+                      %li.divider
+                      %li= link_to 'Log Out', destroy_user_session_path
+                %a.btn.btn-mini{:href => edit_user_registration_path}
+                  %i.icon-cog
+      .app-header
+        .container-fluid
+          .row-fluid
+            .span3
+              %a{:href => "/"}
+                %img{:src => "/assets/watchfire.png"}/
+            .span9
+              - if user_signed_in?
+                = breadcrumb
+      .content
         = yield
-        %br
-        %br
-        %br
-      #footer-span
-        #footer
-          #footer-container
-            %div
-              .left.platform
-                InSTEDD has created an evolving platform of free and open source technologies to support humanitarian causes. These tools can be used individually or as building blocks for larger solutions.
-                %a{:href => "http://instedd.org/technologies/"} Click here
-                to learn more
-              .right
-                %a.more{:href => "http://instedd.org/technologies/"} Learn more
-                #instedd-footer{"data-app-name" => "nuntium"}
-              .clear
-            %div
-              .left
-                %a{:href => "http://instedd.org"} © 2011 InSTEDD
-                %a{:href => "#TODO"} Terms and conditions
-                %a{:href => "#TODO"} Contact us
-              .right
-                = link_to 'Events', missions_path
-                = link_to 'Volunteers', volunteers_path
-                %a#invite_bubble_trigger{:href => "#"} Invite new users
-                #invite_bubble_content
-                  = render :partial => "shared/invite_bubble_form"
-                #version
-                  Version: #{watchfire_version}
-              .clear
+      .footer
+        .container-fluid
+          .row-fluid.top
+            .span5
+              <img src="/assets/theme/footer/InSTEDDPlatform.png" vspace="7" title="InSTEDD Platform" >
+              %br
+              InSTEDD has created an evolving platform of free and open source technologies to support humanitarian causes. These tools can be used individually or as building blocks for larger solutions.
+              %a{:href => "http://instedd.org/technologies/"} Click here
+              to learn more
+            .span7
+              %a.more.pull-right{:href => "http://instedd.org/technologies/"} Learn more
+              %br
+              #instedd-footer.pull-right{"data-app-name" => "nuntium"}
+          .row-fluid
+            .span4
+              %a{:href => "http://instedd.org"} © 2011 InSTEDD
+              %a{:href => "#TODO"} Terms and conditions
+              %a{:href => "#TODO"} Contact us
+            .span6.offset2.aright
+              = link_to 'Events', missions_path
+              = link_to 'Volunteers', volunteers_path
+              = link_to 'Members', members_path
+              %a#invite_bubble_trigger{:href => "#"} Invite new users
+              #invite_bubble_content
+                = render :partial => "shared/invite_bubble_form"
+              %span#version
+                Version: #{watchfire_version}
