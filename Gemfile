@@ -15,7 +15,7 @@ gem 'devise', "~>2.2.3"
 gem 'devise_invitable'
 gem 'breadcrumbs_on_rails'
 gem 'kaminari'
-gem 'pigeon', :path => '../pigeon'
+gem 'instedd-pigeon', :path => '../pigeon'
 gem 'decent_exposure'
 gem 'guid'
 gem 'foreman'

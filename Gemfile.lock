@@ -8,7 +8,7 @@ GIT
 PATH
   remote: ../pigeon
   specs:
-    pigeon (0.0.1)
+    instedd-pigeon (0.0.1)
       nuntium_api (~> 0.19)
       rails (~> 3.2.12)
       verboice (= 0.6.0)
@@ -244,13 +244,13 @@ DEPENDENCIES
   geokit-rails3
   guid
   haml-rails
+  instedd-pigeon!
   jquery-rails (~> 2.0.3)
   kaminari
   machinist (>= 2.0.0.beta2)
   mocha
   mysql2
   nuntium_api (~> 0.19)
-  pigeon!
   pry
   pry-debugger
   quiet_assets
