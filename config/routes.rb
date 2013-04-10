@@ -9,6 +9,9 @@ Watchfire::Application.routes.draw do
   # Nuntium Callbacks
   post "nuntium/receive"
 
+  # Pigeon mount
+  mount Pigeon::Engine => '/pigeon'
+
   resources :organizations do
     member do
       get 'select'

@@ -11,4 +11,7 @@ Pigeon.setup do |config|
   config.verboice_host = watchfire_config['verboice_host']
   config.verboice_account = watchfire_config['verboice_account']
   config.verboice_password = watchfire_config['verboice_password']
+
+  config.twitter_consumer_key = watchfire_config['twitter_consumer_key']
+  config.twitter_consumer_secret = watchfire_config['twitter_consumer_secret']
 end
