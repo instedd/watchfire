@@ -12,7 +12,7 @@ PATH
       nuntium_api (~> 0.19)
       rails (~> 3.2.12)
       twitter_oauth
-      verboice (= 0.6.0)
+      verboice (= 0.7.0)
 
 GEM
   remote: http://rubygems.org/
@@ -226,7 +226,7 @@ GEM
     valid_email (0.0.4)
       activemodel
       mail
-    verboice (0.6.0)
+    verboice (0.7.0)
       json
       rest-client
     warden (1.2.1)
@@ -269,4 +269,4 @@ DEPENDENCIES
   timecop
   uglifier (>= 1.0.3)
   valid_email
-  verboice (= 0.6.0)
+  verboice (= 0.7.0)
