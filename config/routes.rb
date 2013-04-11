@@ -10,7 +10,9 @@ Watchfire::Application.routes.draw do
   post "nuntium/receive"
 
   # Pigeon mount
-  mount Pigeon::Engine => '/pigeon'
+  authenticate :user do
+    mount Pigeon::Engine => '/pigeon'
+  end
 
   resources :organizations do
     member do
