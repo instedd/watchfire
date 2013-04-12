@@ -25,6 +25,12 @@ class Mission < ActiveRecord::Base
 
   accepts_nested_attributes_for :mission_skills, :allow_destroy => true
 
+  belongs_to :verboice_channel, :class_name => 'PigeonChannel'
+  belongs_to :nuntium_channel, :class_name => 'PigeonChannel'
+
+  validate :channels_are_valid
+  validate :has_channels_when_running
+
 	def candidate_count(st)
 		return self.candidates.where('status = ?', st).count
 	end
@@ -79,8 +85,12 @@ class Mission < ActiveRecord::Base
 	end
 
 	def call_volunteers
-	  update_status :running
-	  candidates_to_call.each{|c| c.call}
+    begin
+      update_status :running
+      candidates_to_call.each{|c| c.call}
+    rescue ActiveRecord::RecordInvalid
+      self.status = self.status_was
+    end
   end
 
   def stop_calling_volunteers
@@ -247,6 +257,14 @@ class Mission < ActiveRecord::Base
     Watchfire::Application.config.max_distance
   end
 
+  def unlink_channel! channel
+    if channel == verboice_channel
+      update_attribute :verboice_channel, nil
+    elsif channel == nuntium_channel
+      update_attribute :nuntium_channel, nil
+    end
+  end
+
   private
 
 	def reason_for_message
@@ -268,6 +286,28 @@ class Mission < ActiveRecord::Base
 
   def available_ratio
     Watchfire::Application.config.available_ratio
+  end
+
+  def channels_are_valid
+    [:verboice, :nuntium].each do |type|
+      attribute = "#{type}_channel".to_sym
+      channel = self.send(attribute)
+      if channel.present?
+        if channel.organization != organization
+          errors[attribute] << 'belongs to another organization'
+        end
+        if channel.channel_type != type
+          errors[attribute] << 'has an invalid type'
+        end
+      end
+    end
+  end
+
+  def has_channels_when_running
+    if status == :running && ![verboice_channel, nuntium_channel].any?
+      errors.add :base, "Cannot start recruiting unless event has at least one channel"
+    end
+    errors.blank?
   end
 
 end

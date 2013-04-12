@@ -62,6 +62,12 @@ Call.blueprint do
   candidate { Candidate.make! }
 end
 
+PigeonChannel.blueprint do
+  organization { Organization.make! }
+  name { _name }
+  pigeon_name { _name }
+end
+
 def _name
   Faker::Name.name
 end

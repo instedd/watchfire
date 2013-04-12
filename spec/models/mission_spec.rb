@@ -2,6 +2,13 @@ require 'spec_helper'
 
 describe Mission do
 
+  it "should have at least one channel to begin calling volunteers" do
+    mission = Mission.make!
+    mission.call_volunteers 
+    mission.should_not be_running
+    mission.errors.should_not be_blank
+  end
+
   it "should call volunteers" do
     mission = Mission.new
     mission.stubs(:save!).returns(true)
@@ -39,7 +46,8 @@ describe Mission do
 
   describe "stop calling volunteers" do
     before(:each) do
-      @mission = Mission.make! :status => :running
+      @channel = PigeonChannel.make! :channel_type => :verboice
+      @mission = Mission.make! :status => :running, :organization => @channel.organization, :verboice_channel => @channel
     end
 
     it "should change status to paused" do
@@ -57,7 +65,8 @@ describe Mission do
 
   describe "finish" do
     before(:each) do
-      @mission = Mission.make! :status => :running
+      @channel = PigeonChannel.make! :channel_type => :verboice
+      @mission = Mission.make! :status => :running, :organization => @channel.organization, :verboice_channel => @channel
     end
 
     it "should change status to finished" do
@@ -369,6 +378,43 @@ describe Mission do
       @mission.set_candidates [@vol2, @vol3]
 
       @mission.candidates.where(:active => false).map(&:volunteer).should include(@vol2)
+    end
+  end
+
+  describe "channel validations" do
+    before(:each) do
+      @organization = Organization.make!
+      @nuntium_channel = PigeonChannel.make! :organization => @organization, :channel_type => :nuntium
+      @verboice_channel = PigeonChannel.make! :organization => @organization, :channel_type => :verboice
+      @other_channel = PigeonChannel.make! :channel_type => :verboice
+      @mission = Mission.make! :organization => @organization
+    end
+
+    it "should pass with nil channels" do
+      @mission.should be_valid
+    end
+
+    it "should pass with valid channels" do
+      @mission.nuntium_channel = @nuntium_channel
+      @mission.verboice_channel = @verboice_channel
+      @mission.should be_valid
+    end
+
+    it "should reject invalid nuntium channel types" do
+      @mission.nuntium_channel = @verboice_channel
+      @mission.should_not be_valid
+      @mission.errors.should include(:nuntium_channel)
+    end
+
+    it "should reject invalid verboice channel types" do
+      @mission.verboice_channel = @nuntium_channel
+      @mission.should_not be_valid
+      @mission.errors.should include(:verboice_channel)
+    end
+
+    it "should reject channels not belonging to the mission's organization" do
+      @mission.verboice_channel = @other_channel
+      @mission.should_not be_valid
     end
   end
 end

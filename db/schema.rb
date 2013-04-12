@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130326140352) do
+ActiveRecord::Schema.define(:version => 20130412170903) do
 
   create_table "calls", :force => true do |t|
     t.string   "session_id"
@@ -104,10 +104,15 @@ ActiveRecord::Schema.define(:version => 20130326140352) do
     t.datetime "updated_at"
     t.integer  "user_id"
     t.string   "name"
-    t.boolean  "use_custom_text", :default => false, :null => false
+    t.boolean  "use_custom_text",     :default => false, :null => false
     t.text     "custom_text"
     t.integer  "organization_id"
+    t.integer  "verboice_channel_id"
+    t.integer  "nuntium_channel_id"
   end
+
+  add_index "missions", ["nuntium_channel_id"], :name => "index_missions_on_nuntium_channel_id"
+  add_index "missions", ["verboice_channel_id"], :name => "index_missions_on_verboice_channel_id"
 
   create_table "organizations", :force => true do |t|
     t.string   "name"

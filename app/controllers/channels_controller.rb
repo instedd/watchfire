@@ -29,9 +29,13 @@ class ChannelsController < ApplicationController
   end
 
   def destroy
-    @channel.destroy
     @pigeon_channel.destroy
-    redirect_to channels_path, notice: 'Channel deleted'
+    if @pigeon_channel.destroyed?
+      @channel.destroy
+      redirect_to channels_path, notice: 'Channel deleted'
+    else
+      redirect_to channels_path, error: @pigeon_channel.errors.full_messages.join
+    end
   end
 
   private
