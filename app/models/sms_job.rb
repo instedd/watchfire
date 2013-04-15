@@ -9,6 +9,12 @@ class SmsJob < CandidateJob
 			return
 		end
 
+    # check that the mission has a Nuntium channel configured
+    if candidate.mission.nuntium_channel.nil?
+      JobLogger.warn "SmsJob: Mission for candidate #{candidate_id} does not have a Nuntium channel"
+      return
+    end
+
 		# check if candidate has run out of sms retries
 		unless candidate.has_sms_retries?
 			unless candidate.has_retries?
@@ -22,14 +28,17 @@ class SmsJob < CandidateJob
 		# Send SMS
 		nuntium = Nuntium.from_config
 		begin
+      channel = candidate.mission.nuntium_channel.pigeon_name
 			candidate.volunteer.sms_channels.each do |sms_channel|
 				begin
 					message = {
 						:from => "sms://watchfire",
 						:to => sms_channel.address.with_protocol,
-						:body => candidate.mission.sms_message
+						:body => candidate.mission.sms_message,
+            :suggested_channel => channel,
+            :organization_id => candidate.mission.organization_id
 					}
-					JobLogger.debug "SmsJob: Sending AO message to Candidate #{candidate_id}, address is #{message[:to]}"
+					JobLogger.debug "SmsJob: Sending AO message to Candidate #{candidate_id} using channel #{channel}, address is #{message[:to]}"
 					nuntium.send_ao message
 				rescue Nuntium::Exception => e
 					JobLogger.error "SmsJob: Error sending AO for Candidate #{candidate_id}, exception: #{e}"

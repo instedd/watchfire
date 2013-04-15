@@ -5,6 +5,9 @@ describe SmsJob do
   before(:each) do
     @nuntium = mock()
     Nuntium.stubs(:from_config).returns(@nuntium)
+    @organization = Organization.make! :max_sms_retries => 10, :max_voice_retries => 20
+    @channel = PigeonChannel.make! :channel_type => :nuntium, :organization => @organization
+    @mission = Mission.make! :nuntium_channel => @channel, :organization => @organization
   end
 
   after(:each) do
@@ -13,7 +16,7 @@ describe SmsJob do
 
   describe "successful" do
     before(:each) do
-      @candidate = Candidate.make! :status => :pending, :sms_retries => 0
+      @candidate = Candidate.make! :status => :pending, :sms_retries => 0, :mission => @mission
       @sms_job = SmsJob.new @candidate.id
     end
 
@@ -63,12 +66,48 @@ describe SmsJob do
 
       @sms_job.perform
     end
+
+    it "should send sms with organization" do
+      @nuntium.expects(:send_ao).with do |message|
+        message[:organization_id] == @organization.id
+      end
+
+      @sms_job.perform
+    end
+
+    it "should send sms with the channel suggestion for the mission" do
+      @nuntium.expects(:send_ao).with do |message|
+        message[:suggested_channel] == @channel.pigeon_name
+      end
+
+      @sms_job.perform
+    end
+  end
+
+  describe "mission does not have an sms channel" do
+    before(:each) do
+      @mission = Mission.make!
+      @candidate = Candidate.make! :status => :pending, :sms_retries => 0, :mission => @mission
+      @sms_job = SmsJob.new @candidate.id
+    end
+
+    it "should not send sms" do
+      @nuntium.expects(:send_ao).never
+
+      @sms_job.perform
+    end
+
+    it "should not enqueue new job" do
+      @sms_job.perform
+
+      Delayed::Job.count.should == 0
+    end
   end
 
   describe "candidate not pending" do
 
     before(:each) do
-      @candidate = Candidate.make! :status => :confirmed
+      @candidate = Candidate.make! :status => :confirmed, :mission => @mission
       @sms_job = SmsJob.new @candidate.id
     end
 
@@ -95,9 +134,8 @@ describe SmsJob do
 
   describe "candidate has run out of retries" do
     before(:each) do
-      @organization = Organization.make! :max_sms_retries => 10, :max_voice_retries => 20
       @volunteer = Volunteer.make! :organization => @organization
-      @candidate = Candidate.make! :volunteer => @volunteer, :status => :pending, :sms_retries => @organization.max_sms_retries, :voice_retries => @organization.max_voice_retries
+      @candidate = Candidate.make! :volunteer => @volunteer, :status => :pending, :sms_retries => @organization.max_sms_retries, :voice_retries => @organization.max_voice_retries, :mission => @mission
       @sms_job = SmsJob.new @candidate.id
     end
 
@@ -128,9 +166,8 @@ describe SmsJob do
 
   describe "candidate has retries but sms retries has hit limit" do
     before(:each) do
-      @organization = Organization.make! :max_sms_retries => 10, :max_voice_retries => 20
       @volunteer = Volunteer.make! :organization => @organization
-      @candidate = Candidate.make! :volunteer => @volunteer, :status => :pending, :sms_retries => @organization.max_sms_retries, :voice_retries => @organization.max_voice_retries - 1
+      @candidate = Candidate.make! :volunteer => @volunteer, :status => :pending, :sms_retries => @organization.max_sms_retries, :voice_retries => @organization.max_voice_retries - 1, :mission => @mission
       @sms_job = SmsJob.new @candidate.id
     end
 
@@ -147,9 +184,8 @@ describe SmsJob do
 
   describe "candidate has run out of sms retries and doesn't have voice" do
     before(:each) do
-      @organization = Organization.make! :max_sms_retries => 10, :max_voice_retries => 20
       @volunteer = Volunteer.make! :voice_channels => [], :organization => @organization
-      @candidate = Candidate.make! :volunteer => @volunteer, :status => :pending, :sms_retries => @organization.max_sms_retries
+      @candidate = Candidate.make! :volunteer => @volunteer, :status => :pending, :sms_retries => @organization.max_sms_retries, :mission => @mission
       @sms_job = SmsJob.new @candidate.id
     end
 
@@ -172,7 +208,7 @@ describe SmsJob do
   describe "nuntium error" do
 
     before(:each) do
-      @candidate = Candidate.make! :status => :pending, :sms_retries => 1
+      @candidate = Candidate.make! :status => :pending, :sms_retries => 1, :mission => @mission
       @sms_job = SmsJob.new @candidate.id
 
       @nuntium.expects(:send_ao).raises(Nuntium::Exception, "Nuntium Error")
@@ -199,7 +235,7 @@ describe SmsJob do
   describe "with multiple sms phone numbers" do
     before(:each) do
       @volunteer = Volunteer.make! :sms_channels => [SmsChannel.make, SmsChannel.make]
-      @candidate = Candidate.make! :status => :pending, :sms_retries => 0, :volunteer => @volunteer
+      @candidate = Candidate.make! :status => :pending, :sms_retries => 0, :volunteer => @volunteer, :mission => @mission
       @sms_job = SmsJob.new @candidate.id
     end
 

@@ -9,6 +9,11 @@ class VoiceJob < CandidateJob
       return
     end
 
+    if candidate.mission.verboice_channel.nil?
+      JobLogger.warn "VoiceJob: Mission for candidate #{candidate_id} does not have a Verboice channel"
+      return
+    end
+
     # check if candidate has run out of voice retries
     unless candidate.has_voice_retries?
       unless candidate.has_retries?
@@ -58,8 +63,9 @@ class VoiceJob < CandidateJob
     voice_number = voice_numbers[number_index % voice_numbers.length]
 
     begin
-      JobLogger.debug "VoiceJob: Calling Candidate #{candidate_id} through Verboice, number is #{candidate.volunteer.voice_channels.first.address}"
-      response = @verboice.call voice_number, :status_callback_url => Rails.application.routes.url_helpers.verboice_status_callback_url
+      channel = candidate.mission.verboice_channel.pigeon_name
+      JobLogger.debug "VoiceJob: Calling Candidate #{candidate_id} through Verboice using channel #{channel}, number is #{candidate.volunteer.voice_channels.first.address}"
+      response = @verboice.call voice_number, :status_callback_url => Rails.application.routes.url_helpers.verboice_status_callback_url, :channel => channel
 
       session_id = response['call_id']
       JobLogger.debug "VoiceJob: Adding Call with session_id #{session_id} to Candidate #{candidate_id}"

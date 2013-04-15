@@ -6,6 +6,9 @@ describe VoiceJob do
     @verboice = mock()
     Verboice.stubs(:from_config).returns(@verboice)
     @response = mock()
+    @organization = Organization.make! :max_sms_retries => 10, :max_voice_retries => 20
+    @channel = PigeonChannel.make! :channel_type => :verboice, :organization => @organization 
+    @mission = Mission.make! :verboice_channel => @channel, :organization => @organization
   end
 
   after(:each) do
@@ -14,13 +17,13 @@ describe VoiceJob do
 
   describe "successful" do
     before(:each) do
-      @candidate = Candidate.make! :status => :pending, :voice_retries => 0
+      @candidate = Candidate.make! :status => :pending, :voice_retries => 0, :mission => @mission
       @voice_job = VoiceJob.new @candidate.id
       @response.stubs(:[]).with('call_id').returns('123')
     end
 
     it "should call the volunteer" do
-      @verboice.expects(:call).with(@candidate.volunteer.voice_channels.first.address, :status_callback_url => Rails.application.routes.url_helpers.verboice_status_callback_url).returns(@response)
+      @verboice.expects(:call).with(@candidate.volunteer.voice_channels.first.address, :status_callback_url => Rails.application.routes.url_helpers.verboice_status_callback_url, :channel => @channel.pigeon_name).returns(@response)
 
       @voice_job.perform
     end
@@ -62,10 +65,30 @@ describe VoiceJob do
 
   end
 
+  describe "mission has no voice channel defined" do
+    before(:each) do
+      @mission = Mission.make! 
+      @candidate = Candidate.make! :status => :pending, :voice_retries => 0, :mission => @mission
+      @voice_job = VoiceJob.new @candidate.id
+    end
+
+    it "should not call the volunteer" do
+      @verboice.expects(:call).never
+
+      @voice_job.perform
+    end
+
+    it "should not enqueue new job" do
+      @voice_job.perform
+
+      Delayed::Job.count.should == 0
+    end
+  end
+
   describe "candidate not pending" do
 
     before(:each) do
-      @candidate = Candidate.make! :status => :confirmed
+      @candidate = Candidate.make! :status => :confirmed, :mission => @mission
       @voice_job = VoiceJob.new @candidate.id
     end
 
@@ -91,9 +114,8 @@ describe VoiceJob do
 
   describe "candidate has run out of retries" do
     before(:each) do
-      @organization = Organization.make! :max_sms_retries => 10, :max_voice_retries => 20
       @volunteer = Volunteer.make! :organization => @organization
-      @candidate = Candidate.make! :volunteer => @volunteer, :status => :pending, :sms_retries => @organization.max_sms_retries, :voice_retries => @organization.max_voice_retries
+      @candidate = Candidate.make! :volunteer => @volunteer, :status => :pending, :sms_retries => @organization.max_sms_retries, :voice_retries => @organization.max_voice_retries, :mission => @mission
       @voice_job = VoiceJob.new @candidate.id
     end
 
@@ -124,9 +146,8 @@ describe VoiceJob do
 
   describe "candidate has retries but voice retries has hit limit" do
     before(:each) do
-      @organization = Organization.make! :max_sms_retries => 10, :max_voice_retries => 20
       @volunteer = Volunteer.make! :organization => @organization
-      @candidate = Candidate.make! :volunteer => @volunteer, :status => :pending, :sms_retries => @organization.max_sms_retries - 1, :voice_retries => @organization.max_voice_retries
+      @candidate = Candidate.make! :volunteer => @volunteer, :status => :pending, :sms_retries => @organization.max_sms_retries - 1, :voice_retries => @organization.max_voice_retries, :mission => @mission
       @voice_job = VoiceJob.new @candidate.id
     end
 
@@ -143,9 +164,8 @@ describe VoiceJob do
 
   describe "candidate has run out of voice retries and doesn't have sms" do
     before(:each) do
-      @organization = Organization.make! :max_sms_retries => 10, :max_voice_retries => 20
       @volunteer = Volunteer.make! :sms_channels => [], :organization => @organization
-      @candidate = Candidate.make! :volunteer => @volunteer, :status => :pending, :voice_retries => @organization.max_voice_retries
+      @candidate = Candidate.make! :volunteer => @volunteer, :status => :pending, :voice_retries => @organization.max_voice_retries, :mission => @mission
       @voice_job = VoiceJob.new @candidate.id
     end
 
@@ -167,7 +187,7 @@ describe VoiceJob do
 
   describe "verboice bad response" do
     before(:each) do
-      @candidate = Candidate.make! :status => :pending, :voice_retries => 1
+      @candidate = Candidate.make! :status => :pending, :voice_retries => 1, :mission => @mission
       @voice_job = VoiceJob.new @candidate.id
       @verboice.expects(:call).raises(Exception, "Verboice Error")
     end
@@ -191,7 +211,7 @@ describe VoiceJob do
 
   describe "last call" do
     before(:each) do
-      @candidate = Candidate.make! :status => :pending
+      @candidate = Candidate.make! :status => :pending, :mission => @mission
       @last_call = Call.make! :candidate => @candidate
       @voice_job = VoiceJob.new @candidate.id
       @verboice.expects(:call_state).with(@last_call.session_id).returns(@response)
@@ -218,7 +238,7 @@ describe VoiceJob do
 
   describe "verboice last call state fails" do
     before(:each) do
-      @candidate = Candidate.make! :status => :pending
+      @candidate = Candidate.make! :status => :pending, :mission => @mission
       @last_call = Call.make! :candidate => @candidate
       @voice_job = VoiceJob.new @candidate.id
       @verboice.expects(:call_state).with(@last_call.session_id).raises(Exception, "Verboice Error")
@@ -235,19 +255,19 @@ describe VoiceJob do
     before(:each) do
       @volunteer = Volunteer.make! :voice_channels => [VoiceChannel.make, VoiceChannel.make]
       @voice_channels = @volunteer.voice_channels.sort_by(&:id)
-      @candidate = Candidate.make! :status => :pending, :voice_retries => 0, :volunteer => @volunteer
+      @candidate = Candidate.make! :status => :pending, :voice_retries => 0, :volunteer => @volunteer, :mission => @mission
       @status_callback_url = Rails.application.routes.url_helpers.verboice_status_callback_url
     end
 
     it "should call all the voice numbers in order" do
-      @verboice.expects(:call).with(@voice_channels[0].address, :status_callback_url => @status_callback_url).returns(@response)
+      @verboice.expects(:call).with(@voice_channels[0].address, :status_callback_url => @status_callback_url, :channel => @channel.pigeon_name).returns(@response)
       @response.stubs(:[]).with('call_id').returns('123')
 
       @voice_job = VoiceJob.new @candidate.id
       @voice_job.perform
 
       @verboice.expects(:call_state).with('123').returns('completed')
-      @verboice.expects(:call).with(@voice_channels[1].address, :status_callback_url => @status_callback_url).returns(@response)
+      @verboice.expects(:call).with(@voice_channels[1].address, :status_callback_url => @status_callback_url, :channel => @channel.pigeon_name).returns(@response)
       @response.stubs(:[]).with('call_id').returns('456')
 
       @voice_job = VoiceJob.new @candidate.id
@@ -277,13 +297,13 @@ describe VoiceJob do
 
     describe "verboice api raises" do
       it "should call each number in order" do
-        @verboice.expects(:call).with(@voice_channels[0].address, :status_callback_url => @status_callback_url).
+        @verboice.expects(:call).with(@voice_channels[0].address, :status_callback_url => @status_callback_url, :channel => @channel.pigeon_name).
           raises(Exception, "Verboice Error")
 
         @voice_job = VoiceJob.new @candidate.id
         @voice_job.perform
 
-        @verboice.expects(:call).with(@voice_channels[1].address, :status_callback_url => @status_callback_url).
+        @verboice.expects(:call).with(@voice_channels[1].address, :status_callback_url => @status_callback_url, :channel => @channel.pigeon_name).
           raises(Exception, "Verboice Error")
 
         @voice_job = VoiceJob.new @candidate.id
