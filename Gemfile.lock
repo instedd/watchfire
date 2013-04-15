@@ -5,15 +5,6 @@ GIT
     enumerated_attribute (0.3.0.beta1)
       meta_programming (>= 0.2.1)
 
-PATH
-  remote: ../pigeon
-  specs:
-    instedd-pigeon (0.0.1)
-      nuntium_api (~> 0.19)
-      rails (~> 3.2.12)
-      twitter_oauth
-      verboice (= 0.7.0)
-
 GEM
   remote: http://rubygems.org/
   specs:
@@ -111,6 +102,11 @@ GEM
     highline (1.6.15)
     hike (1.2.1)
     i18n (0.6.4)
+    instedd-pigeon (0.1.2)
+      nuntium_api (~> 0.19)
+      rails (~> 3.2.12)
+      twitter_oauth
+      verboice (= 0.7.0)
     journey (1.0.4)
     jquery-rails (2.0.3)
       railties (>= 3.1.0, < 5.0)
@@ -250,7 +246,7 @@ DEPENDENCIES
   geokit-rails3
   guid
   haml-rails
-  instedd-pigeon!
+  instedd-pigeon (~> 0.1.2)
   jquery-rails (~> 2.0.3)
   kaminari
   machinist (>= 2.0.0.beta2)
