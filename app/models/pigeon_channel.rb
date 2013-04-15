@@ -21,7 +21,7 @@ class PigeonChannel < ActiveRecord::Base
 
   def unlink_missions
     if missions.where(:status => :running).count > 0
-      errors.add :base, "Cannot delete channel while there are missions using it"
+      errors.add :base, "Cannot delete #{name} channel while there are active missions using it"
     else
       missions.each do |mission|
         mission.unlink_channel! self

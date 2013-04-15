@@ -34,7 +34,7 @@ class ChannelsController < ApplicationController
       @channel.destroy
       redirect_to channels_path, notice: 'Channel deleted'
     else
-      redirect_to channels_path, error: @pigeon_channel.errors.full_messages.join
+      redirect_to channels_path, alert: @pigeon_channel.errors.full_messages.join
     end
   end
 
