@@ -10,6 +10,9 @@ class PigeonChannel < ActiveRecord::Base
 
   before_destroy :unlink_missions
 
+  scope :verboice, where(:channel_type => :verboice).order(:name)
+  scope :nuntium, where(:channel_type => :nuntium).order(:name)
+
   def missions
     Mission.where(['verboice_channel_id = :id OR nuntium_channel_id = :id', id: id])
   end

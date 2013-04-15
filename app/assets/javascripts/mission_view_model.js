@@ -43,13 +43,18 @@ function CandidateViewModel(data) {
 function MissionViewModel() {
     var self = this;
 
+    self.urls = {};
+
     // DefaultSkill and ActiveSkills are defined by the view
     self.activeSkills = [DefaultSkill].concat(ActiveSkills || []);
     var skillMap = {};
     $.each(self.activeSkills, function(index, skill) {
         skillMap[skill.id] = skill;
     });
-    self.urls = {};
+
+    // VerboiceChannels and NuntiumChannels are defined by the view
+    self.verboiceChannels = [{ id: null, name: '' }].concat(VerboiceChannels || []);
+    self.nuntiumChannels = [{ id: null, name: '' }].concat(NuntiumChannels || []);
 
     // mission hidden fields
     self.id = ko.observable();
@@ -65,6 +70,8 @@ function MissionViewModel() {
     self.mission_skills = ko.observableArray();
     self.use_custom_text = ko.observable(false);
     self.custom_text = ko.observable(null).extend({ trim: true });
+    self.verboice_channel_id = ko.observable();
+    self.nuntium_channel_id = ko.observable();
 
     // candidates lists
     self.candidates = ko.observableArray();
@@ -407,6 +414,8 @@ function MissionViewModel() {
             custom_text: self.custom_text() || '',
             lat: location && location.lat(),
             lng: location && location.lng(),
+            verboice_channel_id: self.verboice_channel_id() || '',
+            nuntium_channel_id: self.nuntium_channel_id() || '',
             mission_skills_attributes: mission_skills
         };
     });
@@ -682,6 +691,8 @@ function MissionViewModel() {
             }
             self.use_custom_text(mission.use_custom_text);
             self.custom_text(mission.custom_text);
+            self.verboice_channel_id(mission.verboice_channel_id);
+            self.nuntium_channel_id(mission.nuntium_channel_id);
 
             // initially set the mission skills; will partially update the info on
             // ajax updates

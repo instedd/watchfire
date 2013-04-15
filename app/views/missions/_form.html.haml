@@ -4,6 +4,7 @@
   %input#name.ux-text.w58(placeholder="Enter the name of this event, e.g. 'Fire on Rangeland'" data-bind="value: name, attr: { readonly: isRunningOrFinished }")
   %br
 %br
+
 %label Recruitees
 .mission_skills(data-bind="foreach: mission_skills")
   .mission_skill(data-bind="visible: !_destroy()")
@@ -16,11 +17,25 @@
 %div(data-bind="if: availableSkills().length > 0 && isCreated()")
   %button.cadd(data-bind="click: addMissionSkill") Recruit for another skill
 %br
+
 %div(data-bind="css: { field_with_errors: 'reason' in errors() }")
   %label(for="reason") Description
   %br
   %textarea#reason.w54.ux-wajbar(maxlength="200" size="" placeholder="Enter the description, e.g 'a single house fire'" data-bind="value: reason, attr: { readonly: isRunningOrFinished }")
   %br
+
+%div(data-bind="css: { field_with_errors: 'verboice_channel' in errors() }")
+  %label(for="verboice_channel") Voice Channel
+  %br
+  %select.ux-dropdown.w30#verboice_channel(data-bind="options: verboiceChannels, optionsText: 'name', optionsValue: 'id', value: verboice_channel_id, enable: !isRunningOrFinished()")
+%br
+
+%div(data-bind="css: { field_with_errors: 'nuntium_channel' in errors() }")
+  %label(for="nuntium_channel") SMS Channel
+  %br
+  %select.ux-dropdown.w30#nuntium_channel(data-bind="options: nuntiumChannels, optionsText: 'name', optionsValue: 'id', value: nuntium_channel_id, enable: !isRunningOrFinished()")
+%br
+
 %div(data-bind="css: { field_with_errors: 'lat' in errors() || 'lng' in errors() || 'address' in errors() }")
   %label(for="address") Address
   %br

@@ -305,7 +305,8 @@ class Mission < ActiveRecord::Base
 
   def has_channels_when_running
     if status == :running && ![verboice_channel, nuntium_channel].any?
-      errors.add :base, "Cannot start recruiting unless event has at least one channel"
+      errors.add :verboice_channel, "Cannot start recruiting unless event has at least one channel"
+      errors.add :nuntium_channel, "Cannot start recruiting unless event has at least one channel"
     end
     errors.blank?
   end
