@@ -37,10 +37,16 @@
 		.missions_empty
 			- if current_organization
 				%div= image_tag 'http://theme.instedd.org/theme/images/icons/72/grey/fire.png'
-				%div.info You have no events yet
-				%a.add{:href => new_mission_path}
-					Create Event
-					%button.cadd
+				- if volunteers.count > 0
+					%div.info You have no events yet
+					%a.add{:href => new_mission_path}
+						Create Event
+						%button.cadd
+				- else
+					%div.info To create an event for recruiting you must have volunteers registered
+					%a.add{:href => new_volunteer_path}
+						Add New Volunteer
+						%button.cadd
 			- else
 				%div.info To start using Watchfire you must create an Organization
 				%a.add{:href => new_organization_path}
