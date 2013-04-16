@@ -20,8 +20,12 @@
     %col(style="width: 15%")
     %col(style="width: 66px")
     %tr
-      = sort_header 'Name', :name
-      = sort_header 'Address', :address
+      - if @volunteers.empty?
+        %th Name
+        %th Address
+      - else
+        = sort_header 'Name', :name
+        = sort_header 'Address', :address
       %th Voice Numbers
       %th(colspan="2") SMS Numbers
     - @volunteers.each do |volunteer|
@@ -35,6 +39,12 @@
             %button.avoid.fdelete
           = form_tag edit_volunteer_path(volunteer), :method => :get do
             %button.avoid.farrow
+  - if @volunteers.empty?
+    .missions_empty
+      %div.info There are no volunteers registered.
+      %a.add{:href => new_volunteer_path}
+        Add a New Volunteer
+        %button.cadd
   - unless current_organization
     .missions_empty
       %div.info To start using Watchfire you must create an Organization
