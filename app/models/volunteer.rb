@@ -6,7 +6,7 @@ class Volunteer < ActiveRecord::Base
 
   has_many :candidates, :dependent => :destroy
   has_many :missions, :through => :candidates
-  has_many :skills_volunteers
+  has_many :skills_volunteers, :dependent => :delete_all
   has_many :skills, :through => :skills_volunteers
 
   has_many :channels
