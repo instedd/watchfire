@@ -7,8 +7,9 @@
     %tr
       %th(colspan="3") 
         %span.left My Channels
-        %span.right
-          = select_tag :new_channel_kind, pigeon_channel_kinds_for_select, prompt: "Create new..."
+        - unless pigeon_channels.empty?
+          %span.right
+            = select_tag :new_channel_kind, pigeon_channel_kinds_for_select, prompt: "Create new..."
     - if pigeon_channels.all.present?
       - pigeon_channels.each do |channel|
         %tr.channel.link{'data-url' => edit_channel_path(channel)}
@@ -26,12 +27,14 @@
               %button.avoid.farrow
     - else
       %tr
-        %td &nbsp;
-        %td &nbsp;
+        %td(colspan="3") &nbsp;
   - if pigeon_channels.all.empty?
-    .channels_empty
+    .missions_empty
       - if current_organization
-        %div.info You have no channels yet
+        %div.info You have no channels yet.
+        %br
+        = select_tag :new_channel_kind, pigeon_channel_kinds_for_select, prompt: "Select New Channel Type..."
+
       - else
         %div.info To start using Watchfire you must create an Organization
         %a.add{:href => new_organization_path}
