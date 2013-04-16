@@ -1,0 +1,18 @@
+.box.w60
+  %legend Basic information
+  %br
+
+  .field.w60
+    = f.label :name
+    = f.text_field :name
+
+  .field.w60
+    = f.label :description
+    = f.text_area :description, rows: 3
+
+%br
+.box.w60
+  %legend Channel configuration
+
+  = pigeon_render_channel @channel, :channel_data
+

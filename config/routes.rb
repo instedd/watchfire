@@ -9,6 +9,11 @@ Watchfire::Application.routes.draw do
   # Nuntium Callbacks
   post "nuntium/receive"
 
+  # Pigeon mount
+  authenticate :user do
+    mount Pigeon::Engine => '/pigeon'
+  end
+
   resources :organizations do
     member do
       get 'select'
@@ -41,7 +46,8 @@ Watchfire::Application.routes.draw do
     end
   end
 
-  resources :channels
+  resources :channels, except: [:show] do
+  end
 
 	resources :candidates, :only => [:update]
 
