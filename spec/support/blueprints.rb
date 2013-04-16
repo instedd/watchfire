@@ -26,6 +26,7 @@ Mission.blueprint do
   lat { _lat }
   lng { _lng }
   address { _address }
+  city { _city }
   mission_skills { [MissionSkill.make] }
 end
 
@@ -74,6 +75,10 @@ end
 
 def _address
    Faker::Address.country
+end
+
+def _city
+   Faker::Address.city
 end
 
 def _email

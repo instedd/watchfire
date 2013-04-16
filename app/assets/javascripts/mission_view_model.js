@@ -63,8 +63,14 @@ function MissionViewModel() {
     self.name = ko.observable('').extend({ trim: true });
     self.reason = ko.observable('').extend({ trim: true });
     self.mission_skills = ko.observableArray();
-    self.use_custom_text = ko.observable(false);
-    self.custom_text = ko.observable(null).extend({ trim: true });
+    self.intro_text = ko.observable('').extend({ trim: true });
+    self.desc_text = ko.observable('').extend({ trim: true });
+    self.question_text = ko.observable('').extend({ trim: true });
+    self.yes_text = ko.observable('').extend({ trim: true });
+    self.no_text = ko.observable('').extend({ trim: true });
+    self.confirm_human = ko.observable(true);
+    self.location_type = ko.observable('city');
+    self.city = ko.observable();
 
     // candidates lists
     self.candidates = ko.observableArray();
@@ -311,6 +317,13 @@ function MissionViewModel() {
         }
     };
 
+    // UI related
+    self.current_edit_message = ko.observable('');
+
+    self.edit_message = function(name) {
+        self.current_edit_message(name);
+    };
+
     // initialization
     self.addMissionSkill();
     self.mapView = new MapView();
@@ -358,8 +371,10 @@ function MissionViewModel() {
             if (status == google.maps.GeocoderStatus.OK) {
                 var location = results[0].geometry.location;
                 self.latlng(location);
+                self.city(find_city(results[0]));
             } else {
                 alert("Location not found");
+                self.city('');
             }
         });
     }
@@ -369,12 +384,24 @@ function MissionViewModel() {
                 if (results[0]) {
                     // save address, but prevent further geocoding
                     self.address(results[0].formatted_address, true);
+                    self.city(find_city(results[0]));
                 }
             } else {
                 alert("Reverse Geocoding failed");
                 self.address('');
+                self.city('');
             }
         });
+    }
+    function find_city(result) {
+        var city = null;
+        for(var i = 0; i < result.address_components.length; i++) {
+            component = result.address_components[i];
+            if (component.types[0] == 'locality') {
+                city = component.long_name;
+            }
+        }
+        return city;
     }
 
     // save & load code
@@ -382,8 +409,8 @@ function MissionViewModel() {
         var location = self.latlng();
         var prio = 1;
         var mission_skills = $.map(self.mission_skills(), function(ms) {
-            var result = { 
-                req_vols: ms.req_vols(), 
+            var result = {
+                req_vols: ms.req_vols(),
                 skill_id: ms.skill_id() || '',
                 priority: prio
             };
@@ -402,9 +429,17 @@ function MissionViewModel() {
         return {
             name: self.name() || '',
             address: self.address() || '',
+            city: self.city() || '',
             reason: self.reason() || '',
-            use_custom_text: self.use_custom_text(),
-            custom_text: self.custom_text() || '',
+            messages: {
+                intro_text: self.intro_text() || '',
+                desc_text: self.desc_text() || '',
+                question_text: self.question_text() || '',
+                yes_text: self.yes_text() || '',
+                no_text: self.no_text() || '',
+                location_type: self.location_type() || 'city',
+                confirm_human: self.confirm_human() ? '1' : '0'
+            },
             lat: location && location.lat(),
             lng: location && location.lng(),
             mission_skills_attributes: mission_skills
@@ -676,13 +711,12 @@ function MissionViewModel() {
             self.name(mission.name);
             self.reason(mission.reason);
             self.address(mission.address, true);
-            if (mission.lat == null || mission.lng == null) {
+            self.city(mission.city);
+            if (mission.lat === null || mission.lng === null) {
                 self.latlng(null);
             } else {
                 self.latlng(new google.maps.LatLng(mission.lat, mission.lng));
             }
-            self.use_custom_text(mission.use_custom_text);
-            self.custom_text(mission.custom_text);
 
             // initially set the mission skills; will partially update the info on
             // ajax updates
@@ -694,6 +728,17 @@ function MissionViewModel() {
             }
         } else {
             mergeMissionSkills(mission.mission_skills);
+        }
+
+        // New record
+        if (self.id() === null && mission.id) {
+            self.intro_text(mission.messages.intro_text);
+            self.desc_text(mission.messages.desc_text);
+            self.question_text(mission.messages.question_text);
+            self.yes_text(mission.messages.yes_text);
+            self.no_text(mission.messages.no_text);
+            self.location_type(mission.messages.location_type);
+            self.confirm_human(mission.messages.confirm_human == '1');
         }
 
         // update the non-user-editable data for the mission

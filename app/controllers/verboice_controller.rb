@@ -2,15 +2,23 @@ class VerboiceController < ApplicationController
   expose(:candidate) { Candidate.find_by_call_session_id params[:CallSid] }
 
   def plan
+    if candidate.mission.confirm_human?
+      render 'plan_before_confirmation'
+    else
+      render 'plan_no_confirmation'
+    end
+  end
+
+  def plan_after_confirmation
   end
 
   def callback
     # Look for user response based on digits
-    match = params[:Digits].match /(1|2)/
+    match = params[:Digits].match(/(1|2)/)
 
     # Digits don't match required response, play 'plan' again
     unless match
-      render "plan"
+      render "plan_no_confirmation"
       return
     end
 

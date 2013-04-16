@@ -104,9 +104,9 @@ ActiveRecord::Schema.define(:version => 20130416180439) do
     t.datetime "updated_at"
     t.integer  "user_id"
     t.string   "name"
-    t.boolean  "use_custom_text", :default => false, :null => false
-    t.text     "custom_text"
     t.integer  "organization_id"
+    t.text     "messages"
+    t.string   "city"
   end
 
   create_table "organizations", :force => true do |t|

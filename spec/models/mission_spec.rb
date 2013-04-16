@@ -179,10 +179,10 @@ describe Mission do
       @mission.expects(:confirmed_candidates).returns([])
       @mission.stubs(:candidate_allocation_order).
         returns(Proc.new { |c1,c2| c1 <=> c2 })
-      allocation = [{ 
-        :mission_skill => @mission_skill, 
-        :confirmed => [], 
-        :pending => (1..8).to_a, 
+      allocation = [{
+        :mission_skill => @mission_skill,
+        :confirmed => [],
+        :pending => (1..8).to_a,
         :needed => 10
       }]
       @mission.expects(:allocate_candidates).returns(allocation)
@@ -202,10 +202,10 @@ describe Mission do
       @mission.expects(:confirmed_candidates).returns((1..2).to_a)
       @mission.stubs(:candidate_allocation_order).
         returns(Proc.new { |c1,c2| c1 <=> c2 })
-      allocation = [{ 
-        :mission_skill => @mission_skill, 
+      allocation = [{
+        :mission_skill => @mission_skill,
         :confirmed => (1..2).to_a,
-        :pending => (1..8).to_a, 
+        :pending => (1..8).to_a,
         :needed => 6
       }]
       @mission.expects(:allocate_candidates).returns(allocation)
@@ -219,10 +219,10 @@ describe Mission do
       @mission.expects(:confirmed_candidates).returns((1..5).to_a)
       @mission.stubs(:candidate_allocation_order).
         returns(Proc.new { |c1,c2| c1 <=> c2 })
-      allocation = [{ 
-        :mission_skill => @mission_skill, 
+      allocation = [{
+        :mission_skill => @mission_skill,
         :confirmed => (1..5).to_a,
-        :pending => [], 
+        :pending => [],
         :needed => 0
       }]
       @mission.expects(:allocate_candidates).returns(allocation)
@@ -236,8 +236,8 @@ describe Mission do
   describe "title" do
     before(:each) do
       @mission = Mission.new :name => "name", :reason => "reason",
-        :mission_skills => [MissionSkill.make(:req_vols => 3, 
-          :skill => Skill.new(:name => "skill"))] 
+        :mission_skills => [MissionSkill.make(:req_vols => 3,
+          :skill => Skill.new(:name => "skill"))]
     end
 
     it "should tell title with all fields" do
@@ -252,10 +252,10 @@ describe Mission do
     end
 
     it "should tell title with multiple required skills" do
-      @mission.mission_skills << 
+      @mission.mission_skills <<
         MissionSkill.make(:mission => @mission, :req_vols => 1)
 
-      @mission.title.should eq("name: 3 skills, 1 Volunteer (reason)") 
+      @mission.title.should eq("name: 3 skills, 1 Volunteer (reason)")
     end
   end
 
@@ -280,32 +280,90 @@ describe Mission do
 			@mission = Mission.new :address => "San Mateo"
 		end
 
-		[:sms_message, :voice_message].each do |kind|
-			it "should tell #{kind.to_s} with reason" do
-				@mission.reason = "a reason"
-				@mission.send(kind).should eq(I18n.t(:template_message, :reason => "a reason", :location => "San Mateo") + I18n.t("#{kind.to_s}_options"))
-			end
+    let(:mission) { Mission.make! }
 
-			it "should tell #{kind.to_s} without reason" do
-			  @mission.send(kind).should eq(I18n.t(:template_message, :reason => "an emergency", :location => "San Mateo") + I18n.t("#{kind.to_s}_options"))
-			end
+    describe "new" do
+      it "should have an intro text" do
+        mission.intro_text.should eq(I18n.t(:intro_message, :organization => mission.organization.name))
+      end
 
-			it "should use custom text if use custom text is enabled" do
-  		  @mission.use_custom_text = true
-  		  @mission.custom_text = "a custom text"
-		    @mission.send(kind).should eq("a custom text." + I18n.t("#{kind.to_s}_options"))
-  	  end
-		end
+      it "should have a desc message with reason" do
+        mission = Mission.make! :reason => "a reason"
+        mission.desc_text.should eq(I18n.t(:desc_message, :reason => mission.reason))
+      end
 
-		it "should tell voice message sentences" do
-			@mission.expects(:voice_message).returns("First sentence. Second sentence . Third")
-			@mission.voice_message_sentences.should eq(["First sentence", "Second sentence", "Third"])
-		end
+      it "should have a desc message with reason" do
+        mission.desc_text.should eq(I18n.t(:desc_message, :reason => I18n.t(:an_emergency)))
+      end
 
-		it "should reject empty sentences in voice message" do
-		  @mission.expects(:voice_message).returns("First sentence. . Third.\r\n")
-		  @mission.voice_message_sentences.should eq(["First sentence", "Third"])
-	  end
+      it "should have a question message" do
+        mission.question_text.should eq(I18n.t(:question_message))
+      end
+
+      it "should have a yes message" do
+        mission.yes_text.should eq(I18n.t(:yes_message))
+      end
+
+      it "should have a no message" do
+        mission.no_text.should eq(I18n.t(:no_message))
+      end
+
+      it "should have a location type" do
+        mission.location_type.should eq('city')
+      end
+
+      it "should confirm human" do
+        mission.confirm_human.should eq('1')
+      end
+    end
+
+    it "should tell confirm message" do
+      mission.yes_text = 'thanks the address is'
+      mission.confirm_message.should eq("thanks the address is #{mission.address}")
+    end
+
+    it "should tell deny message" do
+      mission.no_text = 'thanks anyway'
+      mission.deny_message.should eq('thanks anyway')
+    end
+
+    describe "sms and voice messages" do
+      before(:each) do
+        mission.intro_text = "hello intro."
+        mission.desc_text = "there is a fire in"
+        mission.question_text = "can you respond?"
+      end
+
+  		[:sms_message, :voice_message].each do |kind|
+        it "should tell #{kind.to_s} with city" do
+          mission.location_type = 'city'
+          expected = "hello intro. there is a fire in #{mission.city}. can you respond?. " + I18n.t("#{kind.to_s}_options")
+          mission.send(kind).should eq(expected)
+        end
+
+        it "should tell #{kind.to_s} with address" do
+          mission.location_type = 'address'
+          expected = "hello intro. there is a fire in #{mission.address}. can you respond?. " + I18n.t("#{kind.to_s}_options")
+          mission.send(kind).should eq(expected)
+        end
+      end
+
+      it "should tell before confirmation voice message" do
+        mission.voice_before_confirmation_message.should eq("hello intro. #{I18n.t(:human_message)}")
+      end
+
+      it "should tell after confirmation voice message" do
+        expected = "there is a fire in #{mission.city}. can you respond?. " + I18n.t(:voice_message_options)
+        mission.voice_after_confirmation_message.should eq(expected)
+      end
+    end
+
+    it "should tell if confirm_human" do
+      mission.confirm_human = '0'
+      mission.confirm_human?.should be_false
+      mission.confirm_human = '1'
+      mission.confirm_human?.should be_true
+    end
 	end
 
 	describe "enable/disable all" do
@@ -354,7 +412,7 @@ describe Mission do
     it "should remove candidates not given in the new list" do
       @mission.set_candidates [@vol1, @vol2]
       @mission.set_candidates [@vol2, @vol3]
-      
+
       @mission.candidates.size.should eq(2)
       @mission.volunteers.should include(@vol2, @vol3)
       @mission.volunteers.should_not include(@vol1)

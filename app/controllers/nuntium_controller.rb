@@ -1,13 +1,12 @@
 class NuntiumController < BasicAuthController
   def receive
     begin
-      config = Watchfire::Application.config
       from = params[:from]
       body = params[:body]
 
       # Parse fields
-      number_match = from.match /sms:\/\/(\d+)/
-      response_match = body.downcase.match /(yes|no)/
+      number_match = from.match(/sms:\/\/(\d+)/)
+      response_match = body.downcase.match(/(yes|no)/)
 
       # Check for valid number
       raise 'Error parsing number' unless number_match

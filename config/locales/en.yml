@@ -2,10 +2,13 @@
 # See http://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 en:
-  template_message: "Hello, this is the Red Cross. There is %{reason} located at %{location}. Can you respond?."
+  intro_message: "This is a message from %{organization}."
+  desc_message: "There is %{reason} in"
+  question_message: "Can you respond?"
+  yes_message: "Thanks. You said you can respond. The address is"
+  no_message: "Thanks. You said you cannot respond."
+  human_message: "Press 1 to continue."
   voice_message_options: " Press 1 for yes. Press 2 for no."
   sms_message_options: " Reply with 'yes' or 'no'"
   an_emergency: "an emergency"
   sms_bad_format: "Sorry, you sent '%{text}' but we were expecting 'yes' or 'no'"
-  response_confirmed: "Your confirmation has been registered. Thank you"
-  response_denied: "We have registered that you cannot respond. Thank you"
