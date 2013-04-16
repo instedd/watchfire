@@ -7,6 +7,7 @@ defaults: &defaults
   verboice_host: http://verboice.instedd.org
   verboice_account: COMPLETE
   verboice_password: COMPLETE
+  verboice_channel: COMPLETE
   verboice_default_call_flow: COMPLETE
   twitter_consumer_key: COMPLETE
   twitter_consumer_secret: COMPLETE

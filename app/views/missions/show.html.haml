@@ -35,15 +35,7 @@
     { :id => s.id, 
       :name => s.name, 
       :pluralized => s.pluralized } 
-  }.to_json.gsub('</','<\/')};
-  var VerboiceChannels = #{pigeon_channels.verboice.map { |c|
-    { :id => c.id,
-      :name => c.name }
-  }.to_json.gsub('</','<\/')};
-  var NuntiumChannels = #{pigeon_channels.nuntium.map { |c|
-    { :id => c.id,
-      :name => c.name }
-  }.to_json.gsub('</','<\/')};
-  var MissionData = #{mission_json.to_json.gsub('</','<\/')};
+  }.to_json};
+  var MissionData = #{mission_json.to_json};
 
   onMissionPage();

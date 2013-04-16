@@ -2,7 +2,7 @@ class Verboice
   
   def self.from_config
     config = Watchfire::Application.config
-    Verboice.new config.verboice_host, config.verboice_account, config.verboice_password
+    Verboice.new config.verboice_host, config.verboice_account, config.verboice_password, config.verboice_channel
   end
   
 end
