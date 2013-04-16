@@ -3,7 +3,9 @@ require 'spec_helper'
 describe VerboiceController do
   describe "POST 'plan'" do
     before(:each) do
-      @parameters = {:format => 'xml'}
+      @parameters = {:format => 'xml', :CallSid => '123'}
+      @candidate = Candidate.make
+      Candidate.expects(:find_by_call_session_id).with('123').returns(@candidate)
     end
 
     it "should be successful" do
@@ -11,9 +13,32 @@ describe VerboiceController do
       response.should be_success
     end
 
-    it "should render plan" do
+    it "should render plan_no_confirmation if mission should not confirm human" do
+      @candidate.mission.expects(:confirm_human?).returns(false)
       post 'plan', @parameters
-      response.should render_template('plan')
+      response.should render_template('plan_no_confirmation')
+    end
+
+    it "should render plan_before_confirmation if mission should confirm human" do
+      @candidate.mission.expects(:confirm_human?).returns(true)
+      post 'plan', @parameters
+      response.should render_template('plan_before_confirmation')
+    end
+  end
+
+  describe "POST 'plan_after_confirmation'" do
+    before(:each) do
+      @parameters = {:format => 'xml'}
+    end
+
+    it "should be successful" do
+      post 'plan_after_confirmation', @parameters
+      response.should be_success
+    end
+
+    it "should render after_confirmation" do
+      post 'plan_after_confirmation', @parameters
+      response.should render_template('plan_after_confirmation')
     end
   end
 
@@ -49,12 +74,12 @@ describe VerboiceController do
       response.should render_template('callback')
     end
 
-    it "should render plan if bad answer" do
+    it "should render plan_no_confirmation if bad answer" do
       @parameters[:Digits] = '9'
 
       post 'callback', @parameters
 
-      response.should render_template('plan')
+      response.should render_template('plan_no_confirmation')
       @candidate.reload.is_pending?.should be true
     end
   end

@@ -206,7 +206,7 @@ describe Candidate do
     it "should return nil if number doesn't match any candidate" do
       Candidate.find_last_for_sms_number('foo').should be_nil
     end
-    
+
     it "should find most recent candidate" do
       @new_candidate = Candidate.make! :volunteer => @volunteer, :last_sms_att => (Time.now.utc + 1)
 
@@ -229,12 +229,22 @@ describe Candidate do
     Call.first.should eq(call_3)
   end
 
-  it "should tell voice response based on status" do
-    candidate = Candidate.new
-    candidate.status = :confirmed
-    candidate.response_message.should eq(I18n.t(:response_confirmed))
-    candidate.status = :denied
-    candidate.response_message.should eq(I18n.t(:response_denied))
+  describe "response" do
+    before(:each) do
+      @candidate = Candidate.make!
+    end
+
+    it "should tell confirmation response" do
+      @candidate.mission.expects(:confirm_message).returns('thanks!')
+      @candidate.status = :confirmed
+      @candidate.response_message.should eq('thanks!')
+    end
+
+    it "should tell confirmation response" do
+      @candidate.mission.expects(:deny_message).returns('oh well')
+      @candidate.status = :denied
+      @candidate.response_message.should eq('oh well')
+    end
   end
 
   it "should enable candidate" do

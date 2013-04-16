@@ -70,7 +70,7 @@ class Candidate < ActiveRecord::Base
   end
 
   def response_message
-    I18n.t(confirmed? ? :response_confirmed : :response_denied)
+    confirmed? ? mission.confirm_message : mission.deny_message
   end
 
   def last_call
