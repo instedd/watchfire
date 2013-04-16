@@ -2,28 +2,33 @@ class ChannelsController < ApplicationController
   before_filter :authenticate_user!
   before_filter :build_channel, only: [:new, :create]
   before_filter :find_channel, only: [:edit, :update, :destroy]
+  before_filter :add_channels_breadcrumb, :only => [:index, :new, :edit, :create, :update]
 
   def index
   end
 
   def new
+    add_breadcrumb 'New', new_channel_path(:kind => params[:kind])
   end
 
   def create
     if save_channel
       redirect_to channels_path, notice: 'Channel created'
     else
+      add_breadcrumb 'New', new_channel_path(:kind => params[:kind])
       render 'new'
     end
   end
 
   def edit
+    add_breadcrumb @pigeon_channel.name, edit_channel_path(@pigeon_channel)
   end
 
   def update
     if save_channel
       redirect_to channels_path, notice: 'Channel updated'
     else
+      add_breadcrumb @pigeon_channel.name, edit_channel_path(@pigeon_channel)
       render 'edit'
     end
   end
@@ -77,5 +82,10 @@ class ChannelsController < ApplicationController
     rescue ActiveRecord::RecordInvalid, Pigeon::ChannelInvalid
       false
     end
+  end
+
+  def add_channels_breadcrumb
+    add_breadcrumb "#{current_organization.name}", organizations_path if current_organization
+    add_breadcrumb "Channels", :channels_path
   end
 end
