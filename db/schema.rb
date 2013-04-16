@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130326140352) do
+ActiveRecord::Schema.define(:version => 20130416180439) do
 
   create_table "calls", :force => true do |t|
     t.string   "session_id"
@@ -125,8 +125,9 @@ ActiveRecord::Schema.define(:version => 20130326140352) do
     t.string   "description"
     t.string   "channel_type"
     t.string   "pigeon_name"
-    t.datetime "created_at",      :null => false
-    t.datetime "updated_at",      :null => false
+    t.datetime "created_at",                        :null => false
+    t.datetime "updated_at",                        :null => false
+    t.boolean  "enabled",         :default => true
   end
 
   add_index "pigeon_channels", ["organization_id"], :name => "index_pigeon_channels_on_organization_id"

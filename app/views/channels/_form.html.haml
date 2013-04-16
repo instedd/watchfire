@@ -9,6 +9,10 @@
   .field.w60
     = f.label :description
     = f.text_area :description, rows: 3
+  
+  %p
+    = f.check_box :enabled
+    = f.label :enabled, "Channel enabled"
 
 %br
 .box.w60
