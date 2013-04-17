@@ -163,7 +163,7 @@ var onVolunteerPage = function() {
 
   function getHtmls(obj) {
   	var ret = [];
-  	obj.each(function(){ret.push($(this).html());});
+  	obj.each(function(){ret.push($(this).text());});
   	return ret;
   }
 
