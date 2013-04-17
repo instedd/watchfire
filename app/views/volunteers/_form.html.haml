@@ -1,74 +1,86 @@
 - content_for :head do
   = javascript_include_tag 'http://maps.googleapis.com/maps/api/js?sensor=false'
+= form_for volunteer do |f|
 
-.left.w60
-  = form_for volunteer do |f|
-    = errors_for volunteer
+  = errors_for volunteer
 
-    %br
+  .row-fluid
+    .span12
+      = f.label :name
+      = f.text_field :name, :class => 'span8'
 
-    = f.label :name
-    = f.text_field :name, :class => 'w60'
-    %br
-    %br
-    = label_tag :new_voice_number, 'Voice Numbers'
-    %span.small (numbers will be called in order)
-    %ul.clist.sortable.w30#volunteer_voice_numbers(data-field-name="volunteer[voice_numbers][]")
-      - volunteer.voice_channels.each do |voice_channel|
-        - if !voice_channel.marked_for_destruction?
-          %li
-            = text_field_tag 'volunteer[voice_numbers][]', voice_channel.address, :class => 'ux-clist'
-            %button.clist-remove(type="button")>
-            %span.handle.pprevious>
-      %li.fixed
-        %input.ux-text#new_voice_number(type="text" placeholder="New voice number")
-        %button.clist-add(type="button")>
-    %br
-    = label_tag :new_sms_number, 'SMS Numbers'
-    %ul.clist.w30#volunteer_sms_numbers(data-field-name="volunteer[sms_numbers][]")
-      - volunteer.sms_channels.each do |sms_channel|
-        - if !sms_channel.marked_for_destruction?
-          %li
-            = text_field_tag 'volunteer[sms_numbers][]', sms_channel.address, :class => 'ux-clist'
-            %button.clist-remove(type="button")>
-      %li
-        %input.ux-text#new_sms_number(type="text" placeholder="New SMS number")
-        %button.clist-add(type="button")>
-    %br
-    = f.hidden_field :lat
-    = f.hidden_field :lng
+  .row-fluid
+    .span12
+      = label_tag :new_voice_number, 'Voice Numbers'
+      %span.small (numbers will be called in order)
+      %ul.clist.sortable#volunteer_voice_numbers(data-field-name="volunteer[voice_numbers][]")
+        - volunteer.voice_channels.each do |voice_channel|
+          - if !voice_channel.marked_for_destruction?
+            %li
+              = text_field_tag 'volunteer[voice_numbers][]', voice_channel.address, :class => 'ux-clist'
+              %button.clist-remove(type="button")>
+                %i.icon-minus
+              %span.handle>
+                %i.icon-move
+        %li.fixed
+          %input.ux-text#new_voice_number(type="text" placeholder="New voice number")
+          %button.clist-add(type="button")>
+            %i.icon-plus
 
-    .box.w58
-      = f.label :address
-      = f.text_field :address, :placeholder => 'Search', :class => 'w54 ux-search'
-      #map_canvas_volunteer
-    %br
+  .row-fluid
+    .span12
+      = label_tag :new_sms_number, 'SMS Numbers'
+      %ul.clist#volunteer_sms_numbers(data-field-name="volunteer[sms_numbers][]")
+        - volunteer.sms_channels.each do |sms_channel|
+          - if !sms_channel.marked_for_destruction?
+            %li
+              = text_field_tag 'volunteer[sms_numbers][]', sms_channel.address, :class => 'ux-clist'
+              %button.clist-remove(type="button")>
+                %i.icon-minus
+        %li
+          %input.ux-text#new_sms_number(type="text" placeholder="New SMS number")
+          %button.clist-add(type="button")>
+            %i.icon-plus
+      = f.hidden_field :lat
+      = f.hidden_field :lng
 
-    = label_tag 'Skills'
-    = text_field_tag 'volunteer[skill_names]', nil, :id => 'skills', :class => 'w60'
-    %br
-    %br
+  .row-fluid
+    .span12.well-white
+      .row-fluid
+        .span12
+          = f.label :address
+          = f.text_field :address, :placeholder => 'Search', :class => 'span12 ux-search'
+      .row-fluid
+        .span12
+          #map_canvas_volunteer.span12(style="height: 32em")
 
-    = f.fields_for :shifts do |shift_form|
-      = render :partial => 'shifts_matrix', :locals => {:f => shift_form}
+  .row-fluid
+    .span12
+      = label_tag 'Skills'
+      = text_field_tag 'volunteer[skill_names]', nil, :id => 'skills', :class => 'span8'
 
-    .bottom-actions
-      %button.white Save
-      = link_to 'Cancel', volunteers_path, :class => "tgrey"
+  .row-fluid
+    .span12
+      = f.fields_for :shifts do |shift_form|
+        = render :partial => 'shifts_matrix', :locals => {:f => shift_form}
+
+  .row-fluid
+    .span12
+      %button.btn Save
+      = link_to 'Cancel', volunteers_path, :class => "btn btn-link"
       - unless volunteer.new_record?
         = link_to volunteer, :confirm => "Are you sure?", :method => :delete do
           %button.fdelete.right Delete this volunteer
         %br{:clear => 'all'}
-.right
-.clear
+  .row-fluid
+    .span12
+      %ul.hidden#allSkills
+        - skills.all.each do |s|
+          %li= s.name
 
-%ul.hidden#allSkills
-  - skills.all.each do |s|
-    %li= s.name
-
-%ul.hidden#volSkills
-  - volunteer.skills.each do |s|
-    %li= s.name
+      %ul.hidden#volSkills
+        - volunteer.skills.each do |s|
+          %li= s.name
 
 :javascript
   onVolunteerPage();

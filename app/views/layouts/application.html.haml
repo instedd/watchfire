@@ -16,16 +16,16 @@
         .navbar-inner
           .container-fluid
             .row-fluid
-              .span2
+              .span3
                 <img src="/assets/theme/header/InSTEDDPlatform.png" vspace="7" title="InSTEDD Platform" >
-              .span8.acenter
+              .span6.acenter
                 %ul.NavMenu
                   - if user_signed_in?
                     = section 'Events', missions_path, :missions
                     = section 'Volunteers', volunteers_path, :volunteers
                     = section 'Members', members_path, :members
                     /= section 'Channels', channels_path, :channels
-              .span2
+              .span3.aright
                 - if user_signed_in?
                   .btn-group
                     %a.btn.btn-link.dropdown-toggle{"data-toggle" => "dropdown", href: "#"}
@@ -42,7 +42,7 @@
                       %li= link_to 'My Account', edit_user_registration_path
                       %li.divider
                       %li= link_to 'Log Out', destroy_user_session_path
-                %a.btn.btn-mini{:href => edit_user_registration_path}
+                %a.ic-white{:href => edit_user_registration_path}
                   %i.icon-cog
       .app-header
         .container-fluid

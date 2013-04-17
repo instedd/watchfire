@@ -19,9 +19,13 @@ var onVolunteerPage = function() {
       if (validateNumber(value_field) && value != '') {
         var new_li = $('<li>');
         $('<input type="text">').addClass('ux-clist').attr('name', name).attr('value', value).appendTo(new_li);
-        $('<button type="button">').addClass('clist-remove').appendTo(new_li);
+        var button = $('<button type="button">').addClass('clist-remove');
+          $('<i>').addClass('icon-minus').appendTo(button);
+          button.appendTo(new_li);
         if (list.hasClass('sortable')) {
-          $('<span>').addClass('handle pprevious').appendTo(new_li);
+        var buttonsort = $('<span>').addClass('handle');
+          $('<i>').addClass('icon-move').appendTo(buttonsort);
+          buttonsort.appendTo(new_li);
         }
         new_li.insertBefore($(element).parents('li').first());
         value_field.val('');

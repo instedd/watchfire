@@ -6,10 +6,12 @@ class BreadcrumbBuilder < BreadcrumbsOnRails::Breadcrumbs::Builder
 
   def item element
     if @context.current_page?(compute_path(element))
-      @context.content_tag :li, compute_name(element), :class => "active"
+      @context.content_tag(:li, :class => "active") do
+        @context.content_tag(:span, "") + @context.html_escape(compute_name(element)) 
+      end
     else
       @context.content_tag :li do
-        @context.link_to(@context.html_escape(compute_name(element)), compute_path(element)) + "<span class='divider'>/</span>".html_safe
+        @context.link_to(@context.html_escape(compute_name(element)), compute_path(element))
       end
     end
   end

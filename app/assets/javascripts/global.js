@@ -12,3 +12,9 @@ $(function(){
     click: true
   });
 });
+
+$(function(){
+  $(".toggle").click(function () {
+      $(this).closest(".collapsed").toggleClass("off");
+    });
+});

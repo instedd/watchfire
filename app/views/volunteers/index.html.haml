@@ -1,71 +1,81 @@
-.left
-  %h1
-    = "#{@volunteers_count} volunteers"
+.container-fluid
+  .row-fluid
+    .span6
+      %h1
+        = "#{@volunteers_count} volunteers"
+        - if current_organization
+          = form_tag new_volunteer_path, :method => :get do
+            %button.btn.btn-link.btn-medium{:type => "submit"}
+              %span.ic-blue
+                %i.icon-plus
+              Add New
     - if current_organization
-      = form_tag new_volunteer_path, :method => :get do
-        %button.cadd{:type => "submit"} Add New
+      .span6
+        = form_tag volunteers_path, :method => :get do
+          = text_field_tag :q, @q, :placeholder => "Search", :class => "pull-right", :id => "volunteers_search"
 
-- if current_organization
-  .right
-    = form_tag volunteers_path, :method => :get do
-      = text_field_tag :q, @q, :placeholder => "Search", :class => "w30 ux-search", :id => "volunteers_search"
-
-.clear
-
-.tablewrapp
-  %table.GralTable.ButtonTable.w-pagination.volunteers-table
-    %col(style="width: 25%")
-    %col(style="width: 40%")
-    %col(style="width: 15%")
-    %col(style="width: 15%")
-    %col(style="width: 66px")
-    %tr
-      = sort_header 'Name', :name
-      = sort_header 'Address', :address
-      %th Voice Numbers
-      %th(colspan="2") SMS Numbers
-    - @volunteers.each do |volunteer|
-      %tr.link{'data-url' => edit_volunteer_path(volunteer)}
-        %td= volunteer.name
-        %td= volunteer.address
-        %td= volunteer.voice_numbers
-        %td= volunteer.sms_numbers
-        %td
-          = form_tag volunteer_path(volunteer), :method => :delete, 'data-confirm' => 'Are you sure?' do
-            %button.avoid.fdelete
-          = form_tag edit_volunteer_path(volunteer), :method => :get do
-            %button.avoid.farrow
-  - unless current_organization
-    .missions_empty
-      %div.info To start using Watchfire you must create an Organization
-      %a.add{:href => new_organization_path}
-        Create Organization
-        %button.cadd
-  = paginate @volunteers
+  .row-fluid
+    .span12
+      %table.table.grayheader
+        %col(style="width: 25%")
+        %col(style="width: 40%")
+        %col(style="width: 15%")
+        %col(style="width: 15%")
+        %col(style="width: 5%, min-width:80px")
+        %tr
+          = sort_header 'Name', :name
+          = sort_header 'Address', :address
+          %th Voice Numbers
+          %th(colspan="2") SMS Numbers
+        - @volunteers.each do |volunteer|
+          %tr.link{'data-url' => edit_volunteer_path(volunteer)}
+            %td= volunteer.name
+            %td= volunteer.address
+            %td= volunteer.voice_numbers
+            %td= volunteer.sms_numbers
+            %td.actionbuttons
+              = form_tag volunteer_path(volunteer), :method => :delete, 'data-confirm' => 'Are you sure?' do
+                %button.avoid.ic-white(title="Delete")
+                  %i.icon-trash
+              = form_tag edit_volunteer_path(volunteer), :method => :get do
+                %button.avoid.ic-white(title="Edit")
+                  %i.icon-chevron-right
+      - unless current_organization
+        .missions_empty
+          %div.info To start using Watchfire you must create an Organization
+          %a.add{:href => new_organization_path}
+            Create Organization
+            %button.ic-blue 
+              %i.icon-plus
+      = paginate @volunteers
 %br
-- if current_organization
-  %br
-  %h1 Bulk volunteers creation
-  %span.smalldescription Create volunteers uploading a CSV file.
-  %br
-  = link_to '/samples/volunteers.csv' do
-    %button.fimport Download a sample CSV file
-  %span.tgrey and fill it with the accounts data
-  %br
-  %br
-  .ux-collapsible.collapsed{'data-on-expanded' => 'box grey w40'}
-    %span
-      %a
-        %button.fexport Upload it for bulk account creation
-    .ux-content
-      = form_for :import_volunteers, :url => import_volunteers_path, :html => {:multipart => true} do |f|
-        %hr
-        = file_field_tag :file
-        %hr
-        .botttom-actions.right
-          %a.tgrey.ux-collapse-trigger{:href => "#"} Cancel
-          %button.grey Next
-        %br.clear
+.container-fluid
+  .row-fluid
+    .span12
+      - if current_organization
+        %h1 Bulk volunteers creation
+        %p.small Create volunteers uploading a CSV file.
+        %br
+        = link_to '/samples/volunteers.csv' do
+          %span.ic-white 
+            %i.icon-download-alt
+          Download a sample CSV file
+        and fill it with the accounts data
+        %br
+        %br
+  .row-fluid
+    .collapsed.well-plain.span4
+      %a.btn.btn-link.btn-medium.toggle
+        %span.ic-white
+          %i.icon-download-alt 
+        Upload it for bulk account creation
+      .hidden-content
+        = form_for :import_volunteers, :url => import_volunteers_path, :html => {:multipart => true} do |f|
+          %hr
+          = file_field_tag :file, :class => "input-file"
+          %hr
+          %button.btn.btn-inverse.pull-right Next
+          %a.btn.btn-link.pull-right.toggle{:href => "#"} Cancel
 
 :javascript
   onVolunteerIndex();

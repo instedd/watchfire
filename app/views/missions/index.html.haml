@@ -2,39 +2,43 @@
 	.row-fluid
 		.span12
 			%h1 Events
-			%table.table.table-bordered
-				%tr
-					%th My Events
-					%th
-						%select#combo_status.ux-dropdown.w20{:disabled => missions.all.empty? ? 'disabled' : false}
-							%option{:value => 'active', :selected =>'selected'} Only Active
-							%option{:value => 'finished'} Only Fully Staffed
-							%option{:value => ''} Show all
-				- if missions.all.present?
-					- missions.each do |mission|
-						%tr.mission.link{'data-url' => mission_path(mission), 'data-status' => mission.status}
-							%td{:class => mission.running? ? 'mactive' : 'mpaused'}
-								%span
-								= mission.title
-							%td
-								- if !mission.finished?
-									.smvalues
-										.L
-											%span= mission.candidate_count(:confirmed)
-										.R
-											%span= mission.total_req_vols
-										%br{:clear => 'all'}
-										.M
-											%span.Fill{:style => progress_percentage(mission)}
-								%button.farrow
-					%tr.link{'data-url' => new_mission_path}
-						%td.add Create Event
-						%td
-							%button.cadd
-				- else
+			%table.table
+				%thead
 					%tr
-						%td &nbsp;
-						%td &nbsp;
+						%th My Events
+						%th
+							%select#combo_status.pull-right{:disabled => missions.all.empty? ? 'disabled' : false}
+								%option{:value => 'active', :selected =>'selected'} Only Active
+								%option{:value => 'finished'} Only Fully Staffed
+								%option{:value => ''} Show all
+				%tbody
+					- if missions.all.present?
+						- missions.each do |mission|
+							%tr.mission.link{'data-url' => mission_path(mission), 'data-status' => mission.status}
+								%td{:class => mission.running? ? 'mactive' : 'mpaused'}
+									%span
+									= mission.title
+								%td.aright
+									- if !mission.finished?
+										.smvalues
+											.L
+												%span= mission.candidate_count(:confirmed)
+											.R
+												%span= mission.total_req_vols
+											%br{:clear => 'all'}
+											.M
+												%span.Fill{:style => progress_percentage(mission)}
+									%button.ic-white
+										%i.icon-chevron-right
+						%tr.link.add{'data-url' => new_mission_path}
+							%td Create Event
+							%td.aright
+								%button.ic-blue
+									%i.icon-plus
+					- else
+						%tr
+							%td &nbsp;
+							%td &nbsp;
 	- if missions.all.empty?
 		.missions_empty
 			- if current_organization
@@ -42,12 +46,14 @@
 				%div.info You have no events yet
 				%a.add{:href => new_mission_path}
 					Create Event
-					%button.cadd
+					%button.ic-blue
+						%i.icon-plus
 			- else
 				%div.info To start using Watchfire you must create an Organization
 				%a.add{:href => new_organization_path}
 					Create Organization
-					%button.cadd
+					%button.ic-blue
+						%i.icon-plus
 
 :javascript
 	onMissionIndex();

@@ -8,7 +8,7 @@
 
 // Make all forms have space below them
 form {
-  margin: 0 0 @baseLineHeight;
+ // margin: 0 0 @baseLineHeight;
 }
 
 fieldset {
@@ -116,6 +116,7 @@ input[type="url"],
 input[type="search"],
 input[type="tel"],
 input[type="color"],
+.input,
 .uneditable-input {
   background-color: @inputBackground;
   border: 1px solid @inputBorder;
@@ -483,7 +484,7 @@ select:focus:invalid {
   }
   .add-on:first-child,
   .btn:first-child {
-    // FYI, `.btn:first-child` accounts for a button group that's prepended
+    // FYI, `.btn:first-child` accounts for a button group that prepended
     .border-radius(@inputBorderRadius 0 0 @inputBorderRadius);
   }
 }
