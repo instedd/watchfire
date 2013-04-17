@@ -43,4 +43,7 @@ group :development, :test do
   gem 'pry-debugger'
   gem 'capistrano'
   gem 'rvm-capistrano'
+  gem 'selenium-webdriver'
+  gem 'nokogiri'
+  gem 'xmpp4r'
 end
