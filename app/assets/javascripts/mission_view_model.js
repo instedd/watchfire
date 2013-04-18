@@ -71,6 +71,7 @@ function MissionViewModel() {
     self.confirm_human = ko.observable(true);
     self.location_type = ko.observable('city');
     self.city = ko.observable();
+    self.forward_address = ko.observable('');
 
     // candidates lists
     self.candidates = ko.observableArray();
@@ -440,6 +441,7 @@ function MissionViewModel() {
                 location_type: self.location_type() || 'city',
                 confirm_human: self.confirm_human() ? '1' : '0'
             },
+            forward_address: self.forward_address() || '',
             lat: location && location.lat(),
             lng: location && location.lng(),
             mission_skills_attributes: mission_skills
@@ -717,6 +719,7 @@ function MissionViewModel() {
             } else {
                 self.latlng(new google.maps.LatLng(mission.lat, mission.lng));
             }
+            self.forward_address(mission.forward_address);
 
             // initially set the mission skills; will partially update the info on
             // ajax updates

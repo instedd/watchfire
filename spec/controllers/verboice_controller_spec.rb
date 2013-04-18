@@ -26,6 +26,60 @@ describe VerboiceController do
     end
   end
 
+  describe "POST 'plan' with forward" do
+    before(:each) do
+      @parameters = {:format => 'xml', :CallSid => '1234', :From => '555', :Channel => 'foo' }
+      @organization = Organization.make!
+      @mission = Mission.make! :forward_address => '111', :organization => @organization, :status => :running
+    end
+
+    context "calling number is known" do
+      it "should forward to the mission that made the last call to the number" do
+        @candidate = Candidate.make! :mission => @mission
+        @call = Call.make! :voice_number => @parameters[:From], :candidate => @candidate
+        post 'plan', @parameters
+        response.should render_template('plan_forward')
+        assigns(:mission).should eq(@mission)
+      end
+    end
+
+    context "calling number is unknown" do
+      context "channel is unknown" do
+        it "should forward to the latest running mission" do
+          post 'plan', @parameters
+          response.should render_template('plan_forward')
+          assigns(:mission).should eq(@mission)
+        end
+      end
+
+      context "channel is known" do
+        it "should forward to the organization's running mission launched last" do
+          @channel = PigeonChannel.make! :channel_type => :verboice, :pigeon_name => @parameters[:Channel], :organization => @organization
+
+          post 'plan', @parameters
+          response.should render_template('plan_forward')
+          assigns(:mission).should eq(@mission)
+        end
+      end
+
+      it "should hang up when there are no running missions" do
+        @mission.update_attribute :status, :pending
+
+        post 'plan', @parameters
+        response.should render_template('plan_forward')
+        assigns(:mission).should be_nil
+      end
+
+      it "should hang up if the last running mission does not have a forward address" do 
+        @mission.update_attribute :forward_address, nil
+
+        post 'plan', @parameters
+        response.should render_template('plan_forward')
+        assigns(:mission).should be_nil
+      end
+    end
+  end
+
   describe "POST 'plan_after_confirmation'" do
     before(:each) do
       @parameters = {:format => 'xml'}

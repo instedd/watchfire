@@ -44,3 +44,8 @@
     No ->
     %span(data-bind="html:no_text, visible: current_edit_message() != 'no', click: edit_message.bind($data, 'no')")
     %input(type = "text" data-bind="value: no_text, visible:current_edit_message() == 'no', event: {blur: edit_message.bind($data, '')}, hasfocus: current_edit_message() == 'no'")
+  %hr
+  %p
+    If the volunteer calls back, forward the call to this number:
+    %input(type="tel" data-bind="value: forward_address")
+

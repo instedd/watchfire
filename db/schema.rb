@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130416180439) do
+ActiveRecord::Schema.define(:version => 20130417144711) do
 
   create_table "calls", :force => true do |t|
     t.string   "session_id"
@@ -107,6 +107,7 @@ ActiveRecord::Schema.define(:version => 20130416180439) do
     t.integer  "organization_id"
     t.text     "messages"
     t.string   "city"
+    t.string   "forward_address"
   end
 
   create_table "organizations", :force => true do |t|
