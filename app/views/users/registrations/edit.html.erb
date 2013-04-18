@@ -1,44 +1,63 @@
 <%= devise_error_messages! %>
-  
-<%= form_for(resource, :as => resource_name, :url => registration_path(resource_name), :html => { :method => :put }) do |f| %>
-  <h2>Edit <%= resource_name.to_s.humanize %></h2>
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span12">
+        <%= form_for(resource, :as => resource_name, :url => registration_path(resource_name), :html => { :method => :put }) do |f| %>
+          <h1>Edit <%= resource_name.to_s.humanize %></h1>
+          <br>
+          <div class="control-group">
+            <div class="controls"> 
+              <%= f.label :email %>
+              <%= f.email_field :email %>
+            </div>
+          </div>
 
-  <div class="field w30">
-    <%= f.label :email %>
-    <%= f.email_field :email %>
-  </div>
+          <div class="control-group">
+            <div class="controls"> 
+              <%= f.label :current_password %>
+              <span class="help-block small">(we need your current password to confirm your changes)</span>
+              <%= f.password_field :current_password %>
+            </div>
+          </div>
 
-  <div class="field w30">
-    <%= f.label :current_password %>
-    <p>(we need your current password to confirm your changes)</p>
-    <%= f.password_field :current_password %>
-  </div>
+          <div class="row-fluid">
+            <div class="span4"> 
+              <div class="collapsed well-plain">
+                <a href="#" class="btn btn-link btn-medium toggle">
+                  <span class="ic-white">
+                    <i class="icon-cog"></i>
+                  </span>
+                  Change my password
+                </a>
+                <div class="hidden-content">
+                  <div class="control-group">
+                    <div class="controls"> 
+                      <%= f.label :password %> 
+                      <span class="help-block small">(leave blank if you don't want to change it)</span>
+                      <%= f.password_field :password %>
+                    </div>
+                  </div>
+                  <div class="control-group">
+                    <div class="controls"> 
+                      <%= f.label :password_confirmation %>
+                      <%= f.password_field :password_confirmation %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div> 
 
-  <div class="ux-collapsible collapsed w30" data-on-expanded="box grey">
-    <span><a href="#" class="fsettings">Change my password</a></span>
-    <div class="ux-content">
-      
-		  <div class="field w30">
-		    <%= f.label :password %> 
-		    <p>(leave blank if you don't want to change it)</p>
-		    <%= f.password_field :password %>
-		  </div>
+          <div class="control-group">
+            <div class="controls"> 
+              <button type="submit" class="btn">Update</button>
+            </div>
+          </div> 
 
-		  <div class="field w30">
-		    <%= f.label :password_confirmation %>
-		    <%= f.password_field :password_confirmation %>
-		  </div>
-  
-		</div>
-	</div>
-	
-  <div class="registration bottom-actions">
-    <button type="submit" class="white">Update</button>
-  </div>
-
-  <hr class="w30" />
-
-  <!-- <p>
-    <%= link_to "Delete my account", registration_path(resource_name), :confirm => "Are you sure?", :method => :delete, :class => 'fdelete' %>
-  </p> -->
-<% end %>
+          <!-- <p>
+            <%= link_to "Delete my account", registration_path(resource_name), :confirm => "Are you sure?", :method => :delete, :class => 'fdelete' %>
+          </p> -->
+        <% end %>
+      </div>
+    </div> 
+ </div> 

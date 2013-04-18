@@ -237,6 +237,15 @@ h1,h2,h3,h4,h5,h6 {
 .acenter { text-align: center !important }
 .aright {text-align: right !important }
 
+.help-block.small {
+  font-size: 85%;
+  margin-top: -.6em;
+}
+
+.login a {
+  color: #ff8533;
+}
+
 .btn-link {
   text-decoration: none !important;
 }
@@ -255,6 +264,7 @@ h1,h2,h3,h4,h5,h6 {
     background: none;
     border: none;
     padding: 0px;
+    .box-shadow(none);
     .hidden-content {
       display: none;
     }
@@ -263,7 +273,6 @@ h1,h2,h3,h4,h5,h6 {
       padding: 5px;
       margin-left: -5px !important;
       margin-top: -5px;
-      //.box-shadow(none);
       .hidden-content {
         display: block;
       }
@@ -306,6 +315,21 @@ ul.clist {
     }
   }
 }
+
+
+
+.missions_empty {
+  padding-top: 55px;
+  height: 200px;
+  text-align: center;
+}
+
+
+
+
+
+
+
 
 .superblyTagfieldDiv {
   .input();
@@ -356,4 +380,31 @@ ul.superblyTagItems  li{
 
 .superblySuggestItems:empty {
 
+}
+
+
+.flash { 
+  position: absolute;
+  top: 0px;
+  overflow: hidden;
+  display: none;
+}
+
+.flash > div {
+  white-space: nowrap;
+  padding: 5px 15px;
+  display: inline-block;
+  border-radius: 0px 0px 5px 5px;
+  position: relative;
+  margin: 0px 2px 2px 2px;  
+}
+
+.flash_notice > div {
+  background-color: #e6faa9;
+  color: $green;
+}
+
+.flash_error div {
+  background-color: #ffee9e;
+  color: @red;
 }

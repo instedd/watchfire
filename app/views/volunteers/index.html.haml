@@ -22,34 +22,48 @@
         %col(style="width: 15%")
         %col(style="width: 15%")
         %col(style="width: 5%, min-width:80px")
-        %tr
-          = sort_header 'Name', :name
-          = sort_header 'Address', :address
-          %th Voice Numbers
-          %th(colspan="2") SMS Numbers
-        - @volunteers.each do |volunteer|
-          %tr.link{'data-url' => edit_volunteer_path(volunteer)}
-            %td= volunteer.name
-            %td= volunteer.address
-            %td= volunteer.voice_numbers
-            %td= volunteer.sms_numbers
-            %td.actionbuttons
-              = form_tag volunteer_path(volunteer), :method => :delete, 'data-confirm' => 'Are you sure?' do
-                %button.avoid.ic-white(title="Delete")
-                  %i.icon-trash
-              = form_tag edit_volunteer_path(volunteer), :method => :get do
-                %button.avoid.ic-white(title="Edit")
-                  %i.icon-chevron-right
-      - unless current_organization
-        .missions_empty
-          %div.info To start using Watchfire you must create an Organization
-          %a.add{:href => new_organization_path}
-            Create Organization
-            %button.ic-blue 
-              %i.icon-plus
-      = paginate @volunteers
-%br
-.container-fluid
+        %theader
+          %tr
+            = sort_header 'Name', :name
+            = sort_header 'Address', :address
+            %th Voice Numbers
+            %th(colspan="2") SMS Numbers
+        %tbody  
+          - if volunteers.all.present?
+            - @volunteers.each do |volunteer|
+              %tr.link{'data-url' => edit_volunteer_path(volunteer)}
+                %td= volunteer.name
+                %td= volunteer.address
+                %td= volunteer.voice_numbers
+                %td= volunteer.sms_numbers
+                %td.actionbuttons
+                  = form_tag volunteer_path(volunteer), :method => :delete, 'data-confirm' => 'Are you sure?' do
+                    %button.avoid.ic-white(title="Delete")
+                      %i.icon-trash
+                  = form_tag edit_volunteer_path(volunteer), :method => :get do
+                    %button.avoid.ic-white(title="Edit")
+                      %i.icon-chevron-right
+          - else
+            %tr
+              %td(colspan="4")
+                - if @volunteers.empty?
+                  .missions_empty
+                    %div.info There are no volunteers registered.
+                    %a.add{:href => new_volunteer_path}
+                      Add new volunteer
+                      %button.ic-blue
+                        %i.icon-plus
+          - unless current_organization
+            %tr
+              %td(colspan="4")
+                .missions_empty
+                  %div.info To start using Watchfire you must create an Organization
+                  %a.add{:href => new_organization_path}
+                    Create Organization
+                    %button.ic-blue 
+                      %i.icon-plus
+          = paginate @volunteers
+  %br
   .row-fluid
     .span12
       - if current_organization

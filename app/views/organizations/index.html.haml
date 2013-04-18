@@ -1,27 +1,40 @@
-%h1
-  Organizations
-  - if @organizations.present?
-    = form_tag new_organization_path, :method => :get do
-      %button.cadd{:type => "submit"} Create New
+.container-fluid
+  .row-fluid
+    .span12
+      %h1
+        Organizations
+        - if @organizations.present?
+          = form_tag new_organization_path, :method => :get do
+            %button.btn.btn-link{:type => "submit"}
+              %span.ic-blue
+                %i.icon-plus 
+              Create New
 
-.tablewrapp
-  %table.GralTable.ButtonTable
-    %tr
-      %th Name
-      %th &nbsp;
-    - @organizations.each do |organization|
-      %tr
-        %td= link_to organization.name, select_organization_path(organization.id)
-        %td
-          = form_tag edit_organization_path(organization), :method => :get do
-            %button.avoid.fedit
-          = form_tag select_organization_path(organization.id), :method => :get do
-            %button.avoid.farrow
+  .row-fluid
+    .span12
+      %table.table.grayheader
+        %col(style="width: 90%")
+        %col(style="width: 10%, min-width:80px")
+        %tr
+          %th Name
+          %th &nbsp;
+        - @organizations.each do |organization|
+          %tr
+            %td= link_to organization.name, select_organization_path(organization.id)
+            %td.actionbuttons
+              = form_tag edit_organization_path(organization), :method => :get do
+                %button.avoid.ic-white
+                  %i.icon-pencil
+              = form_tag select_organization_path(organization.id), :method => :get do
+                %button.avoid.ic-white
+                  %i.icon-chevron-right
 
-  - if @organizations.empty?
-    .missions_empty
-      %div.info To start using Watchfire you must create an Organization
-      %a.add{:href => new_organization_path}
-        Create Organization
-        %button.cadd
-
+        - if @organizations.empty?
+          %tr
+            %td(colspan="2")
+              .missions_empty
+                %div.info To start using Watchfire you must create an Organization
+                %a.add{:href => new_organization_path}
+                  Create Organization
+                  %button.ic-blue
+                    %i.icon-plus

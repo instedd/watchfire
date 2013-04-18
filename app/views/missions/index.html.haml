@@ -2,6 +2,8 @@
 	.row-fluid
 		.span12
 			%h1 Events
+	.row-fluid
+		.span12			
 			%table.table
 				%thead
 					%tr
@@ -37,23 +39,24 @@
 									%i.icon-plus
 					- else
 						%tr
-							%td &nbsp;
-							%td &nbsp;
-	- if missions.all.empty?
-		.missions_empty
-			- if current_organization
-				%div= image_tag 'http://theme.instedd.org/theme/images/icons/72/grey/fire.png'
-				%div.info You have no events yet
-				%a.add{:href => new_mission_path}
-					Create Event
-					%button.ic-blue
-						%i.icon-plus
-			- else
-				%div.info To start using Watchfire you must create an Organization
-				%a.add{:href => new_organization_path}
-					Create Organization
-					%button.ic-blue
-						%i.icon-plus
+							%td(colspan="2")
+								- if missions.all.empty?
+									.missions_empty
+										- if current_organization
+											%div= image_tag 'http://theme.instedd.org/theme/images/icons/72/grey/fire.png'
+											%div.info 
+												%em
+													You have no events yet
+											%a.add{:href => new_mission_path}
+												Create Event
+												%button.ic-blue
+													%i.icon-plus
+										- else
+											%div.info To start using Watchfire you must create an Organization
+											%a.add{:href => new_organization_path}
+												Create Organization
+												%button.ic-blue
+													%i.icon-plus
 
 :javascript
 	onMissionIndex();
