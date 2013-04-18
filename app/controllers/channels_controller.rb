@@ -74,6 +74,9 @@ class ChannelsController < ApplicationController
     @pigeon_channel.assign_attributes params[:pigeon_channel]
     @channel.assign_attributes params[:channel_data]
     begin
+      if @channel.type == :verboice
+        @pigeon_channel.limit = @channel.limit
+      end
       @pigeon_channel.transaction do
         @pigeon_channel.save!
         @channel.save!
