@@ -1,32 +1,40 @@
 - content_for :head do
   = javascript_include_tag 'http://maps.googleapis.com/maps/api/js?sensor=false'
-#mission_title
-  = render :partial => 'title'
-%br
-.left
-  #left_panel.box.w60(data-bind="css: { grey: isRunningOrFinished }")
-    #form_container
-      = render :partial => 'form'
-    #map_canvas.map
-    #mission_distance
-      = render :partial => 'distance'  
-.right
-  .box.w30
-    #mission_status.sbox.grey.StateDisplay
-      = render :partial => 'status'
-    #mission_message.event-desc
-      = render :partial => 'message'
-    %hr.shadow
-    #scroll
-      = render :partial => 'candidates'
-.clear
-%br
-%hr
-.bottom-actions(data-bind="visible: id()")
-  %button.fimport(data-bind="click: exportData") Download recruiting results
-  %button.fdelete(data-bind="click: deleteMission") Delete this event
-.bottom-actions(data-bind="visible: !id()")
-  = link_to 'Cancel', missions_path, :class => 'tgrey'
+.container-fluid
+  .row-fluid
+    .span12  
+      #mission_title
+        = render :partial => 'title'
+  .row-fluid
+    .span8
+      .well-white(data-bind="css: { grey: isRunningOrFinished }")
+        = render :partial => 'form'
+        #map_canvas.map
+        #mission_distance
+          = render :partial => 'distance'  
+    .span4
+      .well-white
+        #mission_status.well-plain.grey.StateDisplay
+          = render :partial => 'status'
+        #mission_message.event-desc
+          = render :partial => 'message'
+        %hr.shadow
+        #scroll
+          = render :partial => 'candidates'
+  .row-fluid
+    .span12
+      %hr
+      .bottom-actions(data-bind="visible: id()")
+        %button.btn.btn-link.btn-medium(data-bind="click: exportData")
+          %span.ic-white
+            %i.icon-download-alt
+          Download recruiting results
+        %button.btn.btn-link.btn-medium(data-bind="click: deleteMission")
+          %span.ic-white
+            %i.icon-trash
+          Delete this event
+      .bottom-actions(data-bind="visible: !id()")
+        = link_to 'Cancel', missions_path, :class => 'btn btn-link'
 
 
 :javascript

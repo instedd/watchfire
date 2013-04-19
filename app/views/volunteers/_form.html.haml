@@ -4,15 +4,15 @@
 
   = errors_for volunteer
 
-  .row-fluid
-    .span12
+  .control-group
+    .controls
       = f.label :name
       = f.text_field :name, :class => 'span8'
 
-  .row-fluid
-    .span12
+  .control-group
+    .controls
       = label_tag :new_voice_number, 'Voice Numbers'
-      %span.small (numbers will be called in order)
+      %span.help-block.small (numbers will be called in order)
       %ul.clist.sortable#volunteer_voice_numbers(data-field-name="volunteer[voice_numbers][]")
         - volunteer.voice_channels.each do |voice_channel|
           - if !voice_channel.marked_for_destruction?
@@ -27,8 +27,8 @@
           %button.clist-add(type="button")>
             %i.icon-plus
 
-  .row-fluid
-    .span12
+  .control-group
+    .controls
       = label_tag :new_sms_number, 'SMS Numbers'
       %ul.clist#volunteer_sms_numbers(data-field-name="volunteer[sms_numbers][]")
         - volunteer.sms_channels.each do |sms_channel|
@@ -54,26 +54,28 @@
         .span12
           #map_canvas_volunteer.span12(style="height: 32em")
 
-  .row-fluid
-    .span12
+  .control-group
+    .controls
       = label_tag 'Skills'
       = text_field_tag 'volunteer[skill_names]', nil, :id => 'skills', :class => 'span8'
 
-  .row-fluid
-    .span12
+  .control-group
+    .controls
       = f.fields_for :shifts do |shift_form|
         = render :partial => 'shifts_matrix', :locals => {:f => shift_form}
 
-  .row-fluid
-    .span12
+  .control-group
+    .controls
       %button.btn Save
       = link_to 'Cancel', volunteers_path, :class => "btn btn-link"
       - unless volunteer.new_record?
-        = link_to volunteer, :confirm => "Are you sure?", :method => :delete do
-          %button.fdelete.right Delete this volunteer
-        %br{:clear => 'all'}
-  .row-fluid
-    .span12
+        = link_to volunteer, :confirm => "Are you sure?", :method => :delete, :class => 'pull-right' do
+          %button.btn.btn-link.btn-medium
+            %span.ic-white
+              %i.icon-trash
+            Delete this volunteer
+  .control-group
+    .controls
       %ul.hidden#allSkills
         - skills.all.each do |s|
           %li= s.name

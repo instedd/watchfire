@@ -1,9 +1,8 @@
-<%= devise_error_messages! :class => 'centered w30' %>
-<br><br>
-<div class="container-fluid">
+<%= devise_error_messages! :class => 'acenter' %>
+<div class="container-fluid registration">
   <div class="row-fluid">
     <div class="span4"></div>
-      <div class="span4 well-white login">
+      <div class="span4 well-white">
 
         <%= form_for(resource, :as => resource_name, :url => confirmation_path(resource_name), :html => { :method => :post }) do |f| %>
           <legend>Resend confirmation instructions</legend>

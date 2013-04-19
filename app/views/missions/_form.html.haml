@@ -1,7 +1,6 @@
 %div(data-bind="css: { field_with_errors: 'name' in errors() }")
   %label(for="name") Event name
-  %br
-  %input#name.ux-text.w58(placeholder="Enter the name of this event, e.g. 'Fire on Rangeland'" data-bind="value: name, attr: { readonly: isRunningOrFinished }")
+  %input#name.ux-text.span12(placeholder="Enter the name of this event, e.g. 'Fire on Rangeland'" data-bind="value: name, attr: { readonly: isRunningOrFinished }")
   %br
 %br
 %label Recruitees
@@ -14,19 +13,23 @@
     %button.cremove(data-bind="click: $root.removeMissionSkill, visible: $root.visibleSkills() > 1 && $root.isCreated()")
     %br
 %div(data-bind="if: availableSkills().length > 0 && isCreated()")
-  %button.cadd(data-bind="click: addMissionSkill") Recruit for another skill
+  %button.btn.btn-link.btn-medium(data-bind="click: addMissionSkill") 
+    %span.ic-white
+      %i.icon-plus
+    Recruit for another skill
 %br
 %div(data-bind="css: { field_with_errors: 'reason' in errors() }")
   %label(for="reason") Description
-  %br
-  %textarea#reason.w54.ux-wajbar(maxlength="200" size="" placeholder="Enter the description, e.g 'a single house fire'" data-bind="value: reason, attr: { readonly: isRunningOrFinished }")
+  %textarea#reason.span12.ux-wajbar(maxlength="200" size="" placeholder="Enter the description, e.g 'a single house fire'" data-bind="value: reason, attr: { readonly: isRunningOrFinished }")
   %br
 %div(data-bind="css: { field_with_errors: 'lat' in errors() || 'lng' in errors() || 'address' in errors() }")
   %label(for="address") Address
-  %br
-  %span.small-text Enter an address to find recruitees nearby or you can right-click in the map to indicate a location
-  %input#address.w42.ux-text(placeholder="Enter the address, e.g '1710 Trousdale, Burlingame'" data-bind="value: address, attr: { readonly: !isCreated() }")
-  %button#search_address.fsearch(data-bind="click: findRecruitees, enable: isCreated, css: isCreated() ? '' : 'disabled'") Find recruitees nearby
+  %span.help-block.small Enter an address to find recruitees nearby or you can right-click in the map to indicate a location
+  %input#address.ux-text.span9(placeholder="Enter the address, e.g '1710 Trousdale, Burlingame'" data-bind="value: address, attr: { readonly: !isCreated() }")
+  %button#search_address.btn.btn-link.btn-medium(data-bind="click: findRecruitees, enable: isCreated, css: isCreated() ? '' : 'disabled'")
+    %span.ic-white
+      %i.icon-search
+    Find recruitees nearby
   %br
 %br
 

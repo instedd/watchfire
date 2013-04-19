@@ -24,6 +24,8 @@ body.smallfooter {
 .app-header {
     background: asset-url('theme/footer/shadow.png') no-repeat center bottom;
     padding-bottom: 2em;
+    height: 60px;
+    max-height: 60px;
 }
 
 .content {
@@ -193,7 +195,9 @@ body.smallfooter {
 // --------------------------------------------------
 /* ---------- to reorder --------------*/
 
-
+.content .container-fluid {
+  margin-top: 20px;
+}
 a:hover {
   text-decoration: none;
 }
@@ -242,7 +246,7 @@ h1,h2,h3,h4,h5,h6 {
   margin-top: -.6em;
 }
 
-.login a {
+.registration a {
   color: #ff8533;
 }
 
@@ -252,7 +256,8 @@ h1,h2,h3,h4,h5,h6 {
 
 .btn.btn-medium, .btn.btn-large {
   span {
-    margin-left: -12px;
+    margin-left: -10px;
+    margin-top: -3px;
   }
 }
 
@@ -324,7 +329,10 @@ ul.clist {
   text-align: center;
 }
 
-
+.map {
+  width: 100%;
+  height: 20em;
+}
 
 
 
@@ -408,3 +416,105 @@ ul.superblyTagItems  li{
   background-color: #ffee9e;
   color: @red;
 }
+
+
+
+
+/* ----- Wajbar ----- */
+textarea.ux-text { width: inherit; padding:2px 2px; resize:none; }
+
+.TaskBox { 
+  border: 1px solid #dddddd; 
+  background:@grayLighter; 
+  font-size:10px; 
+  font-weight: bold; 
+  letter-spacing:-0.05em; 
+  padding:0px 0px 1px 0px; 
+  margin:0px 1px 0 1px; 
+  text-align:center; 
+  .border-radius(3px);
+  white-space:nowrap;
+  div { 
+    display: inline-block; 
+    vertical-align:middle; 
+    margin-left:-2px;
+    &.L { 
+      color:@grayDark; 
+      width:4%; 
+      text-align:left; 
+      padding-left:0px; 
+    }
+    &.R { 
+      color:@orange; 
+      width:4%; 
+      text-align:right; 
+      padding-right:0px; 
+    }
+    &.M { 
+      background:@orange; 
+      width:88%; 
+      margin:0 2px 
+    }
+    span { 
+      background:@grayDark; 
+      height:4px; 
+      display:block; 
+      width:80% 
+    }
+  }
+  &.readonly div.R { color:#d0d0d0; }
+  &.readonly div.M { background:#d0d0d0; }
+  &.readonly div.L { color:@grayLight; }
+  &.readonly div span { background:@grayLight; }
+}
+.well-gray .TaskBox { background: white; border-color: white; }
+
+
+
+
+/* ----- Numeric Stepper ----- */
+.ux-nstep {
+  position:relative;
+  display:inline;
+  .kup {
+    background-image:asset-url('theme/numericStepper/up.png');
+    background-color:transparent;
+    width:15px; height:12px;
+    cursor:pointer; border:none;
+    position:absolute; right:3px; top:-7px;
+  }
+  .kdown {
+    background-image:asset-url('theme/numericStepper/down.png');
+    background-color:transparent;
+    width:15px; height:12px;
+    cursor:pointer; border:none;
+    position:absolute; right:3px; bottom:-1px
+  }
+}
+
+
+
+
+/* ------------ State Display ------------------- */
+.StateDisplay { text-align:center }
+.StateDisplay .values { display:inline-block; width:50%; vertical-align:middle }
+.StateDisplay button { display:inline-block; vertical-align:middle; width:45%; white-space:nowrap }
+.values { font-size:11px; letter-spacing:-0.02em; line-height:9px; padding: 2px 0; text-align: center; white-space:nowrap }
+.values div span { display:block }
+.values div.U { text-align:left }
+.values div.U span.big { font-size:22px; line-height:18px  }
+.values div.L { color:#777777; text-align:left; padding-bottom:3px; margin-left:2px; float:left }
+.values div.R { color:#f86808; text-align:right; padding-bottom:3px; float:right }
+.values div.L.empty span, .values div.R.empty span { color:#f86808 }
+.values div.M { background: #f86808; margin-left:2px }
+.values div.M span { background:#777777; height:4px; display:block; width:40% }
+.values div.M.empty span { width:0% }
+.values span.alert { background:asset-url('theme/icons/18/orange/alert.png') no-repeat center 3px; width:18px; height:18px }
+.values span.tilde { background:asset-url('theme/icons/misc/grey/tilde.png') no-repeat center 9px; width:11px; height:18px }
+
+.smvalues { background:#d0d0d0; font-size:11px; letter-spacing:-0.02em; line-height:9px; padding:3px; text-align:center; vertical-align:baseline; white-space:nowrap; width:50px; border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px; border:1px solid #DDDDDD }
+.smvalues div.L { color:#777777; text-align:left; padding-bottom:3px; float:left }
+.smvalues div.R { color:#f86808; text-align:right; padding-bottom:3px; float:right }
+.smvalues div.L span, .values div.R span { display:block }
+.smvalues div.M { background:#f86808; display:block !important}
+.smvalues div.M span { background: #777777; height:4px; display:block; width:40% }

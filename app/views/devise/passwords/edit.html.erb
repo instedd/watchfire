@@ -1,28 +1,32 @@
-<%= devise_error_messages! :class => 'centered w30' %>
-
-<div class="box centered w30">
-
-<%= form_for(resource, :as => resource_name, :url => password_path(resource_name), :html => { :method => :put }) do |f| %>
-  <h2>Change your password</h2>
+<%= devise_error_messages! :class => 'acenter' %>
+<div class="container-fluid registration">
+  <div class="row-fluid">
+    <div class="span4"></div>
+      <div class="span4 well-white">
+        <%= form_for(resource, :as => resource_name, :url => password_path(resource_name), :html => { :method => :put }) do |f| %>
+          <legend>Change your password</legend>
+          <%= f.hidden_field :reset_password_token %>
+          <div class="control-group">
+            <div class="controls"> 
+              <%= f.label :password, "New password" %>
+              <%= f.password_field :password, class:"span12" %>
+            </div>
+          </div>
+          <div class="control-group">
+            <div class="controls"> 
+              <%= f.label :password_confirmation, "Confirm new password" %>
+              <%= f.password_field :password_confirmation, class:"span12" %>
+            </div>
+          </div>
+          <div class="control-group">
+            <div class="controls"> 
+              <button type="submit" class="btn">Change my password</button>
+            </div>
+          </div>
   
-  <hr class="shadow"/>
-  
-  <%= f.hidden_field :reset_password_token %>
+        <% end %>
 
-  <div class="field w30">
-    <%= f.label :password, "New password" %>
-    <%= f.password_field :password %>
+      </div>
+    <div class="span4"></div>
   </div>
-
-  <div class="field w30">
-    <%= f.label :password_confirmation, "Confirm new password" %>
-    <%= f.password_field :password_confirmation %>
-  </div>
-
-  <div class="actions">
-    <button type="submit" class="white">Change my password</button>
-  </div>
-  
-<% end %>
-
 </div>

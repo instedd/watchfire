@@ -1,28 +1,28 @@
 = form_for @organization do |f|
   - if @organization
     = errors_for @organization
-  .row-fluid
-    .span12
+  .control-group
+    .controls
       = f.label :name
       = f.text_field :name, :class => 'w30'
-  .row-fluid
-    .span12
+  .control-group
+    .controls
       = f.label :max_voice_retries, 'Maximum voice call retries'
       = f.number_field :max_voice_retries, :class => 'w10', :in => 1..20
-  .row-fluid
-    .span12
+  .control-group
+    .controls
       = f.label :voice_timeout, 'Minutes to wait between each voice call retry'
       = f.number_field :voice_timeout, :class => 'w10', :in => 0..120
-  .row-fluid
-    .span12
+  .control-group
+    .controls
       = f.label :max_sms_retries, 'Maximum SMS retries'
       = f.number_field :max_sms_retries, :class => 'w10', :in => 1..20
-  .row-fluid
-    .span12
+  .control-group
+    .controls
       = f.label :sms_timeout, 'Minutes to wait between each SMS retry'
       = f.number_field :sms_timeout, :class => 'w10', :in => 0..120
-  .row-fluid
-    .span12
+  .control-group
+    .controls
       %button.btn #{@organization.new_record? ? 'Create' : 'Update'} Organization
       = link_to 'Cancel', organizations_path, :class => 'btn btn-link'
 
