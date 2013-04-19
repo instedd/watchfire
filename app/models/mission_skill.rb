@@ -53,6 +53,16 @@ class MissionSkill < ActiveRecord::Base
     pluralize(req_vols, skill_name)
   end
 
+  def confirmed
+    @confirmed ||= mission.candidates.
+      where(:status => :confirmed).
+      where(:allocated_skill_id => skill).count
+  end
+
+  def still_needed
+    req_vols - confirmed
+  end
+
   private
 
   def init

@@ -4,6 +4,7 @@ class Candidate < ActiveRecord::Base
 
   belongs_to :mission
   belongs_to :volunteer
+  belongs_to :allocated_skill, :class_name => "Skill"
 
   has_many :calls, :dependent => :destroy
 
