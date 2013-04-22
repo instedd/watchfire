@@ -10,12 +10,12 @@ gem 'delayed_job_active_record'
 gem 'rest-client'
 gem 'nuntium_api', '~> 0.19', :require => 'nuntium'
 gem 'geokit-rails3'
-gem 'verboice', "0.6.0"
+gem 'verboice', "0.7.0"
 gem 'devise', "~>2.2.3"
 gem 'devise_invitable'
 gem 'breadcrumbs_on_rails'
 gem 'kaminari'
-# gem 'pigeon', :path => '../pigeon'
+gem 'instedd-pigeon', '~> 0.1.3', :require => 'pigeon'
 gem 'decent_exposure'
 gem 'guid'
 gem 'foreman'
@@ -45,4 +45,7 @@ group :development, :test do
   gem 'pry-debugger'
   gem 'capistrano'
   gem 'rvm-capistrano'
+  gem 'selenium-webdriver'
+  gem 'nokogiri'
+  gem 'xmpp4r'
 end

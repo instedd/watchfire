@@ -3,7 +3,9 @@ require 'spec_helper'
 describe VerboiceController do
   describe "POST 'plan'" do
     before(:each) do
-      @parameters = {:format => 'xml'}
+      @parameters = {:format => 'xml', :CallSid => '123'}
+      @candidate = Candidate.make
+      Candidate.expects(:find_by_call_session_id).with('123').returns(@candidate)
     end
 
     it "should be successful" do
@@ -11,9 +13,86 @@ describe VerboiceController do
       response.should be_success
     end
 
-    it "should render plan" do
+    it "should render plan_no_confirmation if mission should not confirm human" do
+      @candidate.mission.expects(:confirm_human?).returns(false)
       post 'plan', @parameters
-      response.should render_template('plan')
+      response.should render_template('plan_no_confirmation')
+    end
+
+    it "should render plan_before_confirmation if mission should confirm human" do
+      @candidate.mission.expects(:confirm_human?).returns(true)
+      post 'plan', @parameters
+      response.should render_template('plan_before_confirmation')
+    end
+  end
+
+  describe "POST 'plan' with forward" do
+    before(:each) do
+      @parameters = {:format => 'xml', :CallSid => '1234', :From => '555', :Channel => 'foo' }
+      @organization = Organization.make!
+      @mission = Mission.make! :forward_address => '111', :organization => @organization, :status => :running
+    end
+
+    context "calling number is known" do
+      it "should forward to the mission that made the last call to the number" do
+        @candidate = Candidate.make! :mission => @mission
+        @call = Call.make! :voice_number => @parameters[:From], :candidate => @candidate
+        post 'plan', @parameters
+        response.should render_template('plan_forward')
+        assigns(:mission).should eq(@mission)
+      end
+    end
+
+    context "calling number is unknown" do
+      context "channel is unknown" do
+        it "should forward to the latest running mission" do
+          post 'plan', @parameters
+          response.should render_template('plan_forward')
+          assigns(:mission).should eq(@mission)
+        end
+      end
+
+      context "channel is known" do
+        it "should forward to the organization's running mission launched last" do
+          @channel = PigeonChannel.make! :channel_type => :verboice, :pigeon_name => @parameters[:Channel], :organization => @organization
+
+          post 'plan', @parameters
+          response.should render_template('plan_forward')
+          assigns(:mission).should eq(@mission)
+        end
+      end
+
+      it "should hang up when there are no running missions" do
+        @mission.update_attribute :status, :pending
+
+        post 'plan', @parameters
+        response.should render_template('plan_forward')
+        assigns(:mission).should be_nil
+      end
+
+      it "should hang up if the last running mission does not have a forward address" do 
+        @mission.update_attribute :forward_address, nil
+
+        post 'plan', @parameters
+        response.should render_template('plan_forward')
+        assigns(:mission).should be_nil
+      end
+    end
+  end
+
+  describe "POST 'plan_after_confirmation'" do
+    before(:each) do
+      @parameters = {:format => 'xml'}
+    end
+
+    it "should be successful" do
+      post 'plan_after_confirmation', @parameters
+      response.should be_success
+    end
+
+    it "should render after_confirmation" do
+      post 'plan_after_confirmation', @parameters
+      response.should render_template('plan_after_confirmation')
     end
   end
 
@@ -49,12 +128,12 @@ describe VerboiceController do
       response.should render_template('callback')
     end
 
-    it "should render plan if bad answer" do
+    it "should render plan_no_confirmation if bad answer" do
       @parameters[:Digits] = '9'
 
       post 'callback', @parameters
 
-      response.should render_template('plan')
+      response.should render_template('plan_no_confirmation')
       @candidate.reload.is_pending?.should be true
     end
   end

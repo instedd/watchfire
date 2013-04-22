@@ -1,18 +1,51 @@
-%p
-  %input#use_custom_text(type="checkbox" data-bind="checked: use_custom_text, enable: !isRunningOrFinished()")
-  %label(for="use_custom_text") Use Custom Text
-%p We will call and text the recruitees below with the following message:
-%div(data-bind="visible: use_custom_text()")
-  %textarea(rows="3" style="width:98%" data-bind="value: custom_text, enable: !isRunningOrFinished()")
-  %p.tgrey
+/ %p
+/   %input#use_custom_text(type="checkbox" data-bind="checked: use_custom_text, enable: !isRunningOrFinished()")
+/   %label(for="use_custom_text") Use Custom Text
+/ %p We will call and text the recruitees below with the following message:
+/ %div(data-bind="visible: use_custom_text()")
+/   %textarea(rows="3" style="width:98%" data-bind="value: custom_text, enable: !isRunningOrFinished()")
+/   %p.tgrey
+/     %em.left= I18n.t :voice_message_options
+/     .clear
+/ %div(data-bind="visible: !use_custom_text()")
+/   %p.tgrey
+/     %em Hello, this is the Red Cross. There is
+/     %span(data-bind="text: reason_with_default")
+/     %em located at
+/     %span(data-bind="text: address_with_default")<
+/     %em> . Can you respond?
+/     %em= I18n.t :voice_message_options
+%div(data-bind="visible: id")
+  %p We will call and text the recruitees below with the following message:
+  %p
+    %span(data-bind="html:intro_text, visible: current_edit_message() != 'intro', click: edit_message.bind($data, 'intro')")
+    %input(type = "text" data-bind="value:intro_text, visible:current_edit_message() == 'intro', event: {blur: edit_message.bind($data, '')}, hasfocus: current_edit_message() == 'intro'")
+  %p
+    %input(type = "checkbox" data-bind="checked: confirm_human")
+    = I18n.t :human_message
+  %p
+    %span(data-bind="html:desc_text, visible: current_edit_message() != 'desc', click: edit_message.bind($data, 'desc')")
+    %input(type = "text" data-bind="value: desc_text, visible:current_edit_message() == 'desc', event: {blur: edit_message.bind($data, '')}, hasfocus: current_edit_message() == 'desc'")
+    %input(type = "radio" name="location_type" value="city" data-bind="checked: location_type")
+    %label City
+    %input(type = "radio" name="location_type" value="address" data-bind="checked: location_type")
+    %label Address
+  %p
+    %span(data-bind="html:question_text, visible: current_edit_message() != 'question', click: edit_message.bind($data, 'question')")
+    %input(type = "text" data-bind="value: question_text, visible:current_edit_message() == 'question', event: {blur: edit_message.bind($data, '')}, hasfocus: current_edit_message() == 'question'")
     %em.left= I18n.t :voice_message_options
     .clear
-%div(data-bind="visible: !use_custom_text()")
-  %p.tgrey
-    %em Hello, this is the Red Cross. There is
-    %span(data-bind="text: reason_with_default")
-    %em located at
-    %span(data-bind="text: address_with_default")<
-    %em> . Can you respond?
-    %em= I18n.t :voice_message_options
+  %p
+    Yes ->
+    %span(data-bind="html:yes_text, visible: current_edit_message() != 'yes', click: edit_message.bind($data, 'yes')")
+    %input(type = "text" data-bind="value: yes_text, visible:current_edit_message() == 'yes', event: {blur: edit_message.bind($data, '')}, hasfocus: current_edit_message() == 'yes'")
+    %span(data-bind="html: address")
+  %p
+    No ->
+    %span(data-bind="html:no_text, visible: current_edit_message() != 'no', click: edit_message.bind($data, 'no')")
+    %input(type = "text" data-bind="value: no_text, visible:current_edit_message() == 'no', event: {blur: edit_message.bind($data, '')}, hasfocus: current_edit_message() == 'no'")
+  %hr
+  %p
+    If the volunteer calls back, forward the call to this number:
+    %input(type="tel" data-bind="value: forward_address")
 

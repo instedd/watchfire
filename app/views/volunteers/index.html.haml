@@ -24,11 +24,15 @@
         %col(style="width: 5%, min-width:80px")
         %theader
           %tr
-            = sort_header 'Name', :name
-            = sort_header 'Address', :address
+            - if @volunteers.empty?
+              %th Name
+              %th Address
+            - else
+              = sort_header 'Name', :name
+              = sort_header 'Address', :address
             %th Voice Numbers
             %th(colspan="2") SMS Numbers
-        %tbody  
+        %tbody
           - if volunteers.all.present?
             - @volunteers.each do |volunteer|
               %tr.link{'data-url' => edit_volunteer_path(volunteer)}
@@ -60,7 +64,7 @@
                   %div.info To start using Watchfire you must create an Organization
                   %a.add{:href => new_organization_path}
                     Create Organization
-                    %button.ic-blue 
+                    %button.ic-blue
                       %i.icon-plus
           = paginate @volunteers
   %br
@@ -71,7 +75,7 @@
         %p.small Create volunteers uploading a CSV file.
         %br
         = link_to '/samples/volunteers.csv' do
-          %span.ic-white 
+          %span.ic-white
             %i.icon-download-alt
           Download a sample CSV file
         and fill it with the accounts data
@@ -81,7 +85,7 @@
     .collapsed.well-plain.span4
       %a.btn.btn-link.btn-medium.toggle
         %span.ic-white
-          %i.icon-download-alt 
+          %i.icon-download-alt
         Upload it for bulk account creation
       .hidden-content
         = form_for :import_volunteers, :url => import_volunteers_path, :html => {:multipart => true} do |f|

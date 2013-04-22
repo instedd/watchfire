@@ -5,6 +5,7 @@ class Organization < ActiveRecord::Base
   has_many :missions, :dependent => :destroy
   has_many :skills, :dependent => :destroy
   has_many :invites, :dependent => :destroy
+  has_many :pigeon_channels, :dependent => :destroy
 
   validates_presence_of :name
   validates_uniqueness_of :name, :case_sensitive => false

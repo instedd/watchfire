@@ -14,6 +14,8 @@ class Mission < ActiveRecord::Base
 
 	belongs_to :user
 
+  store :messages, accessors: [:intro_text, :desc_text, :question_text, :yes_text, :no_text, :location_type, :confirm_human]
+
   validates_presence_of :organization
   validates_presence_of :user
   validates_presence_of :lat, :lng, :name
@@ -24,6 +26,8 @@ class Mission < ActiveRecord::Base
   validates_numericality_of :lng, :less_than_or_equal_to => 180, :greater_than_or_equal_to => -180
 
   accepts_nested_attributes_for :mission_skills, :allow_destroy => true
+
+  before_create :init_messages
 
 	def candidate_count(st)
 		return self.candidates.where('status = ?', st).count
@@ -78,9 +82,9 @@ class Mission < ActiveRecord::Base
 		@farthest = @farthest || (self.volunteers.geo_scope(:origin => self).order("distance DESC").first.distance.round(2) rescue nil)
 	end
 
-	def call_volunteers
-	  update_status :running
-	  candidates_to_call.each{|c| c.call}
+  def call_volunteers
+    update_status :running
+    candidates_to_call.each{|c| c.call}
   end
 
   def stop_calling_volunteers
@@ -118,8 +122,8 @@ class Mission < ActiveRecord::Base
   end
 
   def candidates_to_call
-		self.candidates.where(:status => :pending, :active => true)
-	end
+    self.candidates.where(:status => :pending, :active => true)
+  end
 
   def allocate_candidates confirmed, pending
     # go through each mission skill by priority and check if we got the desired
@@ -147,7 +151,7 @@ class Mission < ActiveRecord::Base
   def candidate_allocation_order
     # by default, candidates are ordered by the number of skills the volunteer
     # posses, so less specialized volunteers are allocated first
-    Proc.new do |c1, c2| 
+    Proc.new do |c1, c2|
       c1.volunteer.skills.size <=> c2.volunteer.skills.size
     end
   end
@@ -190,22 +194,26 @@ class Mission < ActiveRecord::Base
   end
 
 	def check_for_volunteers?
-		mission_skills.any? { |ms| 
+		mission_skills.any? { |ms|
       ms.marked_for_destruction? || ms.new_record? || ms.check_for_volunteers?
     } || self.lat != self.lat_was || self.lng != self.lng_was
 	end
 
-	def sms_message
-		template_or_custom_text + I18n.t(:sms_message_options)
+  def sms_message
+    full_message + I18n.t(:sms_message_options)
   end
 
   def voice_message
-		template_or_custom_text + I18n.t(:voice_message_options)
+		full_message + I18n.t(:voice_message_options)
   end
 
-	def voice_message_sentences
-		voice_message.split('.').map(&:strip).reject{|s| s.blank?}
-	end
+  def voice_before_confirmation_message
+    before_confirmation_message + I18n.t(:human_message)
+  end
+
+  def voice_after_confirmation_message
+    after_confirmation_message + I18n.t(:voice_message_options)
+  end
 
   def total_req_vols
     mission_skills.map(&:req_vols).reduce(&:+)
@@ -221,14 +229,6 @@ class Mission < ActiveRecord::Base
     requirements = mission_skills.map(&:title).join(', ')
     message = reason.present? ? " (#{truncate(reason, :length => 200)})" : ""
     "#{name}: #{requirements}#{message}"
-  end
-
-  def custom_text_changed?
-    self.previous_changes.keys.include? :custom_text.to_s
-  end
-
-  def template_text
-    I18n.t :template_message, :reason => reason_for_message, :location => address
   end
 
   def enable_all_pending
@@ -247,18 +247,22 @@ class Mission < ActiveRecord::Base
     Watchfire::Application.config.max_distance
   end
 
+  def confirm_message
+    "#{yes_text.strip_sentence} #{address}"
+  end
+
+  def deny_message
+    no_text
+  end
+
+  def confirm_human?
+    self.confirm_human == '1'
+  end
+
   private
 
 	def reason_for_message
 		self.reason.present? ? self.reason : I18n.t(:an_emergency)
-	end
-
-	def template_or_custom_text
-	  if use_custom_text
-	    custom_text[-1] == "." ? custom_text : "#{custom_text}."
-    else
-      template_text
-    end
 	end
 
   def update_status status
@@ -268,6 +272,42 @@ class Mission < ActiveRecord::Base
 
   def available_ratio
     Watchfire::Application.config.available_ratio
+  end
+
+  def init_messages
+    self.intro_text = I18n.t(:intro_message, :organization => self.organization.name)
+    self.desc_text = I18n.t(:desc_message, :reason => reason_for_message)
+    self.question_text = I18n.t(:question_message)
+    self.yes_text = I18n.t(:yes_message)
+    self.no_text = I18n.t(:no_message)
+    self.location_type = 'city'
+    self.confirm_human = '1'
+    true
+  end
+
+  def location
+    location_type == 'address' ? address : city
+  end
+
+  def full_message
+    # message = ''
+    # message << intro_text.to_sentence
+    # message << (desc_text.strip_sentence + ' ')
+    # message << location.to_sentence
+    # message << question_text.to_sentence
+    # message
+    before_confirmation_message + after_confirmation_message
+  end
+
+  def before_confirmation_message
+    intro_text.to_sentence
+  end
+
+  def after_confirmation_message
+    message = desc_text.strip_sentence + ' '
+    message << location.to_sentence
+    message << question_text.to_sentence
+    message
   end
 
 end

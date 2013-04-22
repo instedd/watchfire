@@ -8,6 +8,9 @@ defaults: &defaults
   verboice_account: COMPLETE
   verboice_password: COMPLETE
   verboice_channel: COMPLETE
+  verboice_default_call_flow: COMPLETE
+  twitter_consumer_key: COMPLETE
+  twitter_consumer_secret: COMPLETE
   available_ratio: 0.25
   basic_auth_name: COMPLETE
   basic_auth_pwd: COMPLETE

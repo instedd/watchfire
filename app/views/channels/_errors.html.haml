@@ -1,0 +1,11 @@
+- if @channel.errors.any? || @pigeon_channel.errors.any?
+  .box.error_description.w60
+    %h2= "#{pluralize(@channel.errors.size + @pigeon_channel.errors.size, 'error')} prohibited this channel from being saved:"
+    %ul
+      - @pigeon_channel.errors.full_messages.map do |msg|
+        %li= msg
+      - @channel.errors.full_messages.map do |msg|
+        %li= msg
+  %br
+
+

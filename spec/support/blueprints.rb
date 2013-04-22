@@ -26,6 +26,7 @@ Mission.blueprint do
   lat { _lat }
   lng { _lng }
   address { _address }
+  city { _city }
   mission_skills { [MissionSkill.make] }
 end
 
@@ -62,12 +63,22 @@ Call.blueprint do
   candidate { Candidate.make! }
 end
 
+PigeonChannel.blueprint do
+  organization { Organization.make! }
+  name { _name }
+  pigeon_name { _name }
+end
+
 def _name
   Faker::Name.name
 end
 
 def _address
    Faker::Address.country
+end
+
+def _city
+   Faker::Address.city
 end
 
 def _email

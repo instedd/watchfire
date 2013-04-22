@@ -90,7 +90,7 @@ class VolunteersController < ApplicationController
     volunteer.destroy
 
     respond_to do |format|
-      format.html { redirect_to volunteers_url }
+      format.html { redirect_to volunteers_url, :notice => "#{volunteer.name} was deleted." }
       format.xml  { head :ok }
     end
   end

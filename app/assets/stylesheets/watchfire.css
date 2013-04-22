@@ -93,4 +93,6 @@ table td div { display:inline-block; vertical-align:middle }
 #invitation_bubble button { vertical-align:middle }
 #invitation_bubble .gusers { background:url(http://theme.instedd.org/theme/images/icons/48/gradient/users.png) no-repeat; width:48px; height:48px; margin-right:3px }
 
+td.channel_enabled span { background:#9fc643; margin-right:5px; width:10px; height:10px; display:inline-block; border-radius:2px; -moz-border-radius:2px; -webkit-border-radius:2px }
+td.channel_disabled span { background:#d0d0d0; margin-right:5px; width:10px; height:9px; border-top:1px solid #9c9c9c; display:inline-block; border-radius:2px; -moz-border-radius:2px; -webkit-border-radius:2px }
 

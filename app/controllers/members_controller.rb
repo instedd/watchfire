@@ -2,6 +2,8 @@ class MembersController < ApplicationController
   before_filter :authenticate_user!
 
   def index
+    add_breadcrumb "#{current_organization.name}", organizations_path if current_organization
+    add_breadcrumb "Members", :members_path
   end
 
   def invite
