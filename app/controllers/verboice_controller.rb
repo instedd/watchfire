@@ -34,7 +34,7 @@ class VerboiceController < ApplicationController
   end
 
   def status_callback
-    candidate.voice_status = params[:CallStatus]
+    candidate.last_call_status = params[:CallStatus]
     candidate.save!
 
     head :ok

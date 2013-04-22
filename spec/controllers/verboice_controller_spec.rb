@@ -152,7 +152,7 @@ describe VerboiceController do
 
     it "should set candidate voice status" do
       get 'status_callback', @parameters
-      @candidate.reload.voice_status.should eq('ringing')
+      @candidate.reload.last_call_status.should eq('ringing')
     end
   end
 end

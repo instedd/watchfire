@@ -118,8 +118,8 @@ describe Mission do
 
   describe "title" do
     before(:each) do
-      @mission = Mission.new :name => "name", :reason => "reason",
-        :mission_skills => [MissionSkill.make(:req_vols => 3,
+      @mission = Mission.new :name => "name", :reason => "reason"
+      @mission.mission_skills = [MissionSkill.make(:req_vols => 3,
           :skill => Skill.new(:name => "skill"))]
     end
 

@@ -17,14 +17,14 @@ function CandidateViewModel(data) {
     self.isPending = data.status == 'pending';
     self.active = ko.observable(data.active);
 
-    var current_voice_number = data.last_call && data.last_call.voice_number;
+    var current_voice_number = data.last_voice_number;
     function buildNumbers(collection, spanClass, disabledClass) {
         var result = [];
         for (var i = 0; i < collection.length; i++) {
             var address = collection[i].address;
             var active = (self.active() && self.isPending) || address == data.answered_from;
             if (address == current_voice_number) {
-                address += ' (' + data.voice_status + ')';
+                address += ' (' + data.last_call_status + ')';
             }
             result.push($('<span>').text(address).
                     addClass(active ? spanClass : disabledClass).

@@ -118,7 +118,10 @@ class Mission < ActiveRecord::Base
   end
 
   def add_volunteer volunteer
-		candidate = self.candidates.create! :volunteer => volunteer
+		candidate = self.candidates.create
+    candidate.volunteer = volunteer
+    candidate.save!
+
 		candidate.call
   end
 

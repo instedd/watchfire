@@ -146,8 +146,15 @@ module Mission::AllocationConcern
   end
 
   def obtain_initial_volunteers
-    allocation = initial_allocation
-    allocation.values.flatten
+    initial_allocation.values.flatten
+  end
+
+  def obtain_more_volunteers
+    incremental_allocation.values.flatten
+  end
+
+  def allocate_confirmed_candidate(candidate)
+
   end
 
   # OBSOLETE

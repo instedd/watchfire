@@ -5,7 +5,8 @@ class MissionsController < ApplicationController
   expose(:mission_json) {
     candidates = mission.candidates_with_channels.map { |candidate|
       result = candidate.as_json(
-        :only => [:id, :active, :answered_at, :answered_from, :status, :voice_status],
+        :only => [:id, :active, :answered_at, :answered_from, :status, 
+                  :last_call_status, :last_voice_number],
         :include => {
           :volunteer => {
             :only => [:id, :name, :lat, :lng],
@@ -16,9 +17,6 @@ class MissionsController < ApplicationController
           }
         }
       )["candidate"]
-      if candidate.voice_status && candidate.status == :pending
-        result["last_call"] = candidate.last_call.as_json['call']
-      end
       result["url"] = candidate_path(candidate)
       result[:volunteer]["url"] = volunteer_path(candidate.volunteer)
       result

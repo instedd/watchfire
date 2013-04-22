@@ -294,6 +294,9 @@ describe Mission::AllocationConcern do
 
       allocation = @mission.initial_allocation
       @mission.set_candidates [@vol_at1, @vol_at5]
+
+      @mission.mission_skills[0].req_vols = 2
+      @mission.save!
     end
 
     it "should return a hash with skill ids as keys" do
@@ -305,16 +308,23 @@ describe Mission::AllocationConcern do
     end
 
     it "should not select volunteers which are already in the mission" do
-      @mission.mission_skills[0].req_vols = 2
-      @mission.save!
-
       allocation = @mission.incremental_allocation
       allocation.values.flatten.should_not include(@vol_at1)
       allocation.values.flatten.should_not include(@vol_at5)
+      allocation.values.flatten.size.should > 0
+    end
+
+    it "should select more volunteers ordered by distance" do
+      allocation = @mission.incremental_allocation
       allocation[nil].should eq([@vol_at2, @vol_at3])
     end
 
-    it "should select more volunteers ordered by distance"
+    it "should not select more volunteers if there are enough pending" do
+      @mission.mission_skills[0].req_vols = 1
+      @mission.save!
+
+      @mission.incremental_allocation.values.flatten.should be_empty
+    end
     
     context "when we add requirements for skilled volunteers" do
       before(:each) do
@@ -322,8 +332,19 @@ describe Mission::AllocationConcern do
         @mission.save!
       end
 
-      it "should reallocate previous volunteers if they have the skill"
-      it "should allocate more volunteers for the rest of the requirements"
+      it "should reallocate previous volunteers if they have the skill" do
+        allocation = @mission.incremental_allocation
+
+        allocation[@skill1.id].size.should eq(1) # the other being @vol_at1
+        allocation[@skill1.id].should eq([@vol_at2])
+      end
+
+      it "should allocate more volunteers for the rest of the requirements" do
+        allocation = @mission.incremental_allocation
+
+        allocation[nil].size.should eq(3)
+        allocation[nil].should eq([@vol_at3, @vol_at4, @vol_at6])
+      end
     end
   end
 end
