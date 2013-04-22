@@ -133,6 +133,7 @@ describe Candidate do
     end
 
     it "should handle 'yes' response from sms" do
+      @candidate.mission.expects(:preferred_skill_for_candidate)
       @candidate.answered_from_sms! "yes", @sms_number
 
       @candidate.confirmed?.should be_true
@@ -149,6 +150,7 @@ describe Candidate do
     end
 
     it "should handle '1' response from voice" do
+      @candidate.mission.expects(:preferred_skill_for_candidate)
       @candidate.answered_from_voice! "1", @voice_number
 
       @candidate.confirmed?.should be_true

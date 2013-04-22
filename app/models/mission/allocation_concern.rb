@@ -26,12 +26,11 @@ module Mission::AllocationConcern
       index && @pool.delete_at(index)
     end
 
-    def allocate_one
-      volunteer = nil
+    def allocate_one(volunteer = nil)
       slot = @slots.find do |slot| 
         slot[:risk] >= 0 && 
           slot[:needed] > slot[:allocated].size && 
-          (volunteer = select_volunteer(slot[:skill]))
+          (volunteer ||= select_volunteer(slot[:skill]))
       end
       if slot && volunteer
         slot[:allocated] << volunteer
@@ -51,7 +50,12 @@ module Mission::AllocationConcern
 
     def run_once
       recompute_risks
-      Hash[slot_output(allocate_one)]
+      slot_output(allocate_one)
+    end
+
+    def run_for(volunteer)
+      recompute_risks
+      slot_output(allocate_one(volunteer))
     end
 
   private
@@ -106,6 +110,7 @@ module Mission::AllocationConcern
     if !required_skill_ids.include?(nil)
       vols = vols.where('skills_volunteers.skill_id' => required_skill_ids)
     end
+    vols = vols.select { |v| v.available_at? Time.now.utc }
     unless rejected.empty?
       rejected = Set.new rejected
       vols = vols.reject { |v| rejected.include?(v) }
@@ -153,82 +158,38 @@ module Mission::AllocationConcern
     incremental_allocation.values.flatten
   end
 
-  def allocate_confirmed_candidate(candidate)
-
-  end
-
-  # OBSOLETE
-  def obtain_volunteers
-    vols = []
-    mission_skills.each do |mission_skill|
-      mission_skill.mission = self  # needed to successfully call obtain_volunteers
-      num_vols = (mission_skill.req_vols / available_ratio).to_i
-      vols = vols + mission_skill.obtain_volunteers(num_vols, vols)
+  def preferred_skill_for_candidate(candidate)
+    algo = RiskBasedAlgorithm.new(pending_volunteers)
+    mission_skills.each do |ms|
+      still_needed = ms.still_needed / available_ratio
+      algo.add_requirement ms.skill, still_needed
     end
-    vols
-  end
-
-  def allocate_candidates confirmed, pending
-    # go through each mission skill by priority and check if we got the desired
-    # number of volunteers for each by allocating confirmed and pending
-    # candidates
-    mission_skills.map do |mission_skill|
-      data = { :mission_skill => mission_skill }
-
-      data[:confirmed] = mission_skill.claim_candidates confirmed
-      confirmed = confirmed - data[:confirmed]
-
-      if data[:confirmed].size < mission_skill.req_vols
-        data[:needed] = ((mission_skill.req_vols - data[:confirmed].size) / available_ratio).to_i
-        data[:pending] = mission_skill.claim_candidates pending, data[:needed]
-        pending = pending - data[:pending]
-      else
-        data[:pending] = []
-        data[:needed] = 0
-      end
-
-      data
+    skill_id, allocated = algo.run_for(candidate.volunteer)
+    skill_id && candidate.volunteer.skills.find do |skill|
+      skill.id == skill_id
     end
   end
 
-  def candidate_allocation_order
-    # by default, candidates are ordered by the number of skills the volunteer
-    # posses, so less specialized volunteers are allocated first
-    Proc.new do |c1, c2|
-      c1.volunteer.skills.size <=> c2.volunteer.skills.size
-    end
+  def all_requirements_fulfilled?
+    mission_skills.all? { |ms| ms.still_needed <= 0 }
   end
 
   def check_for_more_volunteers
-    # allocate the confirmed and pending candidates to the required skills for
-    # the mission
-    pending = pending_candidates.sort(&candidate_allocation_order)
-    confirmed = confirmed_candidates.sort(&candidate_allocation_order)
-    allocation = allocate_candidates(confirmed, pending)
+    if all_requirements_fulfilled?
+      finish
+    else
+      new_volunteers = obtain_more_volunteers
 
-    # for each mission skill with allocated candidates, check if we need to add
-    # new volunteers to fulfill the required number
-    finished = true
-    allocation.each do |data|
-      if data[:needed] > 0
-        if data[:pending].size < data[:needed]
-          # not enough number of volunteers in the pending pool that can
-          # fulfill this skill requirement
-          recruit = data[:needed] - data[:pending].size
-          # find new volunteers for this skill
-          new_volunteers = data[:mission_skill].obtain_volunteers recruit, self.volunteers
-          Mission.transaction do
-            new_volunteers.each {|v| add_volunteer v}
+      unless new_volunteers.empty?
+        Mission.transaction do
+          new_volunteers.each do |v|
+            add_volunteer v
           end
-          self.candidates.reload
         end
-        # we're not done yet
-        finished = false
+        self.candidates.reload
       end
     end
-
-		finish if finished
-		self.save! if self.changed?
+    self.save! if self.changed?
   end
 
   def max_distance

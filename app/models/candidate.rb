@@ -113,6 +113,9 @@ class Candidate < ActiveRecord::Base
     self.status = new_status
     self.answered_from = from
     self.answered_at = Time.now.utc
+    if new_status == :confirmed
+      self.allocated_skill = mission.preferred_skill_for_candidate(self)
+    end
     save_and_check!
   end
 

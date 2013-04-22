@@ -46,7 +46,7 @@ class Mission < ActiveRecord::Base
 				Mission.transaction do
 					self.save!
           mission_skills.reload
-          vols = self.obtain_volunteers
+          vols = self.obtain_initial_volunteers
 					set_candidates vols
 				end
 				self.candidates.reload

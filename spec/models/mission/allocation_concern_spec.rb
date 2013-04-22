@@ -3,123 +3,15 @@ require 'spec_helper'
 describe Mission::AllocationConcern do
   before(:each) do
     @organization = Organization.make!
-  end
+    @skill1 = Skill.make! organization: @organization
+    @skill2 = Skill.make! organization: @organization
 
-  it "should obtain volunteers for each skill" do
-    @mission = Mission.make
-    @ms1 = MissionSkill.make :mission => @mission, :req_vols => 5
-    @ms2 = MissionSkill.make :mission => @mission, :req_vols => 10
-    @mission.mission_skills = [@ms1, @ms2]
-    @mission.save!
+    @origin = [37, -122] # lat, lng
+    @mission = Mission.make! lat: @origin[0], lng: @origin[1], 
+      organization: @organization
 
-    @mission.stubs(:available_ratio).returns(0.5)
-    @ms1.expects(:obtain_volunteers).with(10, []).returns((1..5).to_a)
-    @ms2.expects(:obtain_volunteers).with(20, (1..5).to_a).returns((6..10).to_a)
-
-    vols = @mission.obtain_volunteers
-    vols.size.should eq(10)
-    vols.should eq((1..10).to_a)
-  end
-
-  describe "candidate allocation" do
-    before(:each) do
-      @mission = Mission.make!
-      @mission.stubs(:available_ratio).returns(0.5)
-    end
-
-    it "should allocate by priority" do
-      @ms1 = MissionSkill.make!(:mission => @mission, :priority => 2, :req_vols => 3)
-      @ms2 = MissionSkill.make!(:mission => @mission, :priority => 1, :req_vols => 2)
-      @ms3 = MissionSkill.make!(:mission => @mission, :priority => 3, :req_vols => 2)
-      @mission.mission_skills = [@ms1, @ms2, @ms3]
-      @mission.save!
-
-      @candidates = (1..3).map { Candidate.make! }
-      @pendings = (1..2).map { Candidate.make! }
-
-      allocation = @mission.allocate_candidates(@candidates, @pendings)
-
-      allocation.size.should eq(3)
-      allocation[0][:mission_skill].should eq(@ms2)
-      allocation[0][:needed].should eq(0)
-      allocation[0][:confirmed].should eq(@candidates[0..1])
-      allocation[0][:pending].should eq([])
-      allocation[1][:mission_skill].should eq(@ms1)
-      allocation[1][:needed].should eq(4)  # 2 missing * available_ratio
-      allocation[1][:confirmed].should eq(@candidates[2..2])
-      allocation[1][:pending].should eq(@pendings)
-      allocation[2][:mission_skill].should eq(@ms3)
-      allocation[2][:needed].should eq(4)    # 2 missing * available_ratio
-      allocation[2][:confirmed].should eq([])
-      allocation[2][:pending].should eq([])  # no pending candidates left
-    end
-  end
-
-  describe "get more volunteers" do
-    before(:each) do
-      @mission = Mission.make! :name => 'name'
-      @mission_skill = MissionSkill.make!(:mission => @mission, :req_vols => 5)
-      @mission.mission_skills = [@mission_skill]
-      @mission.save!
-    end
-
-    it "should increase volunteers if pending is not enough" do
-      @mission.expects(:pending_candidates).returns((1..8).to_a)
-      @mission.expects(:confirmed_candidates).returns([])
-      @mission.stubs(:candidate_allocation_order).
-        returns(Proc.new { |c1,c2| c1 <=> c2 })
-      allocation = [{
-        :mission_skill => @mission_skill,
-        :confirmed => [],
-        :pending => (1..8).to_a,
-        :needed => 10
-      }]
-      @mission.expects(:allocate_candidates).returns(allocation)
-
-      @mission_skill.expects(:obtain_volunteers).
-        with(2, @mission.volunteers).returns(['c1', 'c2'])
-      @mission.expects(:add_volunteer).with('c1')
-      @mission.expects(:add_volunteer).with('c2')
-
-      @mission.expects(:update_status).never
-
-      @mission.check_for_more_volunteers
-    end
-
-    it "should not increase volunteers if there are enough pendings and set as finished" do
-      @mission.expects(:pending_candidates).returns((1..8).to_a)
-      @mission.expects(:confirmed_candidates).returns((1..2).to_a)
-      @mission.stubs(:candidate_allocation_order).
-        returns(Proc.new { |c1,c2| c1 <=> c2 })
-      allocation = [{
-        :mission_skill => @mission_skill,
-        :confirmed => (1..2).to_a,
-        :pending => (1..8).to_a,
-        :needed => 6
-      }]
-      @mission.expects(:allocate_candidates).returns(allocation)
-      @mission.expects(:update_status).never
-
-      @mission.check_for_more_volunteers
-    end
-
-    it "should update status to finished if all requirements are satisfied" do
-      @mission.expects(:pending_candidates).returns([])
-      @mission.expects(:confirmed_candidates).returns((1..5).to_a)
-      @mission.stubs(:candidate_allocation_order).
-        returns(Proc.new { |c1,c2| c1 <=> c2 })
-      allocation = [{
-        :mission_skill => @mission_skill,
-        :confirmed => (1..5).to_a,
-        :pending => [],
-        :needed => 0
-      }]
-      @mission.expects(:allocate_candidates).returns(allocation)
-      @mission.expects(:update_status).with(:finished)
-
-      @mission.check_for_more_volunteers
-    end
-
+    @vol_at1 = make_volunteer @mission.endpoint(0,1), [@skill1, @skill2]
+    @vol_outofrange = make_volunteer @mission.endpoint(0, 1000)
   end
 
   def make_volunteer location, skills = []
@@ -129,18 +21,9 @@ describe Mission::AllocationConcern do
 
   describe "obtain volunteer pool" do
     before(:each) do
-      @origin = [37, -122] # lat, lng
-      @mission = Mission.make! lat: @origin[0], lng: @origin[1], 
-        organization: @organization
-
-      @skill1 = Skill.make! organization: @organization
-      @skill2 = Skill.make! organization: @organization
-
       @vol_at5 = make_volunteer @mission.endpoint(0,5)
       @vol_at2 = make_volunteer @mission.endpoint(0,2), [@skill1]
       @vol_at3 = make_volunteer @mission.endpoint(0,3), [@skill2]
-      @vol_at1 = make_volunteer @mission.endpoint(0,1), [@skill1, @skill2]
-      @vol_outofrange = make_volunteer @mission.endpoint(0, 1000)
     end
 
     context "when the mission requires only non-skilled volunteers" do
@@ -187,21 +70,23 @@ describe Mission::AllocationConcern do
     it "should not return rejected volunteers" do
       @mission.obtain_volunteer_pool([@vol_at1]).should_not include(@vol_at1)
     end
+
+    it "should not return non-available volunteers" do
+      # @time is Monday, April 22th 10:30:00 AM
+      @time = Time.utc(2013, 4, 22, 10, 30, 0)
+      @vol_at1.shifts = {'monday' => {'10' => '0'}}
+      @vol_at1.save!
+
+      Timecop.travel(@time)
+      @mission.obtain_volunteer_pool.should_not include(@vol_at1)
+    end
   end
 
   describe "initial allocation" do
     before(:each) do
-      @origin = [37, -122] # lat, lng
-      @mission = Mission.make! lat: @origin[0], lng: @origin[1], 
-        organization: @organization
-
-      @skill1 = Skill.make! organization: @organization
-      @skill2 = Skill.make! organization: @organization
-
       @vol_at5 = make_volunteer @mission.endpoint(0,5)
       @vol_at2 = make_volunteer @mission.endpoint(0,2), [@skill1]
       @vol_at3 = make_volunteer @mission.endpoint(0,3)
-      @vol_at1 = make_volunteer @mission.endpoint(0,1), [@skill1, @skill2]
       @vol_at4 = make_volunteer @mission.endpoint(0,4)
 
       @mission.stubs(:available_ratio).returns(0.5)
@@ -273,78 +158,133 @@ describe Mission::AllocationConcern do
 
   end
 
-  describe "incremental allocation" do
+  context "with initial allocation" do
     before(:each) do
-      @origin = [37, -122] # lat, lng
-      @mission = Mission.make! lat: @origin[0], lng: @origin[1], 
-        organization: @organization
-
-      @skill1 = Skill.make! organization: @organization
-      @skill2 = Skill.make! organization: @organization
-
       @vol_at5 = make_volunteer @mission.endpoint(0,5)
       @vol_at2 = make_volunteer @mission.endpoint(0,2), [@skill1]
       @vol_at3 = make_volunteer @mission.endpoint(0,3)
-      @vol_at1 = make_volunteer @mission.endpoint(0,1), [@skill1, @skill2]
       @vol_at4 = make_volunteer @mission.endpoint(0,4), [@skill1]
       @vol_at6 = make_volunteer @mission.endpoint(0,6)
       @vol_at7 = make_volunteer @mission.endpoint(0,7), [@skill2]
 
       @mission.stubs(:available_ratio).returns(0.5)
 
-      allocation = @mission.initial_allocation
       @mission.set_candidates [@vol_at1, @vol_at5]
-
-      @mission.mission_skills[0].req_vols = 2
-      @mission.save!
     end
 
-    it "should return a hash with skill ids as keys" do
-      allocation = @mission.incremental_allocation
-      allocation.should be_a(Hash)
-      allocation.size.should eq(@mission.mission_skills.size)
-      allocation.should include(nil)
-      allocation[nil].should be_a(Array)
-    end
-
-    it "should not select volunteers which are already in the mission" do
-      allocation = @mission.incremental_allocation
-      allocation.values.flatten.should_not include(@vol_at1)
-      allocation.values.flatten.should_not include(@vol_at5)
-      allocation.values.flatten.size.should > 0
-    end
-
-    it "should select more volunteers ordered by distance" do
-      allocation = @mission.incremental_allocation
-      allocation[nil].should eq([@vol_at2, @vol_at3])
-    end
-
-    it "should not select more volunteers if there are enough pending" do
-      @mission.mission_skills[0].req_vols = 1
-      @mission.save!
-
-      @mission.incremental_allocation.values.flatten.should be_empty
-    end
-    
-    context "when we add requirements for skilled volunteers" do
+    describe "incremental allocation" do
       before(:each) do
-        @ms1 = @mission.add_mission_skill skill: @skill1
+        @mission.mission_skills[0].req_vols = 2
         @mission.save!
       end
 
-      it "should reallocate previous volunteers if they have the skill" do
+      it "should return a hash with skill ids as keys" do
         allocation = @mission.incremental_allocation
-
-        allocation[@skill1.id].size.should eq(1) # the other being @vol_at1
-        allocation[@skill1.id].should eq([@vol_at2])
+        allocation.should be_a(Hash)
+        allocation.size.should eq(@mission.mission_skills.size)
+        allocation.should include(nil)
+        allocation[nil].should be_a(Array)
       end
 
-      it "should allocate more volunteers for the rest of the requirements" do
+      it "should not select volunteers which are already in the mission" do
         allocation = @mission.incremental_allocation
-
-        allocation[nil].size.should eq(3)
-        allocation[nil].should eq([@vol_at3, @vol_at4, @vol_at6])
+        allocation.values.flatten.should_not include(@vol_at1)
+        allocation.values.flatten.should_not include(@vol_at5)
+        allocation.values.flatten.size.should > 0
       end
+
+      it "should select more volunteers ordered by distance" do
+        allocation = @mission.incremental_allocation
+        allocation[nil].should eq([@vol_at2, @vol_at3])
+      end
+
+      it "should not select more volunteers if there are enough pending" do
+        @mission.mission_skills[0].req_vols = 1
+        @mission.save!
+
+        @mission.incremental_allocation.values.flatten.should be_empty
+      end
+      
+      context "when we add requirements for skilled volunteers" do
+        before(:each) do
+          @ms1 = @mission.add_mission_skill skill: @skill1
+          @mission.save!
+        end
+
+        it "should reallocate previous volunteers if they have the skill" do
+          allocation = @mission.incremental_allocation
+
+          allocation[@skill1.id].size.should eq(1) # the other being @vol_at1
+          allocation[@skill1.id].should eq([@vol_at2])
+        end
+
+        it "should allocate more volunteers for the rest of the requirements" do
+          allocation = @mission.incremental_allocation
+
+          allocation[nil].size.should eq(3)
+          allocation[nil].should eq([@vol_at3, @vol_at4, @vol_at6])
+        end
+      end
+    end
+
+    describe "preferred skill for candidate" do
+      before(:each) do
+        @mission.add_mission_skill skill: @skill1
+        @mission.save!
+        # mission has two requirements:
+        #  nil and @skill1, each needing 1 vol
+        # and two pending candidates
+        #  who can fulfill each requirement
+      end
+
+      it "should select the riskiest mission requirement" do
+        candidate = @mission.candidates.find do |c|
+          c.volunteer = @vol_at1
+        end
+
+        # skill specific requirements are always more risky than non-skilled
+        @mission.preferred_skill_for_candidate(candidate).should eq(@skill1)
+      end
+
+      it "should return nil if all requirements are fulfilled" do
+        # confirm all mission's candidates fulfilling both requirements
+        @mission.candidates.each do |c|
+          c.status = :confirmed
+          c.allocated_skill = case c.volunteer
+                              when @vol_at1 then @skill1
+                              else nil
+                              end
+          c.save!
+        end
+
+        # make a new candidate
+        candidate = Candidate.make! mission: @mission, volunteer: @vol_at2
+
+        @mission.preferred_skill_for_candidate(candidate).should be_nil
+      end
+    end
+  end
+
+  describe "check for more volunteers" do
+    it "should add new pending candidates if required" do
+      @mission.expects(:obtain_more_volunteers).returns([@vol_at1])
+      @mission.expects(:add_volunteer).with(@vol_at1)
+
+      @mission.check_for_more_volunteers
+    end
+
+    it "should finish the mission if all requirements are fulfilled" do
+      candidate = Candidate.make! mission: @mission, volunteer: @vol_at1, status: :confirmed
+
+      @mission.check_for_more_volunteers
+      @mission.status.should eq(:finished)
+    end
+
+    it "should not finish the mission unless all requirements are fulfilled" do
+      @mission.expects(:obtain_more_volunteers).returns([])
+      @mission.check_for_more_volunteers
+
+      @mission.status.should_not eq(:finished)
     end
   end
 end
