@@ -76,7 +76,8 @@ class Mission < ActiveRecord::Base
 
   def call_volunteers
     update_status :running
-    candidates_to_call.each{|c| c.call}
+    SchedulerAdvisor.mission_started self
+    #candidates_to_call.each{|c| c.call}
   end
 
   def stop_calling_volunteers

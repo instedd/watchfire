@@ -1,39 +1,32 @@
 require 'eventmachine'
 
-class Scheduler
+module Scheduler
   class << self
     def organizations
-      @organizations ||= {} 
+      @organizations ||= Hash.new do |hash, key|
+        org = Organization.find(key)
+        hash[key] = start_organization(org)
+      end
     end
 
     def start
-      EM.start_server "127.0.0.1", SchedulerAdvisor.port, AdvisorServer
+      EM.start_server "127.0.0.1", SchedulerAdvisor.port, Scheduler::AdvisorServer
 
-      Organization.all.each do |organization|
-        start_organization(organization)
+      Organization.all.each do |org|
+        organizations[org.id] = start_organization(org)
       end
     end
 
-    def start_organization(organization)
-      return if organizations[organization.id].present?
-
-      sched = Scheduler::OrganizationScheduler.new(organization).start
-      organizations[organization.id] = sched if sched.present?
+    def organization(id)
+      organizations[id]
     end
-  end
 
-  class AdvisorServer < EM::Connection
-    include EventMachine::Protocols::LineProtocol
+  private
 
-    def receive_line(line)
-      tokens = JSON.parse(line)
-      case tokens[0]
-      when 'quit'
-        puts "Quitting per advisor request"
-        EM.stop
-      else
-        puts "Received #{tokens[0]} command with #{tokens[1..-1]}"
-      end
+    def start_organization(org)
+      Scheduler::OrganizationScheduler.new(org).tap { |sched|
+        sched.start
+      }
     end
   end
 end

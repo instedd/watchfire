@@ -11,5 +11,22 @@ class PigeonChannel < ActiveRecord::Base
   scope :enabled, where(:enabled => true)
   scope :nuntium, where(:channel_type => :nuntium)
   scope :verboice, where(:channel_type => :verboice)
+
+  before_save :prepare_advice
+  after_commit :advice_scheduler
+
+private
+
+  def prepare_advice
+    @should_advice = enabled && (new_record? || !enabled_was)
+    true
+  end
+
+  def advice_scheduler
+    if @should_advice
+      SchedulerAdvisor.channel_enabled self
+    end
+    true
+  end
 end
 
