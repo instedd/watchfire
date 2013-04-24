@@ -53,6 +53,6 @@ module Watchfire
     config.platform_base_url = 'http://theme.instedd.org'
 
     # Default scheduler port
-    config.scheduler_port = 4000
+    config.scheduler_uri = 'druby://localhost:4000'
   end
 end

@@ -6,52 +6,25 @@ raise Exception, "#{ConfigFilePath} configuration file is missing" unless FileTe
 
 RailsEnv = ENV["RAILS_ENV"] || "development"
 
-require 'eventmachine'
 require 'yaml'
+require 'drb/drb'
+require 'logger'
 
-module Watchfire
-  module Application
-    class Config
-      def initialize
-        @settings = YAML.load_file(ConfigFilePath)[RailsEnv]
-      end
-
-      def scheduler_port
-        @settings["scheduler_port"] || 4000
-      end
-
-      def method_missing(name, *args)
-        p @settings
-        if @settings.include?(name.to_s)
-          @settings[name.to_s]
-        else
-          super
-        end
-      end
-    end
-
-    def self.config
-      @config ||= Config.new
-    end
+module Rails
+  def self.logger
+    @logger ||= Logger.new(STDOUT)
   end
 end
+
+settings = YAML.load_file(ConfigFilePath)[RailsEnv]
+uri = settings['scheduler_uri'] || 'druby://localhost:4000'
 
 require File.expand_path 'app/models/scheduler_advisor.rb', Root
 
-EM.error_handler do |err|
-  puts err
-  puts err.backtrace.join "\n"
-end
-
-EM::run do
-  unless ARGV.empty?
-    SchedulerAdvisor.send(*ARGV)
-    EM.add_timer(0.5) do
-      EM.stop_event_loop
-    end
-  else
-    puts "no data to send the scheduler was specified"
-    EM.stop
-  end
+unless ARGV.empty?
+  SchedulerAdvisor.advisor = DRb::DRbObject.new_with_uri(uri)
+  SchedulerAdvisor.advice(*ARGV)
+else
+  puts "no data to send the scheduler was specified"
 end
 

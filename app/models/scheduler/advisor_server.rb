@@ -1,43 +1,54 @@
-module Scheduler::AdvisorServer
-  include EventMachine::Protocols::LineProtocol
+require 'drb/drb'
 
-  def receive_line(line)
-    tokens = JSON.parse(line)
-    Rails.logger.debug "Received #{tokens[0]} command with #{tokens[1..-1]}"
+module Scheduler
+  class AdvisorServer
+    include Singleton
 
-    case tokens[0]
-    when 'quit'
+    def self.start
+      DRb.start_service SchedulerAdvisor.uri, instance, safe_level: 1
+    end
+  
+    def method_missing(name, *args)
+      Rails.logger.warn "Received unknown command #{name} with arguments #{args}"
+    end
+
+    def quit
       Rails.logger.info "Quitting per advisor request"
       EM.stop
+    end
 
-    when 'mission_started'
-      mission_id = tokens[1]
+    def mission_started(mission_id)
       mission = Mission.where(id: mission_id).first
       unless mission.nil?
         organization_id = mission.organization_id
         Rails.logger.debug "Organization ##{organization_id}: Mission #{mission.name} was started"
-        Scheduler.organization(organization_id).schedule_mission_check(mission.id)
+        EM.schedule do
+          Scheduler.organization(organization_id).schedule_mission_check(mission.id)
+        end
       end
+    end
 
-    when 'channel_enabled'
-      channel_id = tokens[1]
+    def channel_enabled(channel_id)
       channel = PigeonChannel.where(id: channel_id).first
       unless channel.nil?
         organization_id = channel.organization_id
         Rails.logger.debug "Organization ##{organization_id}: Channel #{channel.name} was enabled"
-        Scheduler.organization(organization_id).schedule_janitor
+        EM.schedule do
+          Scheduler.organization(organization_id).schedule_janitor
+        end
       end
+    end
 
-    when 'candidate_status_updated'
-      candidate_id = tokens[1]
+    def candidate_status_updated(candidate_id)
       candidate = Candidate.where(id: candidate_id).first
       unless candidate.nil?
         mission = candidate.mission
         organization_id = mission.organization_id
         Rails.logger.debug "Organization ##{organization_id}: Candidate #{candidate.volunteer.name} status updated"
-        Scheduler.organization(organization_id).schedule_mission_check(mission.id)
+        EM.schedule do
+          Scheduler.organization(organization_id).schedule_mission_check(mission.id)
+        end
       end
-
     end
   end
 end

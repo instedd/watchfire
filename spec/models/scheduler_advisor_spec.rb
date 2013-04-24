@@ -2,38 +2,34 @@ require 'spec_helper'
 
 describe "SchedulerAdvisor" do
   before(:each) do
-    class DummyAdvisor
-      include SchedulerAdvisor
-    end
-
-    @advisor = DummyAdvisor.new
-    SchedulerAdvisor.stubs(:open).yields(@advisor)
+    @advisor = mock
+    @old_advisor = SchedulerAdvisor.advisor
+    SchedulerAdvisor.advisor = @advisor
   end
 
   after(:each) do
-    SchedulerAdvisor.unstub(:open)
+    SchedulerAdvisor.advisor = @old_advisor
   end
 
   it "should send advice for any method missing" do
-    @advisor.expects(:send_data)
+    @advisor.expects(:foo)
     SchedulerAdvisor.foo
   end
 
   it "should send advice through the advice method" do
-    @advisor.expects(:send_data)
+    @advisor.expects(:foo)
     SchedulerAdvisor.advice 'foo'
   end
 
-  it "should send arguments encoded as new-line terminated JSON" do
-    @advisor.expects(:send_data).with(["foo", 42, "bar"].to_json + "\n")
+  it "should send arguments" do
+    @advisor.expects(:foo).with(42, 'bar')
     SchedulerAdvisor.foo 42, 'bar'
   end
 
   it "should use ActiveModel conversion to send parameters" do
     org = Organization.make!
     
-    @advisor.expects(:send_data)
-      .with(["new_organization", org.to_param].to_json + "\n")
+    @advisor.expects(:new_organization).with(org.to_param)
     SchedulerAdvisor.new_organization org
   end
 end

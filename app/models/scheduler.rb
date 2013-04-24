@@ -10,7 +10,7 @@ module Scheduler
     end
 
     def start
-      EM.start_server "127.0.0.1", SchedulerAdvisor.port, Scheduler::AdvisorServer
+      Scheduler::AdvisorServer.start
 
       Organization.all.each do |org|
         organizations[org.id] = start_organization(org)
