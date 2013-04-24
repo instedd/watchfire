@@ -28,6 +28,8 @@ RSpec.configure do |config|
 
   config.before(:each) do
     Timecop.return
+
+    SchedulerAdvisor.stubs(:open)
   end
 
   # Returns the string to be used for HTTP_AUTHENTICATION header

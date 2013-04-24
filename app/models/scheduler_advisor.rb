@@ -1,6 +1,6 @@
 require 'json'
 
-class SchedulerAdvisor < EM::Connection
+module SchedulerAdvisor
   class << self
     def port
       @port ||= Watchfire::Application.config.scheduler_port.to_i

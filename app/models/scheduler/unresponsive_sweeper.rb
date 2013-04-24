@@ -3,14 +3,6 @@ class Scheduler::UnresponsiveSweeper
     @mission = mission
   end
 
-  def max_sms_retries
-    @max_sms_retries ||= @mission.organization.max_sms_retries
-  end
-
-  def max_voice_retries
-    @max_voice_retries ||= @mission.organization.max_voice_retries
-  end
-
   def sms_timeout
     @sms_timeout ||= @mission.organization.sms_timeout.minutes
   end
@@ -22,10 +14,9 @@ class Scheduler::UnresponsiveSweeper
   def unresponsive_candidates
     @mission.candidates.
       where(:status => :pending).
-      where("last_sms_att IS NULL OR last_sms_att < ?", sms_timeout.ago)
-      where("last_voice_att IS NULL OR last_voice_att < ?", voice_timeout.ago)
-      where("sms_retries >= ?", max_sms_retries).
-      where("voice_retries >= ?", max_voice_retries)
+      where("last_sms_att IS NULL OR last_sms_att < ?", sms_timeout.ago).
+      where("last_voice_att IS NULL OR last_voice_att < ?", voice_timeout.ago).
+      reject { |c| c.has_retries? }
   end
 
   def perform

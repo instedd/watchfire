@@ -2,7 +2,11 @@ require 'spec_helper'
 
 describe "SchedulerAdvisor" do
   before(:each) do
-    @advisor = SchedulerAdvisor.new nil
+    class DummyAdvisor
+      include SchedulerAdvisor
+    end
+
+    @advisor = DummyAdvisor.new
     SchedulerAdvisor.stubs(:open).yields(@advisor)
   end
 
