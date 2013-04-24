@@ -17,9 +17,10 @@ class Scheduler::SmsSender
   def find_candidates_to_sms
     @mission.candidates.
       where(:status => :pending).
-      where("last_sms_att IS NULL OR last_sms_att < ?", sms_timeout.ago)
+      where("last_sms_att IS NULL OR last_sms_att < ?", sms_timeout.ago).
       where("sms_retries < ?", max_sms_retries).
-      includes(:volunteer => [:sms_channels])
+      joins(:volunteer => [:sms_channels]).
+      readonly(false).uniq
   end
 
   def send_sms_to_candidate(candidate)
@@ -44,15 +45,18 @@ class Scheduler::SmsSender
     end
   end
 
-  def calculate_next_time
+  def next_deadline
     # get the time at which we should perform a new SMS send
-    older = @mission.candidates.where(:status => :pending).
+    older = @mission.candidates.
+      where(:status => :pending).
+      joins(:volunteer => [:sms_channels]).
+      where("sms_retries < ?", max_sms_retries).
       order("last_sms_att ASC").first
     if older
       if older.last_sms_att.nil?
         Time.now
       else
-        older.last_sms_att.in sms_timeout
+        older.last_sms_att.in(sms_timeout + 1.second)
       end
     else
       nil
