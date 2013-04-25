@@ -11,12 +11,14 @@ module Scheduler
     end
 
     describe "find_candidates_to_sms" do
-      it "should return pending candidates" do
+      it "should return only active and pending candidates" do
         @c1 = Candidate.make! mission: @mission, status: :pending
         @c2 = Candidate.make! mission: @mission, status: :denied
+        @c3 = Candidate.make! mission: @mission, status: :pending, active: false
 
         @sender.find_candidates_to_sms.should include(@c1)
         @sender.find_candidates_to_sms.should_not include(@c2)
+        @sender.find_candidates_to_sms.should_not include(@c3)
       end
 
       it "should return candidates who we never sent an SMS to" do

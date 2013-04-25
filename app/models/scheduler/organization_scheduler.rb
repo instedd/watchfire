@@ -30,16 +30,26 @@ class Scheduler::OrganizationScheduler
     end
   end
 
+  def has_sms_channels?
+    organization.pigeon_channels.nuntium.enabled.any?
+  end
+
+  def has_voice_channels?
+    organization.pigeon_channels.verboice.enabled.any?
+    # FIXME
+    false
+  end
+
+  def has_channels?
+    organization.pigeon_channels.enabled.any?
+  end
+
 private
 
   def missions
     @missions ||= Hash.new do |hash, id|
       hash[id] = { check: nil, sms: nil, sweep: nil }
     end
-  end
-
-  def has_channels?
-    organization.pigeon_channels.enabled.any?
   end
 
   def active_missions
@@ -67,7 +77,7 @@ private
 
     mission.check_for_more_volunteers
 
-    schedule_next_sms_send(mission)
+    schedule_next_sms_send(mission) if has_sms_channels?
     schedule_next_unresponsive_sweep(mission)
   end
 
@@ -75,7 +85,7 @@ private
     timers = missions[mission.id]
     EM.cancel_timer(timers[:sms]) unless timers[:sms].nil?
     
-    sms_sender = Scheduler::SmsSender.new(mission)
+    sms_sender = Scheduler::SmsSender.new(mission, self)
     next_sms_deadline = sms_sender.next_deadline
     if next_sms_deadline
       if next_sms_deadline.past?
@@ -96,12 +106,13 @@ private
   end
 
   def send_sms(mission_id)
+    return unless has_sms_channels?
     mission = organization.missions.where(id: mission_id).first
     return if mission.nil? || !mission.is_running?
 
     puts "Sending SMSs for #{mission.name}"
 
-    sender = Scheduler::SmsSender.new(mission)
+    sender = Scheduler::SmsSender.new(mission, self)
     sender.perform
 
     schedule_next_sms_send mission
@@ -112,13 +123,13 @@ private
     timers = missions[mission.id]
     EM.cancel_timer(timers[:sweep]) unless timers[:sweep].nil?
     
-    sweeper = Scheduler::UnresponsiveSweeper.new(mission)
+    sweeper = Scheduler::UnresponsiveSweeper.new(mission, self)
     next_sweep_deadline = sweeper.next_deadline
     if next_sweep_deadline
       if next_sweep_deadline.past?
         puts "Will mark unresponsive candidates next for #{mission.name}"
       else
-        puts "Will mark unresponsive candidates at #{next_sms_deadline} for #{mission.name}"
+        puts "Will mark unresponsive candidates at #{next_sweep_deadline} for #{mission.name}"
       end
       timeout = if next_sweep_deadline.past? 
                    0
@@ -138,7 +149,7 @@ private
 
     puts "Marking unresponsive candidates for #{mission.name}"
 
-    sweeper = Scheduler::UnresponsiveSweeper.new(mission)
+    sweeper = Scheduler::UnresponsiveSweeper.new(mission, self)
     if sweeper.perform
       schedule_mission_check mission_id
     end

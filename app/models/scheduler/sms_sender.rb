@@ -2,8 +2,9 @@
 # have remaining SMS retries
 #
 class Scheduler::SmsSender
-  def initialize(mission)
+  def initialize(mission, scheduler)
     @mission = mission
+    @scheduler = scheduler
   end
 
   def max_sms_retries
@@ -15,9 +16,8 @@ class Scheduler::SmsSender
   end
 
   def find_candidates_to_sms
-    @mission.candidates.
-      where(:status => :pending).
-      where("last_sms_att IS NULL OR last_sms_att < ?", sms_timeout.ago).
+    @mission.candidates_to_call.
+      where("last_sms_att IS NULL OR last_sms_att <= ?", sms_timeout.ago).
       where("sms_retries < ?", max_sms_retries).
       joins(:volunteer => [:sms_channels]).
       readonly(false).uniq
@@ -33,6 +33,8 @@ class Scheduler::SmsSender
   end
 
   def perform
+    return unless @scheduler.has_sms_channels?
+
     # find pending candidates who still have SMS retries and that we have
     # never messaged or we have messaged before timeout minutes ago
     candidates = find_candidates_to_sms
@@ -46,9 +48,10 @@ class Scheduler::SmsSender
   end
 
   def next_deadline
+    return nil unless @scheduler.has_sms_channels?
+
     # get the time at which we should perform a new SMS send
-    older = @mission.candidates.
-      where(:status => :pending).
+    older = @mission.candidates_to_call.
       joins(:volunteer => [:sms_channels]).
       where("sms_retries < ?", max_sms_retries).
       order("last_sms_att ASC").first
@@ -56,7 +59,7 @@ class Scheduler::SmsSender
       if older.last_sms_att.nil?
         Time.now
       else
-        older.last_sms_att.in(sms_timeout + 1.second)
+        older.last_sms_att.in(sms_timeout)
       end
     else
       nil

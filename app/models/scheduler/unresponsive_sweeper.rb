@@ -1,6 +1,7 @@
 class Scheduler::UnresponsiveSweeper
-  def initialize(mission)
+  def initialize(mission, scheduler)
     @mission = mission
+    @scheduler = scheduler
   end
 
   def sms_timeout
@@ -12,22 +13,29 @@ class Scheduler::UnresponsiveSweeper
   end
 
   def max_sms_retries
-    @max_sms_retries ||= @mission.organization.max_sms_retries
+    @max_sms_retries ||= if @scheduler.has_sms_channels? 
+                           @mission.organization.max_sms_retries
+                         else
+                           0
+                         end
   end
 
   def max_voice_retries
-    @max_voice_retries || @mission.organization.max_voice_retries
-  end
-
-  def pending_candidates
-    @mission.candidates.where(:status => :pending)
+    @max_voice_retries ||= if @scheduler.has_voice_channels?
+                             @mission.organization.max_voice_retries
+                           else
+                             0
+                           end
   end
 
   def unresponsive_candidates
-    pending_candidates.
-      where("last_sms_att IS NULL OR last_sms_att < ?", sms_timeout.ago).
-      where("last_voice_att IS NULL OR last_voice_att < ?", voice_timeout.ago).
-      reject { |c| c.has_retries? }
+    @mission.candidates_to_call.
+      where("last_sms_att IS NULL OR last_sms_att <= ?", sms_timeout.ago).
+      where("last_voice_att IS NULL OR last_voice_att <= ?", voice_timeout.ago).
+      reject { |c| 
+        (c.has_sms? && c.sms_retries < max_sms_retries) ||
+        (c.has_voice? && c.voice_retries < max_voice_retries)
+      }
   end
 
   def perform
@@ -41,10 +49,13 @@ class Scheduler::UnresponsiveSweeper
   end
 
   def next_deadline
-    next_unresponsives = pending_candidates.
+    next_unresponsives = @mission.candidates_to_call.
       where("last_sms_att IS NULL OR sms_retries >= ?", max_sms_retries).
       where("last_voice_att IS NULL OR voice_retries >= ?", max_voice_retries).
-      reject { |c| c.has_retries? }
+      reject { |c| 
+        (c.has_sms? && c.sms_retries < max_sms_retries) ||
+        (c.has_voice? && c.voice_retries < max_voice_retries)
+      }
 
     next_sms = next_unresponsives.
       reject { |c| c.last_sms_att.nil? }.
