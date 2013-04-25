@@ -1,14 +1,11 @@
 class VerboiceController < ApplicationController
-  expose(:candidate) { Candidate.find_by_call_session_id params[:CallSid] }
+  expose(:current_call) { CurrentCall.find_by_session_id params[:CallSid] }
+  expose(:candidate) { current_call.try(:candidate) }
+
+  before_filter :forward_call_if_unknown, except: [:status_callback]
 
   def plan
-    if candidate.nil?
-      # It's an unknown call session, find a mission to forward the call to
-      @mission = find_mission_to_forward_call
-      @channel = params[:Channel]
-      @from = params[:From]
-      render 'plan_forward'
-    elsif candidate.mission.confirm_human?
+    if candidate.mission.confirm_human?
       render 'plan_before_confirmation'
     else
       render 'plan_no_confirmation'
@@ -30,22 +27,34 @@ class VerboiceController < ApplicationController
 
     # Update status according to response
     response = match[1]
-    candidate.answered_from_voice! response, Call.find_by_session_id(params[:CallSid]).voice_number
+    candidate.answered_from_voice! response, current_call.voice_number
   end
 
   def status_callback
-    candidate.last_call_status = params[:CallStatus]
-    candidate.save!
+    SchedulerAdvisor.call_status_update params[:CallSid], params[:CallStatus]
+    unless candidate.nil?
+      candidate.update_attribute :last_call_status, params[:CallStatus]
+    end
 
     head :ok
   end
 
 private
 
+  def forward_call_if_unknown
+    if current_call.nil?
+      # It's an unknown call session, find a mission to forward the call to
+      @mission = find_mission_to_forward_call
+      @channel = params[:Channel]
+      @from = params[:From]
+      render 'plan_forward'
+    end
+  end
+
   def find_mission_to_forward_call
-    last_known_call = Call.find_by_voice_number(params[:From])
-    if last_known_call
-      mission = last_known_call.candidate.mission
+    last_called_candidate = Candidate.find_last_for_voice_number(params[:From])
+    if last_called_candidate
+      mission = last_called_candidate.mission
     else
       channel = PigeonChannel.verboice.find_by_pigeon_name(params[:Channel])
       missions = Mission.where(:status => :running)

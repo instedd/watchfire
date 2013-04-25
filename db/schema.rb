@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130419211104) do
+ActiveRecord::Schema.define(:version => 20130425152836) do
 
   create_table "calls", :force => true do |t|
     t.string   "session_id"
@@ -50,6 +50,21 @@ ActiveRecord::Schema.define(:version => 20130419211104) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  create_table "current_calls", :force => true do |t|
+    t.integer  "pigeon_channel_id"
+    t.integer  "candidate_id"
+    t.string   "session_id"
+    t.string   "call_status"
+    t.string   "voice_number"
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
+  end
+
+  add_index "current_calls", ["candidate_id"], :name => "index_current_calls_on_candidate_id"
+  add_index "current_calls", ["pigeon_channel_id"], :name => "index_current_calls_on_pigeon_channel_id"
+  add_index "current_calls", ["session_id"], :name => "index_current_calls_on_session_id"
+  add_index "current_calls", ["voice_number"], :name => "index_current_calls_on_voice_number"
 
   create_table "delayed_jobs", :force => true do |t|
     t.integer  "priority",   :default => 0

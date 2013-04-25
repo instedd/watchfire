@@ -7,6 +7,7 @@ class Candidate < ActiveRecord::Base
   belongs_to :allocated_skill, :class_name => "Skill"
 
   has_many :calls, :dependent => :destroy
+  has_many :current_calls, :dependent => :destroy
 
   validates_presence_of :mission_id, :volunteer_id, :voice_retries, :sms_retries
 
@@ -21,8 +22,12 @@ class Candidate < ActiveRecord::Base
     Candidate.joins(:volunteer => [:sms_channels]).where(:channels =>{:address => number}).order('last_sms_att DESC').readonly(false).first
   end
 
+  def self.find_last_for_voice_number number
+    Candidate.joins(:volunteer => [:voice_channels]).where(:channels =>{:address => number}).order('last_voice_att DESC').readonly(false).first
+  end
+
   def self.find_by_call_session_id id
-    Call.find_by_session_id(id).candidate rescue nil
+    CurrentCall.find_by_session_id(id).candidate rescue nil
   end
 
   def has_sms?

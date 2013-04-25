@@ -158,8 +158,8 @@ describe Candidate do
   describe "find by call session id" do
     before(:each) do
       @candidate = Candidate.make!
-      @call_1 = Call.make! :candidate => @candidate
-      @call_2 = Call.make! :candidate => @candidate
+      @call_1 = CurrentCall.make! :candidate => @candidate
+      @call_2 = CurrentCall.make! :candidate => @candidate
     end
 
     it "should find candidate by any of its calls" do

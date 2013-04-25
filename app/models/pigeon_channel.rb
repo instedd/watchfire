@@ -1,6 +1,8 @@
 class PigeonChannel < ActiveRecord::Base
   belongs_to :organization
 
+  has_many :current_calls, :dependent => :destroy
+
   enum_attr :channel_type, %w(^verboice nuntium)
 
   attr_accessible :description, :name, :enabled
@@ -14,6 +16,17 @@ class PigeonChannel < ActiveRecord::Base
 
   before_save :prepare_advice
   after_commit :advice_scheduler
+
+  def is_verboice?
+    channel_type == :verboice
+  end
+
+  def is_nuntium?
+    channel_type == :nuntium
+  end
+
+  alias :is_voice? :is_verboice?
+  alias :is_sms? :is_nuntium?
 
 private
 
