@@ -33,11 +33,6 @@ class Candidate < ActiveRecord::Base
     volunteer.voice_channels.size > 0
   end
 
-  def call
-    #Delayed::Job.enqueue(SmsJob.new(self.id)) if self.has_sms?
-    #Delayed::Job.enqueue(VoiceJob.new(self.id)) if self.has_voice?
-  end
-
   def organization
     volunteer.organization
   end
@@ -122,7 +117,6 @@ class Candidate < ActiveRecord::Base
   def save_and_check!
     self.save!
     SchedulerAdvisor.candidate_status_updated self
-    #mission.check_for_more_volunteers
   end
 
   def init

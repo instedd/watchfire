@@ -7,7 +7,10 @@ module Scheduler
 
       @organization = Organization.make! sms_timeout: 5, max_sms_retries: 3
       @mission = Mission.make! organization: @organization
-      @sender = Scheduler::SmsSender.new(@mission)
+    
+      @scheduler = mock
+      @scheduler.stubs(:has_sms_channels?).returns(true)
+      @sender = Scheduler::SmsSender.new(@mission, @scheduler)
     end
 
     describe "find_candidates_to_sms" do

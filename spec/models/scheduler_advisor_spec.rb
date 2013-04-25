@@ -2,13 +2,11 @@ require 'spec_helper'
 
 describe "SchedulerAdvisor" do
   before(:each) do
-    @advisor = mock
-    @old_advisor = SchedulerAdvisor.advisor
-    SchedulerAdvisor.advisor = @advisor
+    @advisor = push_scheduler_advisor
   end
 
   after(:each) do
-    SchedulerAdvisor.advisor = @old_advisor
+    pop_scheduler_advisor
   end
 
   it "should send advice for any method missing" do

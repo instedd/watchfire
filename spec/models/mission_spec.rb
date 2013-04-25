@@ -1,25 +1,23 @@
 require 'spec_helper'
 
 describe Mission do
+  describe "call volunteers" do
+    before(:each) do
+      @advisor = push_scheduler_advisor
+    end
 
-  it "should call volunteers" do
-    mission = Mission.new
-    mission.stubs(:save!).returns(true)
+    after(:each) do
+      pop_scheduler_advisor
+    end
 
-    c1 = mock('c1')
-    c2 = mock('c2')
+    it "should advice the scheduler" do
+      mission = Mission.make!
 
-    mission.expects(:candidates_to_call).returns([c2])
-		mission.expects(:pending_candidates).never
+      @advisor.expects(:mission_started).with(mission.to_param)
 
-		c1.stubs(:paused).returns(true)
-
-    c1.expects(:call).never
-    c2.expects(:call)
-
-    mission.call_volunteers
-
-    mission.is_running?.should be true
+      mission.call_volunteers
+      mission.is_running?.should be true
+    end
   end
 
   %w(pending confirmed).each do |status|

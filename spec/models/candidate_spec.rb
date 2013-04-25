@@ -48,29 +48,6 @@ describe Candidate do
     end
   end
 
-  describe "call" do
-    before(:each) do
-      @candidate = Candidate.new
-      @candidate.stubs(:id).returns(10)
-      @candidate.stubs(:has_sms?).returns(false)
-      @candidate.stubs(:has_voice?).returns(false)
-    end
-
-    it "should send sms if it has sms" do
-      @candidate.expects(:has_sms?).returns(true)
-      Delayed::Job.expects(:enqueue).with(SmsJob.new(@candidate.id))
-
-      @candidate.call
-    end
-
-    it "should call if it has voice" do
-      @candidate.expects(:has_voice?).returns(true)
-      Delayed::Job.expects(:enqueue).with(VoiceJob.new(@candidate.id))
-
-      @candidate.call
-    end
-  end
-
   describe "has retries" do
     before(:each) do
       @organization = Organization.new :max_sms_retries => 10, :max_voice_retries => 20
@@ -128,8 +105,13 @@ describe Candidate do
       @candidate = Candidate.make!
       @sms_number = @candidate.volunteer.sms_channels.first.address
       @voice_number = @candidate.volunteer.voice_channels.first.address
-      @candidate.mission.expects(:check_for_more_volunteers)
+      @advisor = push_scheduler_advisor
+      @advisor.expects(:candidate_status_updated)
       Timecop.freeze
+    end
+
+    after(:each) do
+      pop_scheduler_advisor
     end
 
     it "should handle 'yes' response from sms" do
