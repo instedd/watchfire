@@ -105,6 +105,13 @@ class Scheduler::OrganizationScheduler
     voice_channels.find { |c| c.has_slots_available? }
   end
 
+  def free_idle_call_slots
+    CurrentCall.where("updated_at < ?", CALL_TIMEOUT.ago).each do |call|
+      call.timeout
+      call.destroy
+    end
+  end
+
 private
 
   def missions
@@ -134,13 +141,6 @@ private
     schedule_try_call
   end
 
-  def free_idle_call_slots
-    CurrentCall.where("updated_at < ?", CALL_TIMEOUT.ago).each do |call|
-      call.timeout
-      call.destroy
-    end
-  end
-
   def mission_check(mission_id)
     mission = organization.missions.where(id: mission_id).first
     return if mission.nil? || !mission.is_running?
@@ -149,8 +149,10 @@ private
 
     mission.check_for_more_volunteers
 
-    schedule_next_sms_send(mission) if has_sms_channels?
-    schedule_next_unresponsive_sweep(mission)
+    if mission.is_running?
+      schedule_next_sms_send(mission) if has_sms_channels?
+      schedule_next_unresponsive_sweep(mission)
+    end
   end
 
   def schedule_next_sms_send(mission)
