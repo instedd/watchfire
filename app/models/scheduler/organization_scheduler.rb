@@ -1,5 +1,6 @@
 class Scheduler::OrganizationScheduler
   JANITOR_INTERVAL = 60*10
+  CALL_TIMEOUT = 10.minutes
 
   attr_reader :organization
 
@@ -30,18 +31,78 @@ class Scheduler::OrganizationScheduler
     end
   end
 
+  def schedule_try_call
+    return unless call_slots_available?
+
+    EM.cancel_timer(@try_call_timer) unless @try_call_timer.nil?
+    @try_call_timer = nil
+
+    call_deadline = Scheduler::CallPlacer.new(self).next_deadline
+    return if call_deadline.nil?
+
+    timeout = if call_deadline.past?
+                puts "Scheduling place call next for #{organization.name}"
+                0
+              else
+                puts "Scheduling place call at #{call_deadline} for #{organization.name}"
+                call_deadline - Time.now
+              end
+    @try_call_timer = EM.add_timer(timeout) do
+      @try_call_timer = nil
+      Scheduler::CallPlacer.new(self).perform
+      schedule_try_call
+    end
+  end
+
+  def sms_channels
+    @sms_channels ||= organization.pigeon_channels.nuntium.enabled
+  end
+
   def has_sms_channels?
-    organization.pigeon_channels.nuntium.enabled.any?
+    sms_channels.any?
+  end
+
+  def voice_channels
+    @voice_channels ||= organization.pigeon_channels.verboice.enabled
   end
 
   def has_voice_channels?
     organization.pigeon_channels.verboice.enabled.any?
-    # FIXME
-    false
   end
 
   def has_channels?
     organization.pigeon_channels.enabled.any?
+  end
+
+  def call_slots_available?
+    has_voice_channels? && voice_channels.any?(&:has_slots_available?)
+  end
+
+  def call_status_update(session_id, call_status)
+    call = CurrentCall.find_by_session_id(session_id)
+    return if call.nil?
+
+    case call_status
+    when 'completed', 'failed'
+      # call finished -> free slot
+      if call_status == 'failed'
+        call.fail
+      end
+      call.destroy
+      schedule_try_call
+    else
+      call.update_attribute :call_status, call_status
+    end
+  end
+
+  def next_sms_channel
+    @last_sms_channel_used = sms_channels.cycle(2).drop_while { |c|
+      c != @last_sms_channel_used
+    }.second || sms_channels.first
+  end
+
+  def next_voice_channel
+    voice_channels.find { |c| c.has_slots_available? }
   end
 
 private
@@ -56,9 +117,11 @@ private
     organization.missions.where(:status => :running)
   end
 
-
   def janitor
     organization.reload
+    @sms_channels = nil
+    @voice_channels = nil
+
     puts "Periodic job for #{organization.name}"
 
     active_missions.each do |mission|
@@ -66,8 +129,17 @@ private
       timers = missions[mission.id]
       schedule_mission_check(mission.id)
     end
+
+    free_idle_call_slots
+    schedule_try_call
   end
 
+  def free_idle_call_slots
+    CurrentCall.where("updated_at < ?", CALL_TIMEOUT.ago).each do |call|
+      call.timeout
+      call.destroy
+    end
+  end
 
   def mission_check(mission_id)
     mission = organization.missions.where(id: mission_id).first

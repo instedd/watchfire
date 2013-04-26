@@ -17,16 +17,20 @@ class PigeonChannel < ActiveRecord::Base
   before_save :prepare_advice
   after_commit :advice_scheduler
 
-  def is_verboice?
+  def verboice?
     channel_type == :verboice
   end
 
-  def is_nuntium?
+  def nuntium?
     channel_type == :nuntium
   end
 
-  alias :is_voice? :is_verboice?
-  alias :is_sms? :is_nuntium?
+  alias_method :voice?, :verboice?
+  alias_method :sms?, :nuntium?
+
+  def has_slots_available?
+    current_calls.count < limit
+  end
 
 private
 

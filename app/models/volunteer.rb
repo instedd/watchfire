@@ -70,6 +70,18 @@ class Volunteer < ActiveRecord::Base
     voice_channels.reject { |c| c.marked_for_destruction? }.map(&:address).include?(number)
   end
 
+  def has_voice?
+    voice_channels.any?
+  end
+
+  def ordered_voice_numbers
+    voice_channels.sort_by(&:id).map(&:address)
+  end
+
+  def is_last_voice_number?(number)
+    ordered_voice_numbers.last == number
+  end
+
   def sms_numbers
     self.sms_channels.reject{|c|c.marked_for_destruction?}.map(&:address).join(', ')
   end

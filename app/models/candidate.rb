@@ -78,6 +78,12 @@ class Candidate < ActiveRecord::Base
     self.calls.order('created_at DESC').first
   end
 
+  def next_number_to_call
+    numbers = volunteer.ordered_voice_numbers.cycle(2)
+    last_index = numbers.find_index(last_voice_number) || -1
+    numbers.to_a[last_index + 1]
+  end
+
   def enable!
     self.active = true
     self.save!

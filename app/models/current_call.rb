@@ -8,10 +8,21 @@ class CurrentCall < ActiveRecord::Base
 
   validate :is_voice_channel
 
+  def timeout
+    self.fail
+  end
+
+  def fail
+    return unless candidate.active? && candidate.pending?
+    unless candidate.has_voice_retries?
+      candidate.no_answer!
+    end
+  end
+
 private
 
   def is_voice_channel
-    unless pigeon_channel.is_voice?
+    unless pigeon_channel.voice?
       errors[:pigeon_channel] << "must be a voice channel"
     end
   end

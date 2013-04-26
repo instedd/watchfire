@@ -41,11 +41,16 @@ module Mission::AllocationConcern
     end
 
     def run
+      Hash[run_all]
+    end
+
+    def run_all
       begin
         recompute_risks
       end while allocate_one
-
-      Hash[@slots.map do |slot| slot_output(slot) end]
+      @slots.map do |slot|
+        slot_output(slot) 
+      end
     end
 
     def run_once
@@ -131,14 +136,8 @@ module Mission::AllocationConcern
   end
 
   def incremental_allocation
-    # allocate pending volunteers
-    algo_pending = RiskBasedAlgorithm.new(pending_volunteers)
-    mission_skills.each do |ms|
-      still_needed = ms.still_needed / available_ratio
-      algo_pending.add_requirement ms.skill, still_needed
-    end
-    pending_allocations = algo_pending.run
-    
+    pending_allocations = Hash[pending_volunteers_allocation]
+
     # now run again against a new pool of volunteers to try to fill in the
     # remaining pending slots
     algo_incremental = RiskBasedAlgorithm.new(obtain_volunteer_pool(volunteers))
@@ -148,6 +147,16 @@ module Mission::AllocationConcern
       algo_incremental.add_requirement ms.skill, still_needed
     end
     algo_incremental.run
+  end
+
+  def pending_volunteers_allocation
+    # allocate pending volunteers
+    algo_pending = RiskBasedAlgorithm.new(pending_volunteers)
+    mission_skills.each do |ms|
+      still_needed = ms.still_needed / available_ratio
+      algo_pending.add_requirement ms.skill, still_needed
+    end
+    algo_pending.run_all
   end
 
   def obtain_initial_volunteers

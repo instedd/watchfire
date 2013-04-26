@@ -50,6 +50,13 @@ module Scheduler
         end
       end
     end
+
+    def call_status_update(session_id, call_status)
+      Rails.logger.debug "Call status update for call #{session_id} with status #{call_status}"
+      EM.schedule do
+        Scheduler.call_status_update session_id, call_status
+      end
+    end
   end
 end
 
