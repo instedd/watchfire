@@ -46,4 +46,6 @@ group :development, :test do
   gem 'selenium-webdriver'
   gem 'nokogiri'
   gem 'xmpp4r'
+  gem 'capybara'
+  gem 'database_cleaner'
 end
