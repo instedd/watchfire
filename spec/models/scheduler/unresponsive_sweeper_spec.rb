@@ -89,10 +89,10 @@ describe Scheduler::UnresponsiveSweeper do
       @sweeper.next_deadline.should be_nil
     end
 
-    it "when there are no more retries left, should return the earliest deadline of sms and voice" do
+    it "when there are no more retries left, should return the latest deadline of sms and voice" do
       @c1 = make_unresponsive_candidate last_sms_att: 1.minutes.ago, 
         last_voice_att: 2.minutes.ago
-      @sweeper.next_deadline.should eq(3.minutes.from_now)
+      @sweeper.next_deadline.should eq(4.minutes.from_now)
     end
 
     it "when the candidates have no SMS, should ignore SMS retries" do

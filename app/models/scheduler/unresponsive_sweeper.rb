@@ -72,9 +72,9 @@ class Scheduler::UnresponsiveSweeper
       first
     next_voice = next_voice.last_voice_att + voice_timeout if next_voice
 
-    if next_sms.nil? || (next_voice && next_sms > next_voice)
+    if next_sms.nil? || (next_voice && next_sms < next_voice)
       next_voice
-    elsif next_voice.nil? || (next_sms && next_voice > next_sms)
+    elsif next_voice.nil? || (next_sms && next_voice < next_sms)
       next_sms
     else
       nil
