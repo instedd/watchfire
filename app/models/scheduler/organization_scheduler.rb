@@ -140,6 +140,7 @@ class Scheduler::OrganizationScheduler
     if mission.is_running?
       schedule_next_sms_send(mission) if has_sms_channels?
       schedule_next_unresponsive_sweep(mission)
+      schedule_try_call if call_slots_available?
     end
   end
 

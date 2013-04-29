@@ -131,5 +131,11 @@ describe Scheduler::OrganizationScheduler do
       @scheduler.expects(:schedule_next_sms_send).never
       @scheduler.mission_check(@mission.id)
     end
+
+    it "should enqueue a try call if there are slots available" do
+      PigeonChannel.make!(:verboice, organization: @organization)
+      @scheduler.expects(:schedule_try_call)
+      @scheduler.mission_check(@mission.id)
+    end
   end
 end
