@@ -4,7 +4,6 @@ describe "account" do
 
   it "should login", js:true do
     user = User.make!
-    #(:email => 'user@manas.com.ar', :password => '123456789')
     visit user_session_path
     within "form#new_user" do 
       fill_in  "Email", :with => user.email 
