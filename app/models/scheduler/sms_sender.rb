@@ -25,7 +25,7 @@ class Scheduler::SmsSender
 
   def send_sms_to_candidate(candidate)
     volunteer = candidate.volunteer
-    puts "Sending SMS to #{volunteer.name} at #{volunteer.sms_numbers}"
+    Rails.logger.debug "Sending SMS to #{volunteer.name} at #{volunteer.sms_numbers}"
 
     candidate.sms_retries += 1
     candidate.last_sms_att = Time.now.utc

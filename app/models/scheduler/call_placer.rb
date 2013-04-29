@@ -24,7 +24,7 @@ class Scheduler::CallPlacer
     missions = missions_by_latest_voice_attempt.to_a
     candidate = nil
     missions.find do |mission|
-      pending_allocations = mission.pending_volunteers_allocation
+      pending_allocations = mission.pending_allocation_by_risk
       volunteers = pending_allocations.map(&:second).flatten
 
       # volunteers now contains a list of people to call
@@ -41,9 +41,9 @@ class Scheduler::CallPlacer
       # find the first candidate that has retries left and his timeout has
       # expired (after we tried all his voice numbers)
       candidate = candidates.find do |c|
-        c.has_voice_retries? && 
+        c.active? && c.has_voice_retries? && 
           (c.last_voice_att.nil? || 
-           c.last_voice_att < voice_timeout.ago || 
+           c.last_voice_att <= voice_timeout.ago || 
            !c.volunteer.is_last_voice_number?(c.last_voice_number))
       end
     end
@@ -53,7 +53,7 @@ class Scheduler::CallPlacer
   def place_call(candidate, channel)
     number = candidate.next_number_to_call
 
-    puts "Calling #{candidate.volunteer.name} at #{number} for mission #{candidate.mission.name} through #{channel.name}"
+    Rails.logger.debug "Calling #{candidate.volunteer.name} at #{number} for mission #{candidate.mission.name} through #{channel.name}"
 
     call = candidate.current_calls.build 
     call.pigeon_channel = channel

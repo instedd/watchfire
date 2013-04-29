@@ -265,6 +265,22 @@ describe Mission::AllocationConcern do
     end
   end
 
+  describe "pending allocation by risk" do
+    it "should return mission skills ordered by risk" do
+      @vol_at5 = make_volunteer @mission.endpoint(0,5)
+
+      @mission.set_candidates [@vol_at1, @vol_at5]
+      @mission.add_mission_skill skill: @skill1
+      @mission.save!
+
+      alloc = @mission.pending_allocation_by_risk
+      alloc.should be_an(Array)
+      alloc.size.should eq(2)
+      alloc[0].should eq([@skill1.id, [@vol_at1]])
+      alloc[1].should eq([nil, [@vol_at5]])
+    end
+  end
+
   describe "check for more volunteers" do
     it "should add new pending candidates if required" do
       @mission.expects(:obtain_more_volunteers).returns([@vol_at1])

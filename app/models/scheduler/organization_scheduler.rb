@@ -9,7 +9,7 @@ class Scheduler::OrganizationScheduler
   end
 
   def start
-    puts "Starting scheduler for #{organization.name}"
+    Rails.logger.info "Starting scheduler for #{organization.name}"
     schedule_janitor
   end
 
@@ -41,10 +41,10 @@ class Scheduler::OrganizationScheduler
     return if call_deadline.nil?
 
     timeout = if call_deadline.past?
-                puts "Scheduling place call next for #{organization.name}"
+                Rails.logger.debug "Scheduling place call next for #{organization.name}"
                 0
               else
-                puts "Scheduling place call at #{call_deadline} for #{organization.name}"
+                Rails.logger.debug "Scheduling place call at #{call_deadline} for #{organization.name}"
                 call_deadline - Time.now
               end
     @try_call_timer = EM.add_timer(timeout) do
@@ -112,6 +112,37 @@ class Scheduler::OrganizationScheduler
     end
   end
 
+  def janitor
+    organization.reload
+    @sms_channels = nil
+    @voice_channels = nil
+
+    Rails.logger.debug "Periodic job for #{organization.name}"
+
+    active_missions.each do |mission|
+      Rails.logger.debug "Scheduling mission check for #{mission.name}"
+      timers = missions[mission.id]
+      schedule_mission_check(mission.id)
+    end
+
+    free_idle_call_slots
+    schedule_try_call
+  end
+
+  def mission_check(mission_id)
+    mission = find_active_mission(mission_id)
+    return if mission.nil?
+
+    Rails.logger.debug "Mission check for #{mission.name}"
+
+    mission.check_for_more_volunteers
+
+    if mission.is_running?
+      schedule_next_sms_send(mission) if has_sms_channels?
+      schedule_next_unresponsive_sweep(mission)
+    end
+  end
+
 private
 
   def missions
@@ -124,35 +155,8 @@ private
     organization.missions.where(:status => :running)
   end
 
-  def janitor
-    organization.reload
-    @sms_channels = nil
-    @voice_channels = nil
-
-    puts "Periodic job for #{organization.name}"
-
-    active_missions.each do |mission|
-      puts "Scheduling mission check for #{mission.name}"
-      timers = missions[mission.id]
-      schedule_mission_check(mission.id)
-    end
-
-    free_idle_call_slots
-    schedule_try_call
-  end
-
-  def mission_check(mission_id)
-    mission = organization.missions.where(id: mission_id).first
-    return if mission.nil? || !mission.is_running?
-
-    puts "Mission check for #{mission.name}"
-
-    mission.check_for_more_volunteers
-
-    if mission.is_running?
-      schedule_next_sms_send(mission) if has_sms_channels?
-      schedule_next_unresponsive_sweep(mission)
-    end
+  def find_active_mission(mission_id)
+    active_missions.where(id: mission_id).first
   end
 
   def schedule_next_sms_send(mission)
@@ -163,9 +167,9 @@ private
     next_sms_deadline = sms_sender.next_deadline
     if next_sms_deadline
       if next_sms_deadline.past?
-        puts "Will send SMS next for #{mission.name}"
+        Rails.logger.debug "Will send SMS next for #{mission.name}"
       else
-        puts "Will send SMS again at #{next_sms_deadline} for #{mission.name}"
+        Rails.logger.debug "Will send SMS again at #{next_sms_deadline} for #{mission.name}"
       end
       timeout = if next_sms_deadline.past? 
                    0
@@ -181,10 +185,10 @@ private
 
   def send_sms(mission_id)
     return unless has_sms_channels?
-    mission = organization.missions.where(id: mission_id).first
-    return if mission.nil? || !mission.is_running?
+    mission = find_active_mission(mission_id)
+    return if mission.nil?
 
-    puts "Sending SMSs for #{mission.name}"
+    Rails.logger.debug "Sending SMSs for #{mission.name}"
 
     sender = Scheduler::SmsSender.new(mission, self)
     sender.perform
@@ -201,9 +205,9 @@ private
     next_sweep_deadline = sweeper.next_deadline
     if next_sweep_deadline
       if next_sweep_deadline.past?
-        puts "Will mark unresponsive candidates next for #{mission.name}"
+        Rails.logger.debug "Will mark unresponsive candidates next for #{mission.name}"
       else
-        puts "Will mark unresponsive candidates at #{next_sweep_deadline} for #{mission.name}"
+        Rails.logger.debug "Will mark unresponsive candidates at #{next_sweep_deadline} for #{mission.name}"
       end
       timeout = if next_sweep_deadline.past? 
                    0
@@ -218,10 +222,10 @@ private
   end
 
   def mark_unresponsives(mission_id)
-    mission = organization.missions.where(id: mission_id).first
-    return if mission.nil? || !mission.is_running?
+    mission = find_active_mission(mission_id)
+    return if mission.nil?
 
-    puts "Marking unresponsive candidates for #{mission.name}"
+    Rails.logger.debug "Marking unresponsive candidates for #{mission.name}"
 
     sweeper = Scheduler::UnresponsiveSweeper.new(mission, self)
     if sweeper.perform

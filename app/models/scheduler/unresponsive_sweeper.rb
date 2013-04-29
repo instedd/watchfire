@@ -43,8 +43,9 @@ class Scheduler::UnresponsiveSweeper
     # ago that don't have remaining retries (of any kind) and set them to
     # unresponsive
     unresponsive_candidates.map do |candidate|
-      puts "Candidate #{candidate.volunteer.name} is not responding"
+      Rails.logger.debug "Candidate ##{candidate.id} (#{candidate.volunteer.name}) is not responding"
       candidate.no_answer!
+      true
     end.any?
   end
 
@@ -58,12 +59,14 @@ class Scheduler::UnresponsiveSweeper
       }
 
     next_sms = next_unresponsives.
+      select { |c| c.has_sms? }.
       reject { |c| c.last_sms_att.nil? }.
       sort_by { |c| c.last_sms_att }.
       first
     next_sms = next_sms.last_sms_att + sms_timeout if next_sms
 
     next_voice = next_unresponsives.
+      select { |c| c.has_voice? }.
       reject { |c| c.last_voice_att.nil? }.
       sort_by { |c| c.last_voice_att }.
       first

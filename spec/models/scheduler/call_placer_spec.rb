@@ -3,42 +3,207 @@ require 'spec_helper'
 describe Scheduler::CallPlacer do
   before(:each) do
     @organization = Organization.make!
-    @scheduler = Scheduler.new(@organization)
-    @placer = Scheduler::CallPlacer(@scheduler)
+    @scheduler = mock
+    @scheduler.stubs(:organization).returns(@organization)
+    @placer = Scheduler::CallPlacer.new(@scheduler)
+  end
+
+  def make_mission(params = {})
+    Mission.make!({ 
+      organization: @organization, 
+      status: :running,
+      lat: 37, lng: -122
+    }.merge(params))
   end
 
   describe "missions_by_latest_voice_attempt" do
-    it "should return missions ordered by latest voice attempt"
-    it "should only return active missions"
+    before(:each) do
+      @m1 = make_mission
+      @m2 = make_mission
+      @cm1 = Candidate.make! mission: @m1, last_voice_att: 2.minutes.ago
+      @cm2 = Candidate.make! mission: @m2, last_voice_att: 5.minutes.ago
+    end
+
+    it "should return missions ordered by latest voice attempt" do
+      @placer.missions_by_latest_voice_attempt.should eq([@m2, @m1])
+    end
+
+    it "should only return active missions" do
+      @m2.update_attribute :status, :pending
+
+      @placer.missions_by_latest_voice_attempt.should_not include(@m2)
+    end
   end
 
   describe "find_next_volunteer_to_call" do
-    it "should only return active pending candidates"
-    it "should return candidates with voice numbers"
-    it "should return candidates with voice retries left"
-    it "should return candidates with expired voice timeout"  
-
-    describe "candidates have multiple voice numbers" do
-      it "when last number called is not the last voice number should not wait for timeout"
+    before(:each) do
+      @mission = make_mission
     end
 
-    it "should return candidates for the riskiest skill first"
-    it "should return nearest candidates first"
+    def make_candidate(params = {})
+      Candidate.make!({ mission: @mission, status: :pending }.merge(params))
+    end
+
+    it "should only return active pending candidates" do
+      @candidate = make_candidate active: false
+      @placer.find_next_volunteer_to_call.should be_nil
+
+      @candidate.update_attribute :active, true
+      @placer.find_next_volunteer_to_call.should eq(@candidate)
+
+      @candidate.update_attribute :status, :denied
+      @placer.find_next_volunteer_to_call.should be_nil
+    end
+
+    it "should return candidates with voice numbers" do
+      @volunteer = Volunteer.make!(organization: @organization, voice_channels: [])
+      @candidate = make_candidate volunteer: @volunteer
+      @placer.find_next_volunteer_to_call.should be_nil
+
+      @volunteer.voice_channels << VoiceChannel.make
+      @volunteer.save!
+      @placer.find_next_volunteer_to_call.should eq(@candidate)
+    end
+
+    it "should return candidates with voice retries left" do
+      @candidate = make_candidate voice_retries: 1
+      @placer.find_next_volunteer_to_call.should eq(@candidate)
+
+      @candidate.update_attribute :voice_retries, @organization.max_voice_retries
+      @placer.find_next_volunteer_to_call.should be_nil
+    end
+
+    it "should return candidates with expired voice timeout" do
+      @candidate = make_candidate voice_retries: 1, last_voice_att: 1.minute.ago
+      @candidate.update_attribute :last_voice_number, @candidate.volunteer.ordered_voice_numbers.last
+      @placer.find_next_volunteer_to_call.should be_nil
+
+      Timecop.travel(@organization.voice_timeout.minutes)
+      @placer.find_next_volunteer_to_call.should eq(@candidate)
+    end
+
+    describe "candidates have multiple voice numbers" do
+      before(:each) do
+        @volunteer = Volunteer.make! voice_channels: 
+          [VoiceChannel.make, VoiceChannel.make]
+        @first_number = @volunteer.ordered_voice_numbers.first
+        @last_number = @volunteer.ordered_voice_numbers.last
+        @candidate = make_candidate volunteer: @volunteer, 
+          last_voice_number: @first_number, last_voice_att: 1.minute.ago
+      end
+
+      it "when last number called is not the last voice number should not wait for timeout" do
+        @placer.find_next_volunteer_to_call.should eq(@candidate)
+
+        @candidate.update_attribute :last_voice_number, @last_number
+        @placer.find_next_volunteer_to_call.should be_nil
+      end
+    end
+
+    def make_candidate(params = {})
+      location = params.delete(:location) || @mission.endpoint(0,0)
+      lat = location.lat
+      lng = location.lng
+      skills = params.delete(:skills) || []
+      volunteer = Volunteer.make! organization: @organization, 
+        lat: lat, lng: lng, skills: skills
+      Candidate.make!({ mission: @mission, volunteer: volunteer }.merge(params))
+    end
+
+    it "should return nearest candidates first" do
+      @at1 = @mission.endpoint(0,1)
+      @at2 = @mission.endpoint(0,2)
+      @c1 = make_candidate location: @at1
+      @c2 = make_candidate location: @at2
+
+      @placer.find_next_volunteer_to_call.should eq(@c1)
+    end
+
+    it "should return candidates for the riskiest skill first" do
+      @skill = Skill.make! organization: @organization
+
+      @c1 = make_candidate location: @mission.endpoint(0,1)
+      @c2 = make_candidate location: @mission.endpoint(0,2), skills: [@skill]
+
+      @placer.find_next_volunteer_to_call.should eq(@c1)
+      @mission.add_mission_skill skill: @skill
+      @mission.save!
+      @placer.find_next_volunteer_to_call.should eq(@c2)
+    end
+
   end
 
   describe "place_call" do
+    before(:each) do
+      @channel = PigeonChannel.make!(:verboice, organization: @organization)
+      @mission = make_mission
+      @candidate = Candidate.make! mission: @mission
+    end
+
     it "should enqueue a call with Verboice"
-    it "should create a new current call"
-    it "should set last voice attempt and last voice number"
-    it "should increment voice retries if the number called is the last voice number of the volunteer"
+
+    it "should create a new current call" do
+      lambda do
+        @placer.place_call @candidate, @channel 
+      end.should change(CurrentCall, :count).by(1)
+
+      @channel.current_calls.first.candidate.should eq(@candidate)
+    end
+
+    it "should set last voice attempt and last voice number" do
+      Timecop.freeze
+
+      @placer.place_call @candidate, @channel
+
+      @candidate.last_voice_att.should eq(Time.now)
+      @candidate.last_voice_number.should eq(@candidate.volunteer.ordered_voice_numbers.first)
+    end
+
+    it "should increment voice retries if the number called is the last voice number of the volunteer" do
+      lambda do
+        @placer.place_call @candidate, @channel
+      end.should change(@candidate, :voice_retries).by(1)
+    end
   end
 
   describe "next_deadline" do
-    it "should return nil if there are no voice channels"
-    it "should only consider pending and active candidates"
-    it "should only consider candidates with voice retries"
-    it "should only consider running missions"
-    it "should add voice timeout only if it called the last voice number"
+    before(:each) do
+      Timecop.freeze
+
+      @mission = make_mission
+      @candidate = Candidate.make! mission: @mission, last_voice_att: 1.minute.ago
+      @scheduler.stubs(:has_voice_channels?).returns(true)
+      @placer.next_deadline.should_not be_nil
+    end
+
+    it "should return nil if there are no voice channels" do
+      @scheduler.expects(:has_voice_channels?).returns(false)
+      @placer.next_deadline.should be_nil
+    end
+
+    it "should only consider pending and active candidates" do
+      @candidate.update_attribute :active, false
+      @placer.next_deadline.should be_nil
+
+      @candidate.update_attributes active: true, status: :denied
+      @placer.next_deadline.should be_nil
+    end
+
+    it "should only consider candidates with voice retries" do
+      @candidate.update_attribute :voice_retries, @organization.max_voice_retries
+      @placer.next_deadline.should be_nil
+    end
+
+    it "should only consider running missions" do
+      @mission.update_attribute :status, :paused
+      @placer.next_deadline.should be_nil
+    end
+
+    it "should add voice timeout only if it called the last voice number" do
+      @placer.next_deadline.should eq(1.minute.ago) 
+      @candidate.update_attribute :last_voice_number, @candidate.volunteer.ordered_voice_numbers.last
+      @placer.next_deadline.should eq(1.minute.ago + @organization.voice_timeout.minutes)
+    end
   end
 end
 
