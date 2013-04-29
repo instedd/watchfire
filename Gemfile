@@ -6,7 +6,6 @@ gem 'mysql2'
 gem 'jquery-rails', '~> 2.0.3'
 gem 'haml-rails'
 gem 'enumerated_attribute', :git => "https://github.com/jeffp/enumerated_attribute.git"
-gem 'delayed_job_active_record'
 gem 'rest-client'
 gem 'nuntium_api', '~> 0.19', :require => 'nuntium'
 gem 'geokit-rails3'

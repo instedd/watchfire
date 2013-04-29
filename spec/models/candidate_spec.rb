@@ -48,29 +48,6 @@ describe Candidate do
     end
   end
 
-  describe "call" do
-    before(:each) do
-      @candidate = Candidate.new
-      @candidate.stubs(:id).returns(10)
-      @candidate.stubs(:has_sms?).returns(false)
-      @candidate.stubs(:has_voice?).returns(false)
-    end
-
-    it "should send sms if it has sms" do
-      @candidate.expects(:has_sms?).returns(true)
-      Delayed::Job.expects(:enqueue).with(SmsJob.new(@candidate.id))
-
-      @candidate.call
-    end
-
-    it "should call if it has voice" do
-      @candidate.expects(:has_voice?).returns(true)
-      Delayed::Job.expects(:enqueue).with(VoiceJob.new(@candidate.id))
-
-      @candidate.call
-    end
-  end
-
   describe "has retries" do
     before(:each) do
       @organization = Organization.new :max_sms_retries => 10, :max_voice_retries => 20
@@ -128,11 +105,17 @@ describe Candidate do
       @candidate = Candidate.make!
       @sms_number = @candidate.volunteer.sms_channels.first.address
       @voice_number = @candidate.volunteer.voice_channels.first.address
-      @candidate.mission.expects(:check_for_more_volunteers)
+      @advisor = push_scheduler_advisor
+      @advisor.expects(:candidate_status_updated)
       Timecop.freeze
     end
 
+    after(:each) do
+      pop_scheduler_advisor
+    end
+
     it "should handle 'yes' response from sms" do
+      @candidate.mission.expects(:preferred_skill_for_candidate)
       @candidate.answered_from_sms! "yes", @sms_number
 
       @candidate.confirmed?.should be_true
@@ -149,6 +132,7 @@ describe Candidate do
     end
 
     it "should handle '1' response from voice" do
+      @candidate.mission.expects(:preferred_skill_for_candidate)
       @candidate.answered_from_voice! "1", @voice_number
 
       @candidate.confirmed?.should be_true
@@ -174,8 +158,8 @@ describe Candidate do
   describe "find by call session id" do
     before(:each) do
       @candidate = Candidate.make!
-      @call_1 = Call.make! :candidate => @candidate
-      @call_2 = Call.make! :candidate => @candidate
+      @call_1 = CurrentCall.make! :candidate => @candidate
+      @call_2 = CurrentCall.make! :candidate => @candidate
     end
 
     it "should find candidate by any of its calls" do
@@ -213,20 +197,6 @@ describe Candidate do
       Candidate.find_last_for_sms_number(@sms_number_1).should eq(@new_candidate)
       Candidate.find_last_for_sms_number(@sms_number_2).should eq(@new_candidate)
     end
-  end
-
-  it "should destroy dependent calls" do
-    candidate = Candidate.make!
-    call_1 = Call.make! :candidate => candidate
-    call_2 = Call.make! :candidate => candidate
-    call_3 = Call.make!
-
-    Call.all.size.should eq(3)
-
-    candidate.destroy
-
-    Call.all.size.should eq(1)
-    Call.first.should eq(call_3)
   end
 
   describe "response" do

@@ -4,8 +4,9 @@ class Candidate < ActiveRecord::Base
 
   belongs_to :mission
   belongs_to :volunteer
+  belongs_to :allocated_skill, :class_name => "Skill"
 
-  has_many :calls, :dependent => :destroy
+  has_many :current_calls, :dependent => :destroy
 
   validates_presence_of :mission_id, :volunteer_id, :voice_retries, :sms_retries
 
@@ -20,8 +21,12 @@ class Candidate < ActiveRecord::Base
     Candidate.joins(:volunteer => [:sms_channels]).where(:channels =>{:address => number}).order('last_sms_att DESC').readonly(false).first
   end
 
+  def self.find_last_for_voice_number number
+    Candidate.joins(:volunteer => [:voice_channels]).where(:channels =>{:address => number}).order('last_voice_att DESC').readonly(false).first
+  end
+
   def self.find_by_call_session_id id
-    Call.find_by_session_id(id).candidate rescue nil
+    CurrentCall.find_by_session_id(id).candidate rescue nil
   end
 
   def has_sms?
@@ -30,11 +35,6 @@ class Candidate < ActiveRecord::Base
 
   def has_voice?
     volunteer.voice_channels.size > 0
-  end
-
-  def call
-    Delayed::Job.enqueue(SmsJob.new(self.id)) if self.has_sms?
-    Delayed::Job.enqueue(VoiceJob.new(self.id)) if self.has_voice?
   end
 
   def organization
@@ -73,8 +73,10 @@ class Candidate < ActiveRecord::Base
     confirmed? ? mission.confirm_message : mission.deny_message
   end
 
-  def last_call
-    self.calls.order('created_at DESC').first
+  def next_number_to_call
+    numbers = volunteer.ordered_voice_numbers.cycle(2)
+    last_index = numbers.find_index(last_voice_number) || -1
+    numbers.to_a[last_index + 1]
   end
 
   def enable!
@@ -112,12 +114,15 @@ class Candidate < ActiveRecord::Base
     self.status = new_status
     self.answered_from = from
     self.answered_at = Time.now.utc
+    if new_status == :confirmed
+      self.allocated_skill = mission.preferred_skill_for_candidate(self)
+    end
     save_and_check!
   end
 
   def save_and_check!
     self.save!
-    mission.check_for_more_volunteers
+    SchedulerAdvisor.candidate_status_updated self
   end
 
   def init

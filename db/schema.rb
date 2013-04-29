@@ -11,15 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130418154456) do
-
-  create_table "calls", :force => true do |t|
-    t.string   "session_id"
-    t.integer  "candidate_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "voice_number"
-  end
+ActiveRecord::Schema.define(:version => 20130429195024) do
 
   create_table "candidates", :force => true do |t|
     t.integer  "mission_id"
@@ -31,12 +23,17 @@ ActiveRecord::Schema.define(:version => 20130418154456) do
     t.datetime "last_sms_att"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "active",            :default => true, :null => false
+    t.boolean  "active",             :default => true, :null => false
     t.string   "answered_from"
     t.datetime "answered_at"
-    t.string   "voice_status"
+    t.string   "last_call_status"
     t.string   "last_voice_number"
+    t.integer  "allocated_skill_id"
+    t.string   "last_call_sid"
   end
+
+  add_index "candidates", ["allocated_skill_id"], :name => "index_candidates_on_allocated_skill_id"
+  add_index "candidates", ["last_call_sid"], :name => "index_candidates_on_last_call_sid"
 
   create_table "channels", :force => true do |t|
     t.integer  "volunteer_id"
@@ -46,21 +43,20 @@ ActiveRecord::Schema.define(:version => 20130418154456) do
     t.datetime "updated_at"
   end
 
-  create_table "delayed_jobs", :force => true do |t|
-    t.integer  "priority",   :default => 0
-    t.integer  "attempts",   :default => 0
-    t.text     "handler"
-    t.text     "last_error"
-    t.datetime "run_at"
-    t.datetime "locked_at"
-    t.datetime "failed_at"
-    t.string   "locked_by"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "queue"
+  create_table "current_calls", :force => true do |t|
+    t.integer  "pigeon_channel_id"
+    t.integer  "candidate_id"
+    t.string   "session_id"
+    t.string   "call_status"
+    t.string   "voice_number"
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
   end
 
-  add_index "delayed_jobs", ["priority", "run_at"], :name => "delayed_jobs_priority"
+  add_index "current_calls", ["candidate_id"], :name => "index_current_calls_on_candidate_id"
+  add_index "current_calls", ["pigeon_channel_id"], :name => "index_current_calls_on_pigeon_channel_id"
+  add_index "current_calls", ["session_id"], :name => "index_current_calls_on_session_id"
+  add_index "current_calls", ["voice_number"], :name => "index_current_calls_on_voice_number"
 
   create_table "invites", :force => true do |t|
     t.integer  "organization_id"
@@ -74,13 +70,6 @@ ActiveRecord::Schema.define(:version => 20130418154456) do
     t.integer  "organization_id"
     t.integer  "user_id"
     t.string   "role"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "mission_jobs", :force => true do |t|
-    t.integer  "mission_id", :null => false
-    t.integer  "job_id",     :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
   end

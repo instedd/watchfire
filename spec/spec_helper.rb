@@ -28,11 +28,24 @@ RSpec.configure do |config|
 
   config.before(:each) do
     Timecop.return
+    SchedulerAdvisor.advisor = nil
   end
 
   # Returns the string to be used for HTTP_AUTHENTICATION header
   def http_auth(user, pass)
     'Basic ' + Base64.encode64(user + ':' + pass)
+  end
+
+  def push_scheduler_advisor(advisor = mock)
+    raise RuntimeError, "advisor already pushed" if @old_advisor
+    @old_advisor = SchedulerAdvisor.advisor
+    SchedulerAdvisor.advisor = advisor
+    advisor
+  end
+
+  def pop_scheduler_advisor
+    SchedulerAdvisor.advisor = @old_advisor
+    @old_advisor = nil
   end
 
   # Include Devise helpers

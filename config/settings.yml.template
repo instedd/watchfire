@@ -18,6 +18,7 @@ defaults: &defaults
   default_url_options:
     host: localhost:3000
   from_email: watchfire@instedd.org
+  scheduler_uri: druby://localhost:4000
 
 development:
   <<: *defaults

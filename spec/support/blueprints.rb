@@ -30,11 +30,6 @@ Mission.blueprint do
   mission_skills { [MissionSkill.make] }
 end
 
-MissionJob.blueprint do
-  mission { Mission.make! }
-  job { Delayed::Job.create! }
-end
-
 Skill.blueprint do
   organization { Organization.make! }
   name { _name }
@@ -57,16 +52,25 @@ SmsChannel.blueprint do
 	address { _phone_number }
 end
 
-Call.blueprint do
+CurrentCall.blueprint do
   session_id { _guid }
   voice_number { _phone_number }
   candidate { Candidate.make! }
+  pigeon_channel { PigeonChannel.make!(:verboice) }
 end
 
 PigeonChannel.blueprint do
   organization { Organization.make! }
   name { _name }
   pigeon_name { _name }
+end
+
+PigeonChannel.blueprint(:verboice) do
+  channel_type { :verboice }
+end
+
+PigeonChannel.blueprint(:nuntium) do
+  channel_type { :nuntium }
 end
 
 def _name

@@ -3,9 +3,11 @@ require 'spec_helper'
 describe VerboiceController do
   describe "POST 'plan'" do
     before(:each) do
-      @parameters = {:format => 'xml', :CallSid => '123'}
+      @session_id = '123'
+      @parameters = {:format => 'xml', :CallSid => @session_id}
       @candidate = Candidate.make
-      Candidate.expects(:find_by_call_session_id).with('123').returns(@candidate)
+      @current_call = CurrentCall.make candidate: @candidate, session_id: @session_id
+      CurrentCall.expects(:find_by_session_id).with(@session_id).returns(@current_call)
     end
 
     it "should be successful" do
@@ -36,7 +38,6 @@ describe VerboiceController do
     context "calling number is known" do
       it "should forward to the mission that made the last call to the number" do
         @candidate = Candidate.make! :mission => @mission
-        @call = Call.make! :voice_number => @parameters[:From], :candidate => @candidate
         post 'plan', @parameters
         response.should render_template('plan_forward')
         assigns(:mission).should eq(@mission)
@@ -82,7 +83,9 @@ describe VerboiceController do
 
   describe "POST 'plan_after_confirmation'" do
     before(:each) do
-      @parameters = {:format => 'xml'}
+      @session_id = '123'
+      @parameters = {:format => 'xml', :CallSid => @session_id}
+      @current_call = CurrentCall.make! session_id: @session_id
     end
 
     it "should be successful" do
@@ -99,8 +102,9 @@ describe VerboiceController do
   describe "POST 'callback'" do
     before(:each) do
       @candidate = Candidate.make! :status => :pending
-      @call = Call.make! :candidate => @candidate
+      @call = CurrentCall.make :candidate => @candidate
       @parameters = {:CallSid => @call.session_id, :Digits => '1', :format => 'xml'}
+      CurrentCall.expects(:find_by_session_id).with(@call.session_id).returns(@call)
     end
 
     it "should be successful" do
@@ -110,7 +114,6 @@ describe VerboiceController do
 
     it "should set candidate status to confirmed if user pressed 1" do
       @parameters[:Digits] = "1"
-      Candidate.expects(:find_by_call_session_id).with(@call.session_id).returns(@candidate)
       @candidate.expects(:answered_from_voice!).with("1", @call.voice_number)
 
       post 'callback', @parameters
@@ -120,7 +123,6 @@ describe VerboiceController do
 
     it "should set candidate status to denied if user pressed 2" do
       @parameters[:Digits] = "2"
-      Candidate.expects(:find_by_call_session_id).with(@call.session_id).returns(@candidate)
       @candidate.expects(:answered_from_voice!).with("2", @call.voice_number)
 
       post 'callback', @parameters
@@ -141,8 +143,14 @@ describe VerboiceController do
   describe "GET 'status_callback'" do
     before(:each) do
       @candidate = Candidate.make! :status => :pending
-      @call = Call.make! :candidate => @candidate
+      @call = CurrentCall.make! :candidate => @candidate
       @parameters = {:CallSid => @call.session_id, :Digits => '1', :CallStatus => 'ringing'}
+      @advisor = push_scheduler_advisor
+      @advisor.expects(:call_status_update).with(@call.session_id, 'ringing')
+    end
+
+    after(:each) do
+      pop_scheduler_advisor
     end
 
     it "should be successful" do
@@ -152,7 +160,7 @@ describe VerboiceController do
 
     it "should set candidate voice status" do
       get 'status_callback', @parameters
-      @candidate.reload.voice_status.should eq('ringing')
+      @candidate.reload.last_call_status.should eq('ringing')
     end
   end
 end

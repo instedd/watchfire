@@ -9,7 +9,6 @@ class Mission < ActiveRecord::Base
 
   has_many :candidates, :dependent => :destroy, :include => :volunteer
   has_many :volunteers, :through => :candidates
-  has_many :mission_jobs, :dependent => :destroy
   has_many :mission_skills, :dependent => :destroy, :include => :skill, :order => "priority ASC"
 
 	belongs_to :user
@@ -29,6 +28,8 @@ class Mission < ActiveRecord::Base
 
   before_create :init_messages
 
+  include Mission::AllocationConcern
+
 	def candidate_count(st)
 		return self.candidates.where('status = ?', st).count
 	end
@@ -38,23 +39,13 @@ class Mission < ActiveRecord::Base
     mission_skills.build({ :priority => new_priority }.merge(params))
   end
 
-  def obtain_volunteers
-    vols = []
-    mission_skills.each do |mission_skill|
-      mission_skill.mission = self  # needed to successfully call obtain_volunteers
-      num_vols = (mission_skill.req_vols / available_ratio).to_i
-      vols = vols + mission_skill.obtain_volunteers(num_vols, vols)
-    end
-    vols
-  end
-
 	def check_and_save
 		if self.valid?
 			if self.status_created?
 				Mission.transaction do
 					self.save!
           mission_skills.reload
-          vols = self.obtain_volunteers
+          vols = self.obtain_initial_volunteers
 					set_candidates vols
 				end
 				self.candidates.reload
@@ -84,17 +75,15 @@ class Mission < ActiveRecord::Base
 
   def call_volunteers
     update_status :running
-    candidates_to_call.each{|c| c.call}
+    SchedulerAdvisor.mission_started self
   end
 
   def stop_calling_volunteers
     update_status :paused
-    self.mission_jobs.destroy_all
   end
 
   def finish
     update_status :finished
-    self.mission_jobs.destroy_all
   end
 
   def open
@@ -125,72 +114,10 @@ class Mission < ActiveRecord::Base
     self.candidates.where(:status => :pending, :active => true)
   end
 
-  def allocate_candidates confirmed, pending
-    # go through each mission skill by priority and check if we got the desired
-    # number of volunteers for each by allocating confirmed and pending
-    # candidates
-    mission_skills.map do |mission_skill|
-      data = { :mission_skill => mission_skill }
-
-      data[:confirmed] = mission_skill.claim_candidates confirmed
-      confirmed = confirmed - data[:confirmed]
-
-      if data[:confirmed].size < mission_skill.req_vols
-        data[:needed] = ((mission_skill.req_vols - data[:confirmed].size) / available_ratio).to_i
-        data[:pending] = mission_skill.claim_candidates pending, data[:needed]
-        pending = pending - data[:pending]
-      else
-        data[:pending] = []
-        data[:needed] = 0
-      end
-
-      data
-    end
-  end
-
-  def candidate_allocation_order
-    # by default, candidates are ordered by the number of skills the volunteer
-    # posses, so less specialized volunteers are allocated first
-    Proc.new do |c1, c2|
-      c1.volunteer.skills.size <=> c2.volunteer.skills.size
-    end
-  end
-
-  def check_for_more_volunteers
-    # allocate the confirmed and pending candidates to the required skills for
-    # the mission
-    pending = pending_candidates.sort(&candidate_allocation_order)
-    confirmed = confirmed_candidates.sort(&candidate_allocation_order)
-    allocation = allocate_candidates(confirmed, pending)
-
-    # for each mission skill with allocated candidates, check if we need to add
-    # new volunteers to fulfill the required number
-    finished = true
-    allocation.each do |data|
-      if data[:needed] > 0
-        if data[:pending].size < data[:needed]
-          # not enough number of volunteers in the pending pool that can
-          # fulfill this skill requirement
-          recruit = data[:needed] - data[:pending].size
-          # find new volunteers for this skill
-          new_volunteers = data[:mission_skill].obtain_volunteers recruit, self.volunteers
-          Mission.transaction do
-            new_volunteers.each {|v| add_volunteer v}
-          end
-          self.candidates.reload
-        end
-        # we're not done yet
-        finished = false
-      end
-    end
-
-		finish if finished
-		self.save! if self.changed?
-  end
-
   def add_volunteer volunteer
-		candidate = self.candidates.create! :volunteer => volunteer
-		candidate.call
+		candidate = self.candidates.create
+    candidate.volunteer = volunteer
+    candidate.save!
   end
 
 	def check_for_volunteers?
@@ -243,10 +170,6 @@ class Mission < ActiveRecord::Base
     end
   end
 
-  def max_distance
-    Watchfire::Application.config.max_distance
-  end
-
   def confirm_message
     "#{yes_text.strip_sentence} #{address}"
   end
@@ -268,10 +191,6 @@ class Mission < ActiveRecord::Base
   def update_status status
     self.status = status
     self.save!
-  end
-
-  def available_ratio
-    Watchfire::Application.config.available_ratio
   end
 
   def init_messages

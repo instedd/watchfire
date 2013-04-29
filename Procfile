@@ -1,2 +1,3 @@
 web: bundle exec rails s
-delayed: bundle exec rake jobs:work
+scheduler: bundle exec lib/scheduler/scheduler.rb
+
