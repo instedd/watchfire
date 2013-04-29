@@ -199,20 +199,6 @@ describe Candidate do
     end
   end
 
-  it "should destroy dependent calls" do
-    candidate = Candidate.make!
-    call_1 = Call.make! :candidate => candidate
-    call_2 = Call.make! :candidate => candidate
-    call_3 = Call.make!
-
-    Call.all.size.should eq(3)
-
-    candidate.destroy
-
-    Call.all.size.should eq(1)
-    Call.first.should eq(call_3)
-  end
-
   describe "response" do
     before(:each) do
       @candidate = Candidate.make!

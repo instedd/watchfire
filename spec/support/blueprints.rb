@@ -30,11 +30,6 @@ Mission.blueprint do
   mission_skills { [MissionSkill.make] }
 end
 
-MissionJob.blueprint do
-  mission { Mission.make! }
-  job { Delayed::Job.create! }
-end
-
 Skill.blueprint do
   organization { Organization.make! }
   name { _name }
@@ -55,12 +50,6 @@ end
 
 SmsChannel.blueprint do
 	address { _phone_number }
-end
-
-Call.blueprint do
-  session_id { _guid }
-  voice_number { _phone_number }
-  candidate { Candidate.make! }
 end
 
 CurrentCall.blueprint do

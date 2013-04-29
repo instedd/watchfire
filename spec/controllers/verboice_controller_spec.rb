@@ -38,7 +38,6 @@ describe VerboiceController do
     context "calling number is known" do
       it "should forward to the mission that made the last call to the number" do
         @candidate = Candidate.make! :mission => @mission
-        @call = Call.make! :voice_number => @parameters[:From], :candidate => @candidate
         post 'plan', @parameters
         response.should render_template('plan_forward')
         assigns(:mission).should eq(@mission)

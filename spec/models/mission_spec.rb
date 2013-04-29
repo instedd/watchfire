@@ -44,13 +44,6 @@ describe Mission do
       @mission.stop_calling_volunteers
       @mission.reload.is_paused?.should be true
     end
-
-    it "should destroy any mission jobs" do
-      (1..3).each{ MissionJob.make! :mission => @mission }
-      @mission.should have(3).mission_jobs
-      @mission.stop_calling_volunteers
-      @mission.should have(0).mission_jobs
-    end
   end
 
   describe "finish" do
@@ -61,13 +54,6 @@ describe Mission do
     it "should change status to finished" do
       @mission.finish
       @mission.reload.finished?.should be true
-    end
-
-    it "should destroy any mission jobs" do
-      (1..3).each{ MissionJob.make! :mission => @mission }
-      @mission.should have(3).mission_jobs
-      @mission.finish
-      @mission.should have(0).mission_jobs
     end
   end
 

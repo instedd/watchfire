@@ -6,7 +6,6 @@ class Candidate < ActiveRecord::Base
   belongs_to :volunteer
   belongs_to :allocated_skill, :class_name => "Skill"
 
-  has_many :calls, :dependent => :destroy
   has_many :current_calls, :dependent => :destroy
 
   validates_presence_of :mission_id, :volunteer_id, :voice_retries, :sms_retries
@@ -72,10 +71,6 @@ class Candidate < ActiveRecord::Base
 
   def response_message
     confirmed? ? mission.confirm_message : mission.deny_message
-  end
-
-  def last_call
-    self.calls.order('created_at DESC').first
   end
 
   def next_number_to_call

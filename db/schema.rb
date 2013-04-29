@@ -11,15 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130425152836) do
-
-  create_table "calls", :force => true do |t|
-    t.string   "session_id"
-    t.integer  "candidate_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "voice_number"
-  end
+ActiveRecord::Schema.define(:version => 20130429193509) do
 
   create_table "candidates", :force => true do |t|
     t.integer  "mission_id"
@@ -94,13 +86,6 @@ ActiveRecord::Schema.define(:version => 20130425152836) do
     t.integer  "organization_id"
     t.integer  "user_id"
     t.string   "role"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "mission_jobs", :force => true do |t|
-    t.integer  "mission_id", :null => false
-    t.integer  "job_id",     :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
   end

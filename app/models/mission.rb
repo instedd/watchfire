@@ -9,7 +9,6 @@ class Mission < ActiveRecord::Base
 
   has_many :candidates, :dependent => :destroy, :include => :volunteer
   has_many :volunteers, :through => :candidates
-  has_many :mission_jobs, :dependent => :destroy
   has_many :mission_skills, :dependent => :destroy, :include => :skill, :order => "priority ASC"
 
 	belongs_to :user
@@ -81,12 +80,10 @@ class Mission < ActiveRecord::Base
 
   def stop_calling_volunteers
     update_status :paused
-    self.mission_jobs.destroy_all
   end
 
   def finish
     update_status :finished
-    self.mission_jobs.destroy_all
   end
 
   def open
