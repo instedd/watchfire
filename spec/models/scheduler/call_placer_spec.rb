@@ -138,16 +138,33 @@ describe Scheduler::CallPlacer do
       @channel = PigeonChannel.make!(:verboice, organization: @organization)
       @mission = make_mission
       @candidate = Candidate.make! mission: @mission
+
+      @verboice = mock
+      Verboice.stubs(:from_config).returns(@verboice)
+      @verboice.stubs(:call).returns({ 'call_id' => '1234', 'state' => 'queued' })
     end
 
-    it "should enqueue a call with Verboice"
+    it "should enqueue a call with Verboice" do
+      @verboice.unstub(:call)
+      number = @candidate.next_number_to_call
+      @verboice.expects(:call).with(number, { 
+        :status_callback_url => @placer.status_callback_url, 
+        :channel => @channel.pigeon_name 
+      }).returns({ 
+        'call_id' => '1234', 'state' => 'queued' 
+      })
+      @placer.place_call @candidate, @channel
+    end
 
     it "should create a new current call" do
       lambda do
         @placer.place_call @candidate, @channel 
       end.should change(CurrentCall, :count).by(1)
 
-      @channel.current_calls.first.candidate.should eq(@candidate)
+      call = @channel.current_calls.first
+      call.candidate.should eq(@candidate)
+      call.session_id.should eq('1234')
+      call.call_status.should eq('queued')
     end
 
     it "should set last voice attempt and last voice number" do
@@ -163,6 +180,31 @@ describe Scheduler::CallPlacer do
       lambda do
         @placer.place_call @candidate, @channel
       end.should change(@candidate, :voice_retries).by(1)
+    end
+
+    context "with Verboice exception" do
+      before(:each) do
+        @verboice.expects(:call).raises(Verboice::Exception)
+      end
+
+      it "should set last voice attempt, call status and increment retries" do
+        Timecop.freeze
+        number = @candidate.next_number_to_call
+        retries = @candidate.voice_retries
+
+        @placer.place_call @candidate, @channel
+
+        @candidate.last_voice_att.should eq(Time.now)
+        @candidate.last_voice_number.should eq(number)
+        @candidate.voice_retries.should eq(retries + 1)
+        @candidate.last_call_status.should eq('failed')
+      end
+
+      it "should not create a current call" do
+        lambda do 
+          @placer.place_call @candidate, @channel
+        end.should_not change(CurrentCall, :count)
+      end
     end
   end
 

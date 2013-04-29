@@ -27,6 +27,21 @@ class Scheduler::SmsSender
     volunteer = candidate.volunteer
     Rails.logger.debug "Sending SMS to #{volunteer.name} at #{volunteer.sms_numbers}"
 
+    nuntium = Nuntium.from_config
+    candidate.volunteer.sms_channels.each do |sms_channel|
+      begin
+        message = {
+          :from => "sms://watchfire",
+          :to => sms_channel.address.with_protocol,
+          :body => @mission.sms_message,
+          :suggested_channel => @scheduler.next_sms_channel.try(:pigeon_name)
+        }
+        nuntium.send_ao message
+      rescue Exception => e
+        Rails.logger.error "Error sending AO for candidate #{candidate.id}, exception: #{e}"
+      end
+    end
+
     candidate.sms_retries += 1
     candidate.last_sms_att = Time.now.utc
     candidate.save :validate => false

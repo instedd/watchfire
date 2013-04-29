@@ -78,10 +78,30 @@ module Scheduler
 
     describe "send_sms_to_candidate" do
       before(:each) do
-        @candidate = Candidate.make! mission: @mission, status: :pending
+        @volunteer = Volunteer.make! organization: @organization, 
+          sms_channels: [SmsChannel.make, SmsChannel.make]
+        @candidate = Candidate.make! mission: @mission, 
+          status: :pending, volunteer: @volunteer
+        @nuntium = mock
+        @nuntium.stubs(:send_ao)
+        Nuntium.stubs(:from_config).returns(@nuntium)
+        @scheduler.stubs(:next_sms_channel)
+        @channel = PigeonChannel.make!(:nuntium, organization: @organization)
       end
 
-      it "should send an SMS to all the SMS numbers of the volunteer"
+      it "should send an SMS to all the SMS numbers of the volunteer" do
+        @scheduler.expects(:next_sms_channel).returns(@channel).twice
+        @candidate.volunteer.sms_channels.each do |sms_channel|
+          @nuntium.expects(:send_ao).with({
+            :from => "sms://watchfire",
+            :to => sms_channel.address.with_protocol,
+            :body => @mission.sms_message,
+            :suggested_channel => @channel.pigeon_name
+          })
+        end
+
+        @sender.send_sms_to_candidate(@candidate)
+      end
 
       it "should set the last SMS attempt timestamp" do
         @sender.send_sms_to_candidate @candidate
@@ -95,6 +115,18 @@ module Scheduler
           @sender.send_sms_to_candidate @candidate
           @candidate.reload
         end.should change(@candidate, :sms_retries).by(1)
+      end
+
+      context "with Nuntium exception" do
+        it "should set last attempt and increment SMS retries" do
+          Timecop.freeze
+
+          @nuntium.stubs(:send_ao).raises(Nuntium::Exception)
+          @sender.send_sms_to_candidate @candidate
+
+          @candidate.last_sms_att.should eq(Time.now)
+          @candidate.sms_retries.should eq(1)
+        end
       end
     end
 

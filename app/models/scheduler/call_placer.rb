@@ -50,21 +50,35 @@ class Scheduler::CallPlacer
     candidate
   end
 
+  def status_callback_url
+    Rails.application.routes.url_helpers.verboice_status_callback_url
+  end
+
   def place_call(candidate, channel)
     number = candidate.next_number_to_call
 
     Rails.logger.debug "Calling #{candidate.volunteer.name} at #{number} for mission #{candidate.mission.name} through #{channel.name}"
 
-    call = candidate.current_calls.build 
-    call.pigeon_channel = channel
-    call.voice_number = number
-    call.call_status = 'queued'
-    # FIXME
-    call.session_id = rand(100000).to_s(10)
-    call.save!
+    begin
+      verboice = Verboice.from_config
+      response = verboice.call number, 
+        :channel => channel.pigeon_name, 
+        :status_callback_url => status_callback_url
+
+      call = candidate.current_calls.build 
+      call.pigeon_channel = channel
+      call.voice_number = number
+      call.call_status = response['state']
+      call.session_id = response['call_id']
+      call.save!
+
+    rescue Exception => e
+      Rails.logger.error "Error calling candidate #{candidate.id}, exception: #{e}"
+      response = { 'call_id' => nil, 'state' => 'failed' }
+    end
 
     candidate.last_voice_number = number
-    candidate.last_call_status = 'queued'
+    candidate.last_call_status = response['state']
     candidate.last_voice_att = Time.now.utc
     if candidate.volunteer.is_last_voice_number?(number)
       candidate.voice_retries += 1 
