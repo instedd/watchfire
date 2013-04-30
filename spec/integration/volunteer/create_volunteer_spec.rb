@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe "volunteer" do 
  
-  it "should edit organization", js:true do
+  it "should create volunteer", js:true do
     user = User.make!
     organization = user.create_organization Organization.make
     login_as (user)
