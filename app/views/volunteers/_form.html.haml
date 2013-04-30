@@ -18,7 +18,7 @@
         - if !voice_channel.marked_for_destruction?
           %li
             = text_field_tag 'volunteer[voice_numbers][]', voice_channel.address, :class => 'ux-clist'
-            %button.clist-remove(type="button")>
+            %button.clist-remove(type="button" id="remove")>
             %span.handle.pprevious>
       %li.fixed
         %input.ux-text#new_voice_number(type="text" placeholder="New voice number")
