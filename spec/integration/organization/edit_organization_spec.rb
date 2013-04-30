@@ -9,7 +9,7 @@ describe "organization" do
     visit missions_path
     click_link organization.name 
     visit edit_organization_path(organization)
-    fill_in 'organization_name', :with => 'Edited Organization Name'
+    fill_in 'organization_name', :with => 'San Mateo Red Cross'
     click_button 'Update Organization'
     sleep 3
     page.should have_content 'Organization was successfully updated'

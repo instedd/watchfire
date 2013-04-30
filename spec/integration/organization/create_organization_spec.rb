@@ -7,11 +7,11 @@ describe "organization" do
     login_as (user)
     visit missions_path
     click_link 'Create Organization'
-    fill_in 'organization_name', :with => 'First Organization'
+    fill_in 'organization_name', :with => 'Red Cross'
     click_button 'Create Organization'
     sleep 3
     page.should have_content 'Organization was successfully created'
-    page.should have_content "First Organization"
+    page.should have_content "Red Cross"
     page.save_screenshot 'Create_organization.png'
   end
   
