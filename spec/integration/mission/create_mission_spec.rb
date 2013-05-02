@@ -9,7 +9,7 @@ describe "mission" do
     login_as (user)
     visit missions_path
     click_link 'Create Event'
-    fill_in 'name', :with => "Earthquake in "
+    fill_in 'name', :with => "Earthquake in Chad"
     fill_in 'reason', :with => "Chad village evacuation"
     fill_in 'address', :with => "15,19\n"
     click_button 'Start recruiting'
