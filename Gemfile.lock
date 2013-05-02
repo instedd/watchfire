@@ -247,6 +247,7 @@ DEPENDENCIES
   devise (~> 2.2.3)
   devise_invitable
   enumerated_attribute!
+  eventmachine
   faker
   foreman
   geokit-rails3
