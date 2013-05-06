@@ -3,7 +3,7 @@ module SchedulerAdvisor
     attr_accessor :advisor
 
     def uri
-      @uri ||= Watchfire::Application.config.scheduler_uri
+      Watchfire::Application.config.scheduler_uri
     end
 
     def method_missing(name, *args)
