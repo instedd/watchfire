@@ -12,7 +12,7 @@ set :scm, :mercurial
 set :deploy_via, :remote_cache
 set :user, 'ubuntu'
 
-set :foreman_concurrency, 'delayed=1'
+set :foreman_concurrency, 'scheduler=1'
 
 namespace :deploy do
   task :start do ; end
