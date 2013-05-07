@@ -104,7 +104,8 @@ class Scheduler::CallPlacer
     # get the time at which we should perform a new SMS send
     older = Candidate.
       where(:status => :pending, :active => true).
-      joins(:mission => :organization).
+      joins(:mission).
+      where("missions.organization_id = ?", @organization.id).
       where("missions.status = ?", :running).
       joins(:volunteer => [:voice_channels]).
       where("voice_retries < ?", max_voice_retries).

@@ -24,7 +24,8 @@ module Scheduler
     def call_status_update(session_id, call_status)
       call = CurrentCall.find_by_session_id(session_id)
       unless call.nil?
-        organization(call.organization.id).call_status_update(session_id, call_status)
+        org = call.candidate.mission.organization
+        organization(org.id).call_status_update(session_id, call_status)
       else
         Rails.logger.warn "Received call status update for unknown call #{session_id}"
       end

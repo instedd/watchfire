@@ -246,6 +246,15 @@ describe Scheduler::CallPlacer do
       @candidate.update_attribute :last_voice_number, @candidate.volunteer.ordered_voice_numbers.last
       @placer.next_deadline.should eq(1.minute.ago + @organization.voice_timeout.minutes)
     end
+
+    it "should consider only running missions for the current organization" do
+      @other_org = Organization.make!
+      @other_mission = Mission.make! organization: @other_org, status: :running
+      @other_candidate = Candidate.make! status: :pending, mission: @other_mission
+
+      @mission.update_attribute :status, :paused
+      @placer.next_deadline.should be_nil
+    end
   end
 end
 

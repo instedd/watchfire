@@ -49,9 +49,13 @@ class Scheduler::OrganizationScheduler
               end
     @try_call_timer = EM.add_timer(timeout) do
       @try_call_timer = nil
-      Scheduler::CallPlacer.new(self).perform
-      schedule_try_call
+      try_call
     end
+  end
+
+  def try_call
+    Scheduler::CallPlacer.new(self).perform
+    schedule_try_call
   end
 
   def sms_channels
