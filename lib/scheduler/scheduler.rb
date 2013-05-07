@@ -11,6 +11,7 @@ if STDOUT.tty?
 else
   Rails.logger = Logger.new($log_path)
 end
+Rails.logger.formatter = Logger::Formatter.new
 
 EM.error_handler do |err|
   puts err
