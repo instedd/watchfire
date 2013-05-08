@@ -13,10 +13,6 @@ class CurrentCall < ActiveRecord::Base
   end
 
   def fail
-    return unless candidate.active? && candidate.pending?
-    unless candidate.has_voice_retries?
-      candidate.no_answer!
-    end
   end
 
 private

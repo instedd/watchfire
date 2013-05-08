@@ -246,6 +246,14 @@ describe Mission::AllocationConcern do
         @mission.preferred_skill_for_candidate(candidate).should eq(@skill1)
       end
 
+      it "should select the riskiest mission requirement that the candidate can fulfill" do
+        @mission.add_mission_skill skill: @skill2
+        c7 = Candidate.make! mission: @mission, volunteer: @vol_at7
+
+        # c7 has skill2 but not skill1
+        @mission.preferred_skill_for_candidate(c7).should eq(@skill2)
+      end
+
       it "should return nil if all requirements are fulfilled" do
         # confirm all mission's candidates fulfilling both requirements
         @mission.candidates.each do |c|
@@ -278,6 +286,17 @@ describe Mission::AllocationConcern do
       alloc.size.should eq(2)
       alloc[0].should eq([@skill1.id, [@vol_at1]])
       alloc[1].should eq([nil, [@vol_at5]])
+    end
+
+    it "should allocate all pending volunteers, even if they are not needed" do
+      @vol_at2 = make_volunteer @mission.endpoint(0,2)
+
+      @mission.stubs(:available_ratio).returns(1)
+      @mission.set_candidates [@vol_at1, @vol_at2]
+      @mission.save!
+
+      alloc = @mission.pending_allocation_by_risk
+      alloc[0].should eq([nil, [@vol_at1, @vol_at2]])
     end
   end
 

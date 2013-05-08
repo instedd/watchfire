@@ -94,6 +94,7 @@ class Scheduler::OrganizationScheduler
       end
       call.destroy
       schedule_try_call
+      schedule_next_unresponsive_sweep(call.candidate.mission)
     else
       call.update_attribute :call_status, call_status
     end

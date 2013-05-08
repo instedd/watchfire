@@ -30,7 +30,9 @@ module Mission::AllocationConcern
       slot = @slots.find do |slot| 
         slot[:risk] >= 0 && 
           slot[:needed] > slot[:allocated].size && 
-          (volunteer ||= select_volunteer(slot[:skill]))
+          (volunteer ||= select_volunteer(slot[:skill])) &&
+          (slot[:skill].nil? || 
+           volunteer.skills.include?(slot[:skill]))
       end
       if slot && volunteer
         slot[:allocated] << volunteer
@@ -171,7 +173,12 @@ module Mission::AllocationConcern
     end
     risks = algo_pending.calculate_risks
     allocation = algo_pending.run_all
-    allocation.sort_by { |slot| -risks[slot.first] }
+    allocation = allocation.sort_by { |slot| -risks[slot.first] }
+
+    # add remaining (not allocated) volunteers to the last (least
+    # riskiest skill)
+    allocation.last.second.concat(algo_pending.pool)
+    allocation
   end
 
   def obtain_initial_volunteers

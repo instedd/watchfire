@@ -55,6 +55,11 @@ describe Scheduler::OrganizationScheduler do
           @scheduler.expects(:schedule_try_call)
           @scheduler.call_status_update(@call.session_id, status)
         end
+
+        it "should enqueue an unresponsive sweeper for the call's mission" do
+          @scheduler.expects(:schedule_next_unresponsive_sweep)
+          @scheduler.call_status_update(@call.session_id, status)
+        end
       end
     end
 

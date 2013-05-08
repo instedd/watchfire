@@ -5,7 +5,8 @@ module Scheduler
     include Singleton
 
     def self.start
-      DRb.start_service SchedulerAdvisor.uri, instance, safe_level: 1
+      # FIXME: safe_level should be at least 1
+      DRb.start_service SchedulerAdvisor.uri, instance, safe_level: 0
     end
   
     def method_missing(name, *args)
