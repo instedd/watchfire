@@ -8,6 +8,10 @@ module Scheduler
       # FIXME: safe_level should be at least 1
       DRb.start_service SchedulerAdvisor.uri, instance, safe_level: 0
     end
+
+    def self.stop
+      DRb.stop_service
+    end
   
     def method_missing(name, *args)
       Rails.logger.warn "Received unknown command #{name} with arguments #{args}"
@@ -15,6 +19,7 @@ module Scheduler
 
     def quit
       Rails.logger.info "Quitting per advisor request"
+      self.class.stop
       EM.stop
     end
 
