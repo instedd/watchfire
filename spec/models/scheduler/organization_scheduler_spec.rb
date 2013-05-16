@@ -43,7 +43,7 @@ describe Scheduler::OrganizationScheduler do
       @call = CurrentCall.make!
     end
 
-    %w(completed failed).each do |status|
+    %w(completed failed no-answer busy canceled).each do |status|
       context "when status is #{status}" do
         it "should free the call slot" do
           lambda do
@@ -68,6 +68,11 @@ describe Scheduler::OrganizationScheduler do
         @scheduler.call_status_update(@call.session_id, 'in-progress')
         @call.reload.call_status.should eq('in-progress')
       end
+    end
+
+    it "should set candidate voice status" do
+      @scheduler.call_status_update(@call.session_id, 'in-progress')
+      @call.candidate.last_call_status.should eq('in-progress')
     end
   end
 

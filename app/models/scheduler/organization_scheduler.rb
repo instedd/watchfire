@@ -86,17 +86,12 @@ class Scheduler::OrganizationScheduler
     call = CurrentCall.find_by_session_id(session_id)
     return if call.nil?
 
-    case call_status
-    when 'completed', 'failed'
-      # call finished -> free slot
-      if call_status == 'failed'
-        call.fail
-      end
+    call.update_status! call_status
+
+    if call.ended?
       call.destroy
       schedule_try_call
       schedule_next_unresponsive_sweep(call.candidate.mission)
-    else
-      call.update_attribute :call_status, call_status
     end
   end
 

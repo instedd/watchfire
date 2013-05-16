@@ -9,10 +9,16 @@ class CurrentCall < ActiveRecord::Base
   validate :is_voice_channel
 
   def timeout
-    self.fail
+    update_status! 'failed'
   end
 
-  def fail
+  def update_status! status
+    update_attribute :call_status, status
+    candidate.update_attribute :last_call_status, status
+  end
+
+  def ended?
+    %w(completed failed busy no-answer canceled).include?(call_status)
   end
 
 private

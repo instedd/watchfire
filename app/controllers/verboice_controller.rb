@@ -32,9 +32,6 @@ class VerboiceController < ApplicationController
 
   def status_callback
     SchedulerAdvisor.call_status_update params[:CallSid], params[:CallStatus]
-    unless candidate.nil?
-      candidate.update_attribute :last_call_status, params[:CallStatus]
-    end
 
     head :ok
   end
