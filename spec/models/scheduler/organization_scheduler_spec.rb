@@ -126,26 +126,46 @@ describe Scheduler::OrganizationScheduler do
       @scheduler.mission_check(@mission.id)
     end
 
-    it "should enqueue an unresponsive sweeper" do
-      @scheduler.expects(:schedule_next_unresponsive_sweep).with(@mission)
-      @scheduler.mission_check(@mission.id)
+    context "when there are candidates to call" do
+      before(:each) do
+        @candidate = Candidate.make! mission: @mission
+      end
+
+      it "should enqueue an unresponsive sweeper" do
+        @scheduler.expects(:schedule_next_unresponsive_sweep).with(@mission)
+        @scheduler.mission_check(@mission.id)
+      end
+
+      it "should enqueue a SMS send if the organization has SMS channels" do
+        PigeonChannel.make!(:nuntium, organization: @organization)
+        @scheduler.expects(:schedule_next_sms_send).with(@mission)
+        @scheduler.mission_check(@mission.id)
+      end
+
+      it "should not enqueue a SMS send if the organization has no SMS channels" do
+        @scheduler.expects(:schedule_next_sms_send).never
+        @scheduler.mission_check(@mission.id)
+      end
+
+      it "should enqueue a try call if there are slots available" do
+        PigeonChannel.make!(:verboice, organization: @organization)
+        @scheduler.expects(:schedule_try_call)
+        @scheduler.mission_check(@mission.id)
+      end
     end
 
-    it "should enqueue a SMS send if the organization has SMS channels" do
-      PigeonChannel.make!(:nuntium, organization: @organization)
-      @scheduler.expects(:schedule_next_sms_send).with(@mission)
-      @scheduler.mission_check(@mission.id)
-    end
+    context "when there are no more candidates to call" do
+      it "should not enqueue a SMS send" do
+        PigeonChannel.make!(:nuntium, organization: @organization)
+        @scheduler.expects(:schedule_next_sms_send).never
+        @scheduler.mission_check(@mission.id)
+      end
 
-    it "should not enqueue a SMS send if the organization has no SMS channels" do
-      @scheduler.expects(:schedule_next_sms_send).never
-      @scheduler.mission_check(@mission.id)
-    end
-
-    it "should enqueue a try call if there are slots available" do
-      PigeonChannel.make!(:verboice, organization: @organization)
-      @scheduler.expects(:schedule_try_call)
-      @scheduler.mission_check(@mission.id)
+      it "should not enqueue a try call" do
+        PigeonChannel.make!(:verboice, organization: @organization)
+        @scheduler.expects(:schedule_try_call).never
+        @scheduler.mission_check(@mission.id)
+      end
     end
   end
 end

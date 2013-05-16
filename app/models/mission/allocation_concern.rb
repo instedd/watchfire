@@ -219,6 +219,10 @@ module Mission::AllocationConcern
         end
         self.candidates.reload
       end
+
+      if candidates_to_call.empty?
+        stop_calling_volunteers
+      end
     end
     self.save! if self.changed?
   end

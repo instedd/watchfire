@@ -301,6 +301,10 @@ describe Mission::AllocationConcern do
   end
 
   describe "check for more volunteers" do
+    before(:each) do
+      @mission.update_attribute :status, :running
+    end
+
     it "should add new pending candidates if required" do
       @mission.expects(:obtain_more_volunteers).returns([@vol_at1])
       @mission.expects(:add_volunteer).with(@vol_at1)
@@ -320,6 +324,13 @@ describe Mission::AllocationConcern do
       @mission.check_for_more_volunteers
 
       @mission.status.should_not eq(:finished)
+    end
+
+    it "should pause the mission if there are no more candidates to call" do
+      @mission.expects(:obtain_more_volunteers).returns([])
+      @mission.check_for_more_volunteers
+
+      @mission.status.should eq(:paused)
     end
   end
 end
