@@ -6,11 +6,12 @@
 %label Recruitees
 .mission_skills(data-bind="foreach: mission_skills")
   .mission_skill(data-bind="visible: !_destroy()")
-    %span.ux-nstep.w06
+    %span.ux-nstep
       %input.req_vols(type="text" size="2" data-min="1" data-bind="value: req_vols, attr: { readonly: $root.isRunningOrFinished() }")
     %span
-      %select.ux-dropdown.w30.skill_id(data-bind="options: availableSkills, optionsText: 'pluralized', optionsValue: 'id', value: skill_id, enable: $root.isCreated()")
-    %button.cremove(data-bind="click: $root.removeMissionSkill, visible: $root.visibleSkills() > 1 && $root.isCreated()")
+      %select.ux-dropdown.skill_id(data-bind="options: availableSkills, optionsText: 'pluralized', optionsValue: 'id', value: skill_id, enable: $root.isCreated()")
+    %button.ic-white(data-bind="click: $root.removeMissionSkill, visible: $root.visibleSkills() > 1 && $root.isCreated()")
+      %i.icon-trash
     %br
 %div(data-bind="if: availableSkills().length > 0 && isCreated()")
   %button.btn.btn-link.btn-medium(data-bind="click: addMissionSkill") 
