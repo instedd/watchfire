@@ -12,6 +12,8 @@ gem 'geokit-rails3'
 gem 'verboice', "0.7.0"
 gem 'devise', "~>2.2.3"
 gem 'devise_invitable'
+gem 'omniauth'
+gem 'omniauth-openid'
 gem 'breadcrumbs_on_rails'
 gem 'kaminari'
 gem 'instedd-pigeon', '~> 0.1.3', :require => 'pigeon'

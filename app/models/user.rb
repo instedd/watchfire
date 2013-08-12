@@ -3,7 +3,7 @@ class User < ActiveRecord::Base
   # :token_authenticatable, :encryptable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable, :invitable,
-         :confirmable
+         :confirmable, :omniauthable
 
   # Setup accessible (or protected) attributes for your model
   attr_accessible :email, :password, :password_confirmation, :remember_me
@@ -11,6 +11,7 @@ class User < ActiveRecord::Base
   has_many :members
   has_many :organizations, :through => :members
 	has_many :missions
+  has_many :identities, dependent: :destroy
 
   belongs_to :current_organization, :class_name => 'Organization'
 

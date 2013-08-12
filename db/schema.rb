@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130429195024) do
+ActiveRecord::Schema.define(:version => 20130812205352) do
 
   create_table "candidates", :force => true do |t|
     t.integer  "mission_id"
@@ -39,8 +39,8 @@ ActiveRecord::Schema.define(:version => 20130429195024) do
     t.integer  "volunteer_id"
     t.string   "type"
     t.string   "address"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
   end
 
   create_table "current_calls", :force => true do |t|
@@ -57,6 +57,16 @@ ActiveRecord::Schema.define(:version => 20130429195024) do
   add_index "current_calls", ["pigeon_channel_id"], :name => "index_current_calls_on_pigeon_channel_id"
   add_index "current_calls", ["session_id"], :name => "index_current_calls_on_session_id"
   add_index "current_calls", ["voice_number"], :name => "index_current_calls_on_voice_number"
+
+  create_table "identities", :force => true do |t|
+    t.integer  "user_id"
+    t.string   "provider"
+    t.string   "token"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "identities", ["provider", "token"], :name => "index_identities_on_provider_and_token"
 
   create_table "invites", :force => true do |t|
     t.integer  "organization_id"
@@ -79,8 +89,8 @@ ActiveRecord::Schema.define(:version => 20130429195024) do
     t.integer  "skill_id"
     t.integer  "priority"
     t.integer  "req_vols"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   create_table "missions", :force => true do |t|
