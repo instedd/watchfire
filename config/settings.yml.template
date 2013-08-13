@@ -19,6 +19,9 @@ defaults: &defaults
     host: localhost:3000
   from_email: watchfire@instedd.org
   scheduler_uri: druby://localhost:4000
+  open_id_providers:
+  - name: sample_open_id
+    identifier: http://sample/openid
 
 development:
   <<: *defaults

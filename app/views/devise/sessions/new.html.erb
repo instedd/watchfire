@@ -27,6 +27,11 @@
     <button type="submit" class="white">Log In</button>
   </div>
 
+  <%- if devise_mapping.omniauthable? %>
+    <%- resource_class.omniauth_providers.each do |provider| %>
+      <p><%= link_to "Log in with #{provider}", omniauth_authorize_path(resource_name, provider) %></p>
+    <% end -%>
+  <% end -%>
 
   <%= render :partial => "devise/shared/links" %>
 <% end %>

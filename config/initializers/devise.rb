@@ -217,6 +217,11 @@ Devise.setup do |config|
   config.reconfirmable = true
 
   require 'openid/store/filesystem'
-  config.omniauth :open_id, store: OpenID::Store::Filesystem.new("#{Rails.root}/tmp"), require: 'omniauth-openid'
-  config.omniauth :open_id, store: OpenID::Store::Filesystem.new("#{Rails.root}/tmp"), name: 'arcbadat', identifier: 'http://www.arcbadat.org/roster/openid/id', require: 'omniauth-openid'
+  watchfire_config['open_id_providers'].each do |provider|
+    config.omniauth :open_id,
+      store: OpenID::Store::Filesystem.new("#{Rails.root}/tmp"),
+      name: provider['name'],
+      identifier: provider['identifier'],
+      require: 'omniauth-openid'
+  end
 end
