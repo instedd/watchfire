@@ -42,6 +42,7 @@
           = c.hidden_field :voice_numbers
           = c.hidden_field :sms_numbers
           = c.hidden_field :skill_names
+          = c.hidden_field :shifts_json
           - unless volunteer.new_record?
             = c.hidden_field :id
         %tr.volunteer{:class => class_for(volunteer)}

@@ -36,6 +36,14 @@ class Volunteer < ActiveRecord::Base
     self.skills.map(&:name).join(', ')
   end
 
+  def shifts_json=(shifts)
+    self.shifts = JSON.parse(shifts) rescue nil
+  end
+
+  def shifts_json
+    shifts.to_json
+  end
+
   def available? day, hour
     begin
       self.shifts[day.to_s][hour.to_s] == "1"
@@ -61,7 +69,7 @@ class Volunteer < ActiveRecord::Base
     self.voice_channels.each do |vc|
       vc.mark_for_destruction
     end
-    numbers.each do |number| 
+    numbers.each do |number|
       self.voice_channels.build(:address => number.strip)
     end
   end
@@ -93,7 +101,7 @@ class Volunteer < ActiveRecord::Base
     self.sms_channels.each do |sc|
       sc.mark_for_destruction
     end
-    numbers.each do |number| 
+    numbers.each do |number|
       self.sms_channels.build(:address => number.strip)
     end
   end
