@@ -2,8 +2,8 @@
   %h1
     = "#{@volunteers_count} volunteers"
     - if current_organization
-      = form_tag new_volunteer_path, :method => :get do
-        %button.cadd{:type => "submit"} Add New
+      = link_to "Add New", new_volunteer_path, class: "cadd"
+      = link_to "Delete All", delete_all_volunteers_path, class: "cremove", confirm: "This will delete all volunteers in this organization. Are you sure?"
 
 - if current_organization
   .right

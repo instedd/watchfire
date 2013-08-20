@@ -58,9 +58,9 @@ class VolunteersController < ApplicationController
         format.html { redirect_to(volunteers_path, :notice => "#{volunteer.name} was successfully created.") }
         format.xml  { render :xml => volunteer, :status => :created, :location => volunteer }
       else
-        format.html { 
+        format.html {
           add_breadcrumb 'New', new_volunteer_path
-          render :action => "new" 
+          render :action => "new"
         }
         format.xml  { render :xml => volunteer.errors, :status => :unprocessable_entity }
       end
@@ -75,9 +75,9 @@ class VolunteersController < ApplicationController
         format.html { redirect_to(volunteers_path, :notice => "#{volunteer.name} was successfully updated.") }
         format.xml  { head :ok }
       else
-        format.html { 
+        format.html {
           add_breadcrumb volunteer.name, edit_volunteer_path(volunteer)
-          render :action => "edit" 
+          render :action => "edit"
         }
         format.xml  { render :xml => volunteer.errors, :status => :unprocessable_entity }
       end
@@ -93,6 +93,11 @@ class VolunteersController < ApplicationController
       format.html { redirect_to volunteers_url, :notice => "#{volunteer.name} was deleted." }
       format.xml  { head :ok }
     end
+  end
+
+  def delete_all
+    current_organization.volunteers.delete_all
+    redirect_to volunteers_url
   end
 
   # POST /volunteers/import

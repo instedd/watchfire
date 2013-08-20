@@ -56,7 +56,7 @@ button.power.on.disabled { background:url(http://theme.instedd.org/theme/images/
 table { width:100% }
 
 table td div { display:inline-block; vertical-align:middle }
-  
+
 .listitem table { font-size:12px; width: 100%; border-collapse:collapse }
 .listitem table td { padding:8px 5px; vertical-align:top; letter-spacing:-0.01em; border-top: 1px solid #eeeeee; }
 .listitem table tr:hover td { background:#d0d0d0 }
@@ -64,9 +64,9 @@ table td div { display:inline-block; vertical-align:middle }
 .listitem table tr td:last-child { border-radius:0 3px 3px 0; -moz-border-radius:0 3px 3px 0; -webkit-border-radius:0 3px 3px 0; text-align:left }
 .listitem table td button { margin:0 auto }
 .listitem table tr.blocked td span{ color:#999999; text-decoration:line-through }
- 
+
 .smalldescription { font-size:12px; color:#555555; margin-top:-5px; padding:0; display:block }
-.tgrey { color:#555555 } 
+.tgrey { color:#555555 }
 
 .StateDisplay button { width:47% }
 
@@ -74,18 +74,18 @@ table td div { display:inline-block; vertical-align:middle }
 
 .map { border:1px solid #dddddd }
 
-.bottom-actions { margin-top:10px } 
-.bottom-actions button { margin-right:10px } 
-.bottom-actions.registration { margin-top:20px } 
- 
-/* --------  Events Table ------------ */ 
+.bottom-actions { margin-top:10px }
+.bottom-actions button { margin-right:10px }
+.bottom-actions.registration { margin-top:20px }
+
+/* --------  Events Table ------------ */
 
 .minactive, .Missions td.paused { color:#555555 }
 .mactive span { background:#9fc643; margin-right:5px; width:10px; height:10px; display:inline-block; border-radius:2px; -moz-border-radius:2px; -webkit-border-radius:2px }
 .mpaused span { background:#d0d0d0; margin-right:5px; width:10px; height:9px; border-top:1px solid #9c9c9c; display:inline-block; border-radius:2px; -moz-border-radius:2px; -webkit-border-radius:2px }
 .minactive span { background:#d0d0d0; margin-right:5px; width:10px; height:9px; border-top:1px solid #9c9c9c; display:inline-block; border-radius:2px; -moz-border-radius:2px; -webkit-border-radius:2px }
 
-/* --------  Invitation buble ------------ */ 
+/* --------  Invitation buble ------------ */
 
 #invitation_bubble { text-align:left; color:#000000 }
 #invitation_bubble h1 { font-size:20px; color:#000000 }
@@ -95,4 +95,6 @@ table td div { display:inline-block; vertical-align:middle }
 
 td.channel_enabled span { background:#9fc643; margin-right:5px; width:10px; height:10px; display:inline-block; border-radius:2px; -moz-border-radius:2px; -webkit-border-radius:2px }
 td.channel_disabled span { background:#d0d0d0; margin-right:5px; width:10px; height:9px; border-top:1px solid #9c9c9c; display:inline-block; border-radius:2px; -moz-border-radius:2px; -webkit-border-radius:2px }
+
+.cremove, .cadd { font-size: 14px;}
 
