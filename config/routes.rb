@@ -37,6 +37,7 @@ Watchfire::Application.routes.draw do
     collection do
       post 'import'
       post 'confirm_import'
+      post 'upload'
       get 'delete_all'
     end
   end

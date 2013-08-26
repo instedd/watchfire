@@ -128,6 +128,29 @@ class VolunteersController < ApplicationController
     end
   end
 
+  # POST /volunteers/upload
+  def upload
+    organization = current_user.organizations.find_by_name params[:organization]
+    return render nothing: true, status: 400 unless organization
+
+    errors = []
+    response = {errors: errors}
+    Volunteer.transaction do
+      organization.volunteers.delete_all
+      volunteers = VolunteerImporter.new(organization).import(request.body.read)
+      volunteers.each do |volunteer|
+        begin
+          volunteer.save!
+        rescue Exception => ex
+          errors << {name: volunteer.name, error: ex.to_s}
+        end
+      end
+      response[:total_rows] = volunteers.length
+    end
+
+    render json: response
+  end
+
   private
 
   def add_volunteers_breadcrumb
