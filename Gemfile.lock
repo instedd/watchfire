@@ -101,7 +101,7 @@ GEM
     highline (1.6.15)
     hike (1.2.1)
     i18n (0.6.4)
-    instedd-pigeon (0.3.0)
+    instedd-pigeon (0.3.1)
       json
       rails (~> 3.2)
       rest-client
@@ -271,7 +271,7 @@ DEPENDENCIES
   geokit-rails3
   guid
   haml-rails
-  instedd-pigeon (~> 0.3.0)
+  instedd-pigeon (~> 0.3.1)
   jquery-rails (~> 2.0.3)
   kaminari
   machinist (>= 2.0.0.beta2)
