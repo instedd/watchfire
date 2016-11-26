@@ -22,6 +22,9 @@ gem 'guid'
 gem 'foreman'
 gem 'valid_email'
 gem 'eventmachine'
+group :webserver do
+  gem 'puma', '~> 3.0.2'
+end
 
 group :assets do
   gem 'sass-rails', "  ~> 3.2.3"
