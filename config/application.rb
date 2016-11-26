@@ -54,5 +54,8 @@ module Watchfire
 
     # Default scheduler port
     config.scheduler_uri = 'druby://localhost:4000'
+
+    # Do not run initializers when precompiling
+    config.assets.initialize_on_precompile = false
   end
 end

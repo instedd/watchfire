@@ -19,9 +19,11 @@ gem 'kaminari'
 gem 'instedd-pigeon', '~> 0.3.1', :require => 'pigeon'
 gem 'decent_exposure'
 gem 'guid'
-gem 'foreman'
+gem 'foreman', '~> 0.64.0'
 gem 'valid_email'
 gem 'eventmachine'
+gem 'newrelic_rpm'
+
 group :webserver do
   gem 'puma', '~> 3.0.2'
 end
@@ -38,16 +40,18 @@ group :development do
 end
 
 group :development, :test do
+  gem 'debugger'
+  gem 'pry'
+  gem 'pry-debugger'
   gem 'rspec-rails'
   gem 'machinist', '>= 2.0.0.beta2'
   gem 'faker'
   gem 'mocha', :require => false
   gem 'timecop'
-  gem 'debugger'
-  gem 'pry'
-  gem 'pry-debugger'
-  gem 'capistrano'
-  gem 'rvm-capistrano'
+  gem 'capistrano',         '~> 3.4.1', :require => false
+  gem 'capistrano-rails',   '~> 1.2',   :require => false
+  gem 'capistrano-bundler', '~> 1.2',   :require => false
+  gem 'net-ssh',            '~> 2.8',   :require => false
   gem 'selenium-webdriver'
   gem 'nokogiri'
   gem 'xmpp4r'

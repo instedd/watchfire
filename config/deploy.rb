@@ -1,44 +1,66 @@
-require 'bundler/capistrano'
-require 'rvm/capistrano'
-require 'foreman/capistrano'
+# config valid only for current version of Capistrano
+lock '3.4.1'
 
-set :rvm_ruby_string, '1.9.3'
-set :rvm_type, :system
-set :sudo, 'rvmsudo'
+set :application, 'watchfire'
+set :repo_url, 'git@github.com:instedd/watchfire.git'
 
-set :application, "watchfire"
-set :repository,  "https://bitbucket.org/instedd/watchfire"
-set :scm, :mercurial
-set :deploy_via, :remote_cache
-set :user, 'ubuntu'
+ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
 
-set :foreman_concurrency, 'scheduler=1'
+set :deploy_to, "/u/apps/#{fetch(:application)}"
+set :scm, :git
+set :pty, true
+set :keep_releases, 5
+set :rails_env, :production
+set :migration_role, :app
 
-namespace :deploy do
-  task :start do ; end
-  task :stop do ; end
-  task :restart, :roles => :app, :except => { :no_release => true } do
-    run "#{try_sudo} touch #{File.join(current_path,'tmp','restart.txt')}"
+# Default value for :linked_files is []
+set :linked_files, ['config/database.yml', 'config/settings.yml', 'config/newrelic.yml']
+
+# Default value for linked_dirs is []
+set :linked_dirs, ['log', 'tmp/pids', 'tmp/cache']
+
+# Name for the exported service
+set :service_name, fetch(:application)
+
+namespace :service do
+  task :export do
+    on roles(:app) do
+      opts = {
+        app: fetch(:service_name),
+        log: File.join(shared_path, 'log'),
+        user: fetch(:deploy_user),
+        concurrency: "puma=1,scheduler=1"
+      }
+
+      execute(:mkdir, "-p", opts[:log])
+
+      within release_path do
+        execute :sudo, '/usr/local/bin/bundle', 'exec', 'foreman', 'export',
+                'upstart', '/etc/init', '-t', "etc/upstart",
+                opts.map { |opt, value| "--#{opt}=\"#{value}\"" }.join(' ')
+      end
+    end
   end
 
-  task :symlink_configs, :roles => :app do
-    %W(settings database).each do |file|
-      run "ln -nfs #{shared_path}/#{file}.yml #{release_path}/config/"
+  # Capture the environment variables for Foreman
+  before :export, :set_env do
+    on roles(:app) do
+      within release_path do
+        with rails_env: fetch(:rails_env) do
+          execute :bundle, :exec, "env | grep '^\\(PATH\\|GEM_PATH\\|GEM_HOME\\|RAILS_ENV\\|PUMA_OPTS\\INSTEDD_THEME\\)'", "> .env"
+        end
+      end
+    end
+  end
+
+  task :safe_restart do
+    on roles(:app) do
+      execute "sudo stop #{fetch(:service_name)} ; sudo start #{fetch(:service_name)}"
     end
   end
 end
 
-namespace :foreman do
-  desc 'Prepare foreman env file with current environment variables'
-  task :set_env, :roles => :app do
-    run "echo -e \"PATH=$PATH\\nGEM_HOME=$GEM_HOME\\nGEM_PATH=$GEM_PATH\\nRAILS_ENV=production\" >  #{current_path}/.env"
-  end
+namespace :deploy do
+  after :updated, "service:export"         # Export foreman scripts
+  after :restart, "service:safe_restart"   # Restart background services
 end
-
-before "deploy:start", "deploy:migrate"
-before "deploy:restart", "deploy:migrate"
-after "deploy:update_code", "deploy:symlink_configs"
-
-before "foreman:export", "foreman:set_env"
-after "deploy:update", "foreman:export"    # Export foreman scripts
-after "deploy:restart", "foreman:restart"   # Restart application scripts
