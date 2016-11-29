@@ -23,6 +23,7 @@ gem 'foreman', '~> 0.64.0'
 gem 'valid_email'
 gem 'eventmachine'
 gem 'newrelic_rpm'
+gem 'minitest', '2.5.1'
 
 group :webserver do
   gem 'puma', '~> 3.0.2'

@@ -131,6 +131,7 @@ GEM
     metaclass (0.0.1)
     method_source (0.8.1)
     mime-types (1.21)
+    minitest (2.5.1)
     mocha (0.13.3)
       metaclass (~> 0.0.1)
     multi_json (1.6.1)
@@ -281,6 +282,7 @@ DEPENDENCIES
   jquery-rails (~> 2.0.3)
   kaminari
   machinist (>= 2.0.0.beta2)
+  minitest (= 2.5.1)
   mocha
   mysql2
   net-ssh (~> 2.8)
